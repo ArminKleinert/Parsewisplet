@@ -27,7 +27,7 @@ internal class TestGrammarC99Scannerless {
     @Test
     fun verifySimpleProgram() {
         val text = "int i; int main (int argc, char** argv) { i = 11; while (--i) { printf(\"%d\", i); } }"
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test

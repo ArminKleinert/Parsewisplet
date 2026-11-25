@@ -11,7 +11,7 @@ import org.junit.jupiter.api.function.ThrowingSupplier
 internal class IdentifierNamesTest {
     @Test
     fun extendedNamesAllowed() {
-        val opts = ParserCreationOptions.getDefault()
+        val opts = ParserCreationOptions.default
         Assertions.assertThrows<Exception?>(Exception::class.java, Executable { parser("1 = 'a'", opts) })
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = 'a'", opts) })
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("\uD83C\uDF81 = 'a'", opts) })

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.function.ThrowingSupplier
 internal class StrangeNonTerminalNamesTest {
     @Test
     fun nonTerminalStartsWithEpsilonName() {
-        val opts = ParserCreationOptions.getDefault()
+        val opts = ParserCreationOptions.default
 
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = EpsNT\nEpsNT = \"1\"", opts) })
 
@@ -25,7 +25,7 @@ internal class StrangeNonTerminalNamesTest {
 
     @Test
     fun nonTerminalStartsWithEofName() {
-        val opts = ParserCreationOptions.getDefault()
+        val opts = ParserCreationOptions.default
 
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier {
             parser(

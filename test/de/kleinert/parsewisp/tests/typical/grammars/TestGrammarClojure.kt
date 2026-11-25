@@ -23,7 +23,7 @@ internal class TestGrammarClojure {
     @Test
     fun helloWorld() {
         val text = "(println \"hello world\")"
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
@@ -36,13 +36,13 @@ internal class TestGrammarClojure {
                   (:import (clojure.lang IFn PersistentVector)
                            (java.util ArrayList List)))
                            """.trimIndent()
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
     fun defDynamic() {
         val text = "(def ^:dynamic *default-output-format* :hiccup)"
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
@@ -113,7 +113,7 @@ internal class TestGrammarClojure {
                       (gll/parse (:grammar parser) start-production text partial?))))
                 
                 """.trimIndent()
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     /**
@@ -136,7 +136,7 @@ internal class TestGrammarClojure {
 //                var res = p.parse(s);
 //                if (res.isFailure())
 //                    System.out.println(res);
-//                Assertions.assertTrue(res.isSuccess());
+//                Assertions.assertTrue(res.isSuccess);
 //            }
 ////            var end = System.nanoTime();
 ////            System.out.println((end - start) / 1000000.0);

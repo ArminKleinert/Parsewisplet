@@ -16,8 +16,8 @@ internal class ParseTreeSpanTest {
             PT.create("S", "b", PT.create("A", "Aa"), "n"),
             tree
         )
-        Assertions.assertEquals(0, tree.getSpanStart())
-        Assertions.assertEquals(4, tree.getSpanEndExclusive())
+        Assertions.assertEquals(0, tree.spanStart)
+        Assertions.assertEquals(4, tree.spanEndExclusive)
 
         val spannedStringInTree = tree.containedString("bAan")
         Assertions.assertTrue(spannedStringInTree.isPresent())
@@ -31,8 +31,8 @@ internal class ParseTreeSpanTest {
         val subTree = tree.getNode(1).tree()
 
         Assertions.assertEquals(PT.create("A", "Aa"), subTree)
-        Assertions.assertEquals(1, subTree.getSpanStart())
-        Assertions.assertEquals(3, subTree.getSpanEndExclusive())
+        Assertions.assertEquals(1, subTree.spanStart)
+        Assertions.assertEquals(3, subTree.spanEndExclusive)
 
         val spannedStringInSubTree = subTree.containedString("bAan")
         Assertions.assertTrue(spannedStringInSubTree.isPresent())
@@ -44,16 +44,16 @@ internal class ParseTreeSpanTest {
         val p = parser("S = ε")
         val tree = p.parse("").castToParseSuccess()
 
-        Assertions.assertEquals(0, tree.getSpanStart())
-        Assertions.assertEquals(0, tree.getSpanEndExclusive())
+        Assertions.assertEquals(0, tree.spanStart)
+        Assertions.assertEquals(0, tree.spanEndExclusive)
     }
 
     @Test
     fun testNoSpan() {
         val tree = PT.create("S", "a", "b", "cdef")
 
-        Assertions.assertTrue(tree.getSpanStart() < 0)
-        Assertions.assertTrue(tree.getSpanEndExclusive() < 0)
+        Assertions.assertTrue(tree.spanStart < 0)
+        Assertions.assertTrue(tree.spanEndExclusive < 0)
         Assertions.assertTrue(tree.containedString("abcdef").isEmpty())
     }
 

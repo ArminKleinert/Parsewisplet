@@ -33,7 +33,7 @@ internal class TestGrammarPoetic {
         try {
             return parser(
                 Files.readString(Path.of("testres/grammars/poetic.grammar")),
-                ParserCreationOptions.getDefault()
+                ParserCreationOptions.default
             )
         } catch (e: IOException) {
             throw RuntimeException(e)
@@ -42,7 +42,7 @@ internal class TestGrammarPoetic {
 
     private fun transform(pt: ParseResult): String {
         val m: MutableMap<Sym?, Function<MutableList<Any?>?, Any?>?> =
-            HashMap<Sym?, Function<MutableList<Any?>?, Any?>?>()
+            HashMap()
         m.put(sym("S"), Function { l: MutableList<Any?>? -> l })
         m.put(sym("i1"), Function { l: MutableList<Any?>? -> '[' }) // 1 corresponds to BF's '[' instruction
         m.put(sym("i2"), Function { l: MutableList<Any?>? -> ']' }) // 2 corresponds to BF's ']' instruction
@@ -62,11 +62,8 @@ internal class TestGrammarPoetic {
         // Anything over 10 writes the number into the current cell. This is implemented as setting the cell to 0 and then mindlessly incrementing.
         m.put(sym("imore"), Function { l: MutableList<Any?>? -> "[-]" + "+".repeat(l!!.size) })
 
-        return (Transform.transform(pt, m) as MutableList<*>)
-            .stream()
-            .map { obj: Any? -> obj.toString() }
-            .toList()
-            .joinToString()
+        return (Transform.transform(pt, m) as List<*>)
+            .joinToString { obj: Any? -> obj.toString() }
     }
 
     fun bfToP() {

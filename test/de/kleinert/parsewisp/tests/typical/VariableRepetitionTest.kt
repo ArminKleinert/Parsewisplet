@@ -16,8 +16,8 @@ internal class VariableRepetitionTest {
     fun parseRepetitionMinimumOnly() {
         run {
             val p = parser("S = 'a' {2,}")
-            Assertions.assertTrue(p.parse("").isFailure())
-            Assertions.assertTrue(p.parse("a").isFailure())
+            Assertions.assertTrue(p.parse("").isFailure)
+            Assertions.assertTrue(p.parse("a").isFailure)
             Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
             Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
             Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"))
@@ -32,18 +32,18 @@ internal class VariableRepetitionTest {
             Assertions.assertEquals(PT.create("S"), p.parse(""))
             Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
             Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
-            Assertions.assertTrue(p.parse("aaa").isFailure())
-            Assertions.assertTrue(p.parse("aaaa").isFailure())
-            Assertions.assertTrue(p.parse("aaaaa").isFailure())
+            Assertions.assertTrue(p.parse("aaa").isFailure)
+            Assertions.assertTrue(p.parse("aaaa").isFailure)
+            Assertions.assertTrue(p.parse("aaaaa").isFailure)
         }
         run {
             val p = parser("S = 'a' {,0}")
             Assertions.assertEquals(PT.create("S"), p.parse(""))
-            Assertions.assertTrue(p.parse("a").isFailure())
-            Assertions.assertTrue(p.parse("aa").isFailure())
-            Assertions.assertTrue(p.parse("aaa").isFailure())
-            Assertions.assertTrue(p.parse("aaaa").isFailure())
-            Assertions.assertTrue(p.parse("aaaaa").isFailure())
+            Assertions.assertTrue(p.parse("a").isFailure)
+            Assertions.assertTrue(p.parse("aa").isFailure)
+            Assertions.assertTrue(p.parse("aaa").isFailure)
+            Assertions.assertTrue(p.parse("aaaa").isFailure)
+            Assertions.assertTrue(p.parse("aaaaa").isFailure)
         }
     }
 
@@ -51,32 +51,32 @@ internal class VariableRepetitionTest {
     fun parseRepetitionMinMax() {
         run {
             val p = parser("S = 'a' {2,4}")
-            Assertions.assertTrue(p.parse("").isFailure())
-            Assertions.assertTrue(p.parse("a").isFailure())
+            Assertions.assertTrue(p.parse("").isFailure)
+            Assertions.assertTrue(p.parse("a").isFailure)
             Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
             Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
             Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"))
-            Assertions.assertTrue(p.parse("aaaaa").isFailure())
+            Assertions.assertTrue(p.parse("aaaaa").isFailure)
         }
         run {
             val p = parser("S = 'a' {0,0}")
             Assertions.assertEquals(PT.create("S"), p.parse(""))
-            Assertions.assertTrue(p.parse("a").isFailure())
-            Assertions.assertTrue(p.parse("aa").isFailure())
-            Assertions.assertTrue(p.parse("aaa").isFailure())
-            Assertions.assertTrue(p.parse("aaaa").isFailure())
-            Assertions.assertTrue(p.parse("aaaaa").isFailure())
+            Assertions.assertTrue(p.parse("a").isFailure)
+            Assertions.assertTrue(p.parse("aa").isFailure)
+            Assertions.assertTrue(p.parse("aaa").isFailure)
+            Assertions.assertTrue(p.parse("aaaa").isFailure)
+            Assertions.assertTrue(p.parse("aaaaa").isFailure)
         }
     }
 
     @Test
     fun parseRepetitionExact() {
         val p = parser("S = 'a' {2}")
-        Assertions.assertTrue(p.parse("").isFailure())
-        Assertions.assertTrue(p.parse("a").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
+        Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
-        Assertions.assertTrue(p.parse("aaa").isFailure())
-        Assertions.assertTrue(p.parse("aaaa").isFailure())
+        Assertions.assertTrue(p.parse("aaa").isFailure)
+        Assertions.assertTrue(p.parse("aaaa").isFailure)
     }
 
     @Test
@@ -90,9 +90,9 @@ internal class VariableRepetitionTest {
             PT.create("S", "a", "a", "a", "a", "a"),
             PT.create("S", "a", "a", "a", "a", "a", "a")
         )
-        val partialOpts = ParsingOptions.getDefault().withPartial(true)
+        val partialOpts = ParsingOptions.default.withPartial(true)
 
-        val creationOpts = ParserCreationOptions.getDefault()
+        val creationOpts = ParserCreationOptions.default
         val repeated_a = parser(
             """
                         S = 'a' 'a' {0,6}
@@ -114,9 +114,9 @@ internal class VariableRepetitionTest {
             PT.create("S", "a", "a", "a", "a", "a"),
             PT.create("S", "a", "a", "a", "a", "a", "a")
         )
-        val partialOpts = ParsingOptions.getDefault().withPartial(true)
+        val partialOpts = ParsingOptions.default.withPartial(true)
 
-        val creationOpts = ParserCreationOptions.getDefault()
+        val creationOpts = ParserCreationOptions.default
         val repeated_a = parser(
             """
                         S = 'a' {1,6}

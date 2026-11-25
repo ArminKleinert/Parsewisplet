@@ -8,13 +8,12 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 import java.util.regex.Pattern
 
 internal class LookaheadRuleTest {
     @Test
     fun create() {
-        val laEps = LookaheadRule.create(EpsilonTerm.getDefault())
+        val laEps = LookaheadRule.create(EpsilonTerm.default)
         Assertions.assertTrue(laEps is EpsilonTerm || laEps is LookaheadRule)
 
         Assertions.assertEquals(
@@ -28,7 +27,7 @@ internal class LookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule?>(
+                    listOf<Rule>(
                         LookaheadRule.create(RegexTerm.create(Pattern.compile("[a-zA-Z]"))),  // Look for any letter
                         LookaheadRule.create(RegexTerm.create(Pattern.compile("[a-fA-F0-9]"))),  // Look for any hex digit
                         RegexTerm.create(Pattern.compile("[\\x00-\\xFF]+")) // Any 8-bit ascii
@@ -41,7 +40,7 @@ internal class LookaheadRuleTest {
             if ((c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
                 Assertions.assertEquals(PT.create("S", text), p.parse(text))
             } else {
-                Assertions.assertTrue(p.parse(text).isFailure())
+                Assertions.assertTrue(p.parse(text).isFailure)
             }
         }
     }
@@ -52,7 +51,7 @@ internal class LookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule?>(
+                    listOf<Rule>(
                         LookaheadRule.create(StringTerm.create("a", false)),
                         LookaheadRule.create(StringTerm.create("a", false)),
                         RegexTerm.create(Pattern.compile("[a-z]"))
@@ -61,7 +60,7 @@ internal class LookaheadRuleTest {
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
-        Assertions.assertTrue(p.parse("b").isFailure()) // Nope. Was looking for "a".
+        Assertions.assertTrue(p.parse("b").isFailure) // Nope. Was looking for "a".
     }
 
     @Test
@@ -69,14 +68,14 @@ internal class LookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         LookaheadRule.create(StringTerm.create("a", false)),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
                 )
             )
         )
-        Assertions.assertTrue(p.parse("b").isFailure()) // Nope. Was looking for "a".
+        Assertions.assertTrue(p.parse("b").isFailure) // Nope. Was looking for "a".
     }
 
     @Test
@@ -85,7 +84,7 @@ internal class LookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule?>(
+                    listOf<Rule>(
                         LookaheadRule.create(StringTerm.create("a", false)),
                         LookaheadRule.create(StringTerm.create("b", false)),
                         RegexTerm.create(Pattern.compile("[a-z]"))
@@ -93,9 +92,9 @@ internal class LookaheadRuleTest {
                 )
             )
         )
-        Assertions.assertTrue(p.parse("a").isFailure()) // Nope. Was looking for "b".
-        Assertions.assertTrue(p.parse("b").isFailure()) // Nope. Was looking for "a".
-        Assertions.assertTrue(p.parse("c").isFailure()) // Fits neither lookahead.
+        Assertions.assertTrue(p.parse("a").isFailure) // Nope. Was looking for "b".
+        Assertions.assertTrue(p.parse("b").isFailure) // Nope. Was looking for "a".
+        Assertions.assertTrue(p.parse("c").isFailure) // Fits neither lookahead.
     }
 
     @Test
@@ -104,7 +103,7 @@ internal class LookaheadRuleTest {
             PT.create("S"),
             parser(
                 Gr.grammar(
-                    "S", LookaheadRule.create(EpsilonTerm.getDefault())
+                    "S", LookaheadRule.create(EpsilonTerm.default)
                 )
             ).parse("")
         )
@@ -112,7 +111,7 @@ internal class LookaheadRuleTest {
             PT.create("S"),
             parser(
                 Gr.grammar(
-                    "S", LookaheadRule.create(EOFTerm.getDefault())
+                    "S", LookaheadRule.create(EOFTerm.default)
                 )
             ).parse("")
         )
@@ -123,9 +122,9 @@ internal class LookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         StringTerm.create("a", false),
-                        LookaheadRule.create(EpsilonTerm.getDefault())
+                        LookaheadRule.create(EpsilonTerm.default)
                     )
                 )
             )
@@ -140,16 +139,16 @@ internal class LookaheadRuleTest {
                 "S", LookaheadRule.create(StringTerm.create("a", false))
             )
         )
-        Assertions.assertTrue(p.parse("a").isFailure()) // Nope. Was looking for "b".
-        Assertions.assertTrue(p.parse("b").isFailure()) // Nope. Was looking for "a".
-        Assertions.assertTrue(p.parse("c").isFailure()) // Fits neither lookahead.
+        Assertions.assertTrue(p.parse("a").isFailure) // Nope. Was looking for "b".
+        Assertions.assertTrue(p.parse("b").isFailure) // Nope. Was looking for "a".
+        Assertions.assertTrue(p.parse("c").isFailure) // Fits neither lookahead.
     }
 
     @Test
     fun getRule() {
         val i = StringTerm.create("a", false)
         val r = LookaheadRule.create(i) as LookaheadRule
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -158,16 +157,16 @@ internal class LookaheadRuleTest {
         val r = LookaheadRule.create(i) as LookaheadRule
 
         // Expected
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         val ni = StringTerm.createDirect("c", false)
         val nr = r.withRule(ni)
 
         // The new rule.
-        Assertions.assertEquals(ni, nr.getRule())
+        Assertions.assertEquals(ni, nr.rule)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -179,17 +178,17 @@ internal class LookaheadRuleTest {
             .withReduction(ReductionType.taggedTree(sym("A"))) as LookaheadRule
 
         // As expected.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
-        Assertions.assertEquals(ni, nr.getRule())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rule)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -205,10 +204,10 @@ internal class LookaheadRuleTest {
         Assertions.assertEquals(r.withHideTag(true), r.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(r.withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(r.includeInResult().isHiddenInResult())
-        Assertions.assertTrue(r.withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(r.hideInResult().isHiddenInResult())
+        Assertions.assertFalse(r.withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(r.includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(r.withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(r.hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(r.withHideTag(false), r.includeInResult())
@@ -223,7 +222,7 @@ internal class LookaheadRuleTest {
         val pDefault = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         r,
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -236,7 +235,7 @@ internal class LookaheadRuleTest {
         val pShow = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         r.withHideTag(false),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -249,7 +248,7 @@ internal class LookaheadRuleTest {
         val pHide = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         r.withHideTag(true),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -275,7 +274,7 @@ internal class LookaheadRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         r,
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -283,7 +282,7 @@ internal class LookaheadRuleTest {
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("A", "a")), pDefault.parse("a"))
-        Assertions.assertTrue(pDefault.parse("b").isFailure())
+        Assertions.assertTrue(pDefault.parse("b").isFailure)
     }
 
     @Test
@@ -293,7 +292,7 @@ internal class LookaheadRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
-                "A", LookaheadRule.create(EpsilonTerm.getDefault())
+                "A", LookaheadRule.create(EpsilonTerm.default)
                     .withReduction(ReductionType.merging())
             )
         )
@@ -306,7 +305,7 @@ internal class LookaheadRuleTest {
         val pMerge2 = parser(
             Gr.grammarS(
                 "S",
-                "S", LookaheadRule.create(EpsilonTerm.getDefault())
+                "S", LookaheadRule.create(EpsilonTerm.default)
                     .withReduction(ReductionType.taggedTree(sym("B")))
             )
         )
@@ -317,7 +316,7 @@ internal class LookaheadRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
-                "A", LookaheadRule.create(EpsilonTerm.getDefault())
+                "A", LookaheadRule.create(EpsilonTerm.default)
                     .withReduction(ReductionType.taggedTree(sym("B")))
             )
         )
@@ -334,7 +333,7 @@ internal class LookaheadRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         r.withReduction(ReductionType.taggedTree(sym("B"))),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )

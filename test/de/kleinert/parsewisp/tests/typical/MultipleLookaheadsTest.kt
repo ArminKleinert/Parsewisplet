@@ -16,14 +16,14 @@ internal class MultipleLookaheadsTest {
     @Test
     fun contradictoryLookaheads() {
         val p = parser("S := &'a' &'b' ('a' | 'b' | 'c')+")
-        Assertions.assertTrue(p.parse("a").isFailure())
-        Assertions.assertTrue(p.parse("b").isFailure())
-        Assertions.assertTrue(p.parse("c").isFailure())
+        Assertions.assertTrue(p.parse("a").isFailure)
+        Assertions.assertTrue(p.parse("b").isFailure)
+        Assertions.assertTrue(p.parse("c").isFailure)
     }
 
     @Test
     fun lookaheads1() {
-        val grammarAsMap = LinkedHashMap<Sym?, Rule?>()
+        val grammarAsMap = LinkedHashMap<Sym, Rule>()
         grammarAsMap.put(
             sym("S"),
             ConcatRule.create(
@@ -38,17 +38,17 @@ internal class MultipleLookaheadsTest {
                 sym("S"),
                 grammarAsMap
             ),
-            ParserCreationOptions.getDefault().withStartProduction(sym("S"))
+            ParserCreationOptions.default.withStartProduction(sym("S"))
         )
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
     fun doubledLookahead() {
         val p = parser("S = &'a' &'a' ('a' | 'b' | 'c')+")
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
@@ -56,14 +56,14 @@ internal class MultipleLookaheadsTest {
         val p = parser("S = !'a' !'a' ('a' | 'b' | 'c')+")
         Assertions.assertEquals(PT.create("S", "b"), p.parse("b"))
         Assertions.assertEquals(PT.create("S", "c"), p.parse("c"))
-        Assertions.assertTrue(p.parse("a").isFailure())
+        Assertions.assertTrue(p.parse("a").isFailure)
     }
 
     @Test
     fun doubledNegativeLookahead1() {
         val p = parser("S = !'a' !'b' ('a' | 'b' | 'c')+")
         Assertions.assertEquals(PT.create("S", "c"), p.parse("c"))
-        Assertions.assertTrue(p.parse("a").isFailure())
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("a").isFailure)
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 }

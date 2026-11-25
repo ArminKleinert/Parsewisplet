@@ -25,14 +25,14 @@ object Transform {
         parseTree: ParseTree,
         transformMap: MutableMap<Sym?, Function<MutableList<Any?>?, Any?>?>
     ): Any {
-        val tagSym = parseTree.getTag().content
+        val tagSym = parseTree.tag.content
         val transformFn = transformMap.get(tagSym)
-        val transformedNodes = parseTree.getContent().stream()
+        val transformedNodes = parseTree.content.stream()
             .map<Any?> { node: Node? -> Transform.transform(node!!, transformMap) }.toList()
         if (transformFn != null) {
             return transformFn.apply(transformedNodes)!!
         } else {
-            return ParseTree.create(parseTree.getTag().content, transformedNodes)
+            return ParseTree.create(parseTree.tag.content, transformedNodes)
         }
     }
 
@@ -84,9 +84,9 @@ object Transform {
         transformMap: MutableMap<Sym?, Function<MutableList<Any?>?, Any?>?>
     ): Any {
         require(parseResult is ParseTree) { parseResult.toString() }
-        val tagSym = parseResult.getTag().content
+        val tagSym = parseResult.tag.content
         val transformedNodes = parseResult
-            .getContent().stream()
+            .content.stream()
             .map<Any?> { node: Node? -> Transform.transform(node!!, transformMap) }
             .toList()
         val transformFn = transformMap.get(tagSym)

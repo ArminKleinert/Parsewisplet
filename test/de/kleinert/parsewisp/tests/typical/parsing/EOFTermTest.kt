@@ -13,14 +13,14 @@ import java.util.List
 internal class EOFTermTest {
     @Test
     fun getDefault() {
-        Assertions.assertEquals(EOFTerm.getDefault(), EOFTerm.getDefault())
+        Assertions.assertEquals(EOFTerm.default, EOFTerm.default)
     }
 
     @Test
     fun parse() {
         val p2 = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.getDefault(), EOFTerm.getDefault()))
+                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.default, EOFTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), p2.parse(""))
@@ -29,10 +29,10 @@ internal class EOFTermTest {
             Gr.grammar(
                 "S",
                 ConcatRule.createDirect(
-                    List.of<Rule?>(
-                        EOFTerm.getDefault(),
-                        EOFTerm.getDefault(),
-                        EOFTerm.getDefault()
+                    listOf(
+                        EOFTerm.default,
+                        EOFTerm.default,
+                        EOFTerm.default
                     )
                 )
             )
@@ -44,15 +44,15 @@ internal class EOFTermTest {
     fun parseError() {
         val p = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.getDefault(), StringTerm.create("a", false)))
+                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.default, StringTerm.create("a", false)))
             )
         )
-        Assertions.assertTrue(p.parse("a").isFailure())
+        Assertions.assertTrue(p.parse("a").isFailure)
     }
 
     @Test
     fun fullParseSingle() {
-        val p = parser(Gr.grammar("S", EOFTerm.getDefault()))
+        val p = parser(Gr.grammar("S", EOFTerm.default))
         Assertions.assertEquals(PT.create("S"), p.parse(""))
     }
 
@@ -60,14 +60,14 @@ internal class EOFTermTest {
     fun fullParseConcat() {
         val pE = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.getDefault(), EOFTerm.getDefault()))
+                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.default, EOFTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), pE.parse(""))
 
         val pA = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(StringTerm.create("a", false), EOFTerm.getDefault()))
+                "S", ConcatRule.createDirect(List.of<Rule>(StringTerm.create("a", false), EOFTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pA.parse("a"))
@@ -75,43 +75,43 @@ internal class EOFTermTest {
 
     @Test
     fun fullParseError() {
-        val p = parser(Gr.grammar("S", EOFTerm.getDefault()))
-        Assertions.assertTrue(p.parse("a").isFailure())
+        val p = parser(Gr.grammar("S", EOFTerm.default))
+        Assertions.assertTrue(p.parse("a").isFailure)
     }
 
     @Test
     fun withHideTag() {
         // By default, not hidden in result. May create a new object, but the output must be equal to the original.
-        Assertions.assertEquals(EOFTerm.getDefault(), EOFTerm.getDefault().withHideTag(false))
-        Assertions.assertEquals(EOFTerm.getDefault(), EOFTerm.getDefault().includeInResult())
+        Assertions.assertEquals(EOFTerm.default, EOFTerm.default.withHideTag(false))
+        Assertions.assertEquals(EOFTerm.default, EOFTerm.default.includeInResult())
 
         // Same input -> Equivalent output
-        Assertions.assertEquals(EOFTerm.getDefault().withHideTag(false), EOFTerm.getDefault().withHideTag(false))
-        Assertions.assertEquals(EOFTerm.getDefault().withHideTag(true), EOFTerm.getDefault().withHideTag(true))
+        Assertions.assertEquals(EOFTerm.default.withHideTag(false), EOFTerm.default.withHideTag(false))
+        Assertions.assertEquals(EOFTerm.default.withHideTag(true), EOFTerm.default.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(EOFTerm.getDefault().withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(EOFTerm.getDefault().includeInResult().isHiddenInResult())
-        Assertions.assertTrue(EOFTerm.getDefault().withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(EOFTerm.getDefault().hideInResult().isHiddenInResult())
+        Assertions.assertFalse(EOFTerm.default.withHideTag(false).isHiddenInResult)
+        Assertions.assertFalse(EOFTerm.default.includeInResult().isHiddenInResult)
+        Assertions.assertTrue(EOFTerm.default.withHideTag(true).isHiddenInResult)
+        Assertions.assertTrue(EOFTerm.default.hideInResult().isHiddenInResult)
     }
 
     @Test
     fun withHideTagParse() {
         // Alternative names give equivalent output
-        Assertions.assertEquals(EOFTerm.getDefault().withHideTag(false), EOFTerm.getDefault().includeInResult())
-        Assertions.assertEquals(EOFTerm.getDefault().withHideTag(true), EOFTerm.getDefault().hideInResult())
+        Assertions.assertEquals(EOFTerm.default.withHideTag(false), EOFTerm.default.includeInResult())
+        Assertions.assertEquals(EOFTerm.default.withHideTag(true), EOFTerm.default.hideInResult())
 
         // By default, not hidden in output, but this type adds nothing to the tree
-        val pDefault = parser(Gr.grammar("S", EOFTerm.getDefault()))
+        val pDefault = parser(Gr.grammar("S", EOFTerm.default))
         Assertions.assertEquals(PT.create("S"), pDefault.parse(""))
 
         // With explicit show, also not hidden, but this type adds nothing to the tree
-        val pShow = parser(Gr.grammar("S", EOFTerm.getDefault().withHideTag(false)))
+        val pShow = parser(Gr.grammar("S", EOFTerm.default.withHideTag(false)))
         Assertions.assertEquals(PT.create("S"), pShow.parse(""))
 
         // With explicit hide
-        val pHide = parser(Gr.grammar("S", EOFTerm.getDefault().withHideTag(true)))
+        val pHide = parser(Gr.grammar("S", EOFTerm.default.withHideTag(true)))
         Assertions.assertEquals(PT.create("S"), pHide.parse(""))
     }
 
@@ -119,8 +119,8 @@ internal class EOFTermTest {
     fun withReduction() {
         // Default.
         Assertions.assertEquals(
-            EOFTerm.getDefault(),
-            EOFTerm.getDefault().withReduction(ReductionType.initial())
+            EOFTerm.default,
+            EOFTerm.default.withReduction(ReductionType.initial())
         )
 
         // Default: Don't merge up
@@ -128,7 +128,7 @@ internal class EOFTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
-                "A", EOFTerm.getDefault()
+                "A", EOFTerm.default
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("A")), pDefault.parse(""))
@@ -141,7 +141,7 @@ internal class EOFTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
-                "A", EOFTerm.getDefault().withReduction(ReductionType.merging())
+                "A", EOFTerm.default.withReduction(ReductionType.merging())
             )
         )
         Assertions.assertEquals(PT.create("S"), pMerge.parse(""))
@@ -153,7 +153,7 @@ internal class EOFTermTest {
         val pMerge2 = parser(
             Gr.grammarS(
                 "S",
-                "S", EOFTerm.getDefault().withReduction(ReductionType.taggedTree(sym("B")))
+                "S", EOFTerm.default.withReduction(ReductionType.taggedTree(sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
@@ -163,7 +163,7 @@ internal class EOFTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
-                "A", EOFTerm.getDefault().withReduction(ReductionType.taggedTree(sym("B")))
+                "A", EOFTerm.default.withReduction(ReductionType.taggedTree(sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -178,8 +178,8 @@ internal class EOFTermTest {
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
                     List.of<Rule>(
-                        EOFTerm.getDefault().withReduction(ReductionType.taggedTree(sym("B"))),
-                        EOFTerm.getDefault()
+                        EOFTerm.default.withReduction(ReductionType.taggedTree(sym("B"))),
+                        EOFTerm.default
                     )
                 )
             )

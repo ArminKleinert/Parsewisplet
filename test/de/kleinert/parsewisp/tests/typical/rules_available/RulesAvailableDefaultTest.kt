@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import org.junit.jupiter.api.function.ThrowingSupplier
-import java.util.Set
 
 internal class RulesAvailableDefaultTest {
     @Test
@@ -26,7 +25,7 @@ internal class RulesAvailableDefaultTest {
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = \"a\" | \"b\"") })
 
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf(
                 PT.create("S", PT.create("A", "a")),
                 PT.create("S", PT.create("B", "a"))
             ),
@@ -36,26 +35,26 @@ internal class RulesAvailableDefaultTest {
 
     @Test
     fun exclusionSimpleTest() {
-        Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = #'[0-9]+' - '1'") })
-        Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = #'[0-9]+' - ('1' | '11' | '111')") })
-        Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = #'[0-9]+' - (#'[1]+' - '11')") })
+        Assertions.assertDoesNotThrow(ThrowingSupplier { parser("S = #'[0-9]+' - '1'") })
+        Assertions.assertDoesNotThrow(ThrowingSupplier { parser("S = #'[0-9]+' - ('1' | '11' | '111')") })
+        Assertions.assertDoesNotThrow(ThrowingSupplier { parser("S = #'[0-9]+' - (#'[1]+' - '11')") })
 
         var p = parser("S = #'[0-9]+' - '1'")
-        Assertions.assertTrue(p.parse("1").isFailure())
+        Assertions.assertTrue(p.parse("1").isFailure)
         Assertions.assertEquals(PT.create("S", "11"), p.parse("11"))
         Assertions.assertEquals(PT.create("S", "1111"), p.parse("1111"))
         Assertions.assertEquals(PT.create("S", "2"), p.parse("2"))
 
         p = parser("S = #'[0-9]+' - ('1' | '11' | '111')")
-        Assertions.assertTrue(p.parse("1").isFailure())
-        Assertions.assertTrue(p.parse("11").isFailure())
+        Assertions.assertTrue(p.parse("1").isFailure)
+        Assertions.assertTrue(p.parse("11").isFailure)
         Assertions.assertEquals(PT.create("S", "1111"), p.parse("1111"))
         Assertions.assertEquals(PT.create("S", "2"), p.parse("2"))
 
         p = parser("S = #'[0-9]+' - (#'[1]+' - '11')")
-        Assertions.assertTrue(p.parse("1").isFailure())
+        Assertions.assertTrue(p.parse("1").isFailure)
         Assertions.assertEquals(PT.create("S", "11"), p.parse("11"))
-        Assertions.assertTrue(p.parse("1111").isFailure())
+        Assertions.assertTrue(p.parse("1111").isFailure)
         Assertions.assertEquals(PT.create("S", "2"), p.parse("2"))
     }
 
@@ -70,7 +69,7 @@ internal class RulesAvailableDefaultTest {
 
         val parserS = parser("S = %s\"a\"")
         Assertions.assertEquals(PT.create("S", "a"), parserS.parse("a"))
-        Assertions.assertTrue(parserS.parse("A").isFailure())
+        Assertions.assertTrue(parserS.parse("A").isFailure)
     }
 
     @Test
@@ -88,7 +87,7 @@ internal class RulesAvailableDefaultTest {
             parser("S = &\"a\" \"a\"").parse("a")
         )
         Assertions.assertTrue(
-            parser("S = &\"b\" \"a\"").parse("a").isFailure()
+            parser("S = &\"b\" \"a\"").parse("a").isFailure
         )
     }
 
@@ -101,7 +100,7 @@ internal class RulesAvailableDefaultTest {
             parser("S = !\"b\" \"a\"").parse("a")
         )
         Assertions.assertTrue(
-            parser("S = !\"a\" \"a\"").parse("a").isFailure()
+            parser("S = !\"a\" \"a\"").parse("a").isFailure
         )
     }
 
@@ -148,7 +147,7 @@ internal class RulesAvailableDefaultTest {
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = \"a\" / \"b\"") })
 
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf(
                 PT.create("S", PT.create("A", "a")),
                 PT.create("S", PT.create("B", "a"))
             ),
@@ -161,7 +160,7 @@ internal class RulesAvailableDefaultTest {
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = \"a\"+") })
 
         val p = parser("S = \"a\"+")
-        Assertions.assertTrue(p.parse("").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
     }
@@ -172,7 +171,7 @@ internal class RulesAvailableDefaultTest {
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = #'a'") })
 
         val p = parser("S = #\"[0-9]\"")
-        Assertions.assertTrue(p.parse("").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
         Assertions.assertEquals(PT.create("S", "0"), p.parse("0"))
         Assertions.assertEquals(PT.create("S", "5"), p.parse("5"))
     }
@@ -208,11 +207,11 @@ internal class RulesAvailableDefaultTest {
         Assertions.assertDoesNotThrow<Parser>(ThrowingSupplier { parser("S = \"a\"{}") })
 
         val p = parser("S = \"a\"{1,3} \"b\"")
-        Assertions.assertTrue(p.parse("a").isFailure())
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("a").isFailure)
+        Assertions.assertTrue(p.parse("b").isFailure)
         Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"))
         Assertions.assertEquals(PT.create("S", "a", "a", "b"), p.parse("aab"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "b"), p.parse("aaab"))
-        Assertions.assertTrue(p.parse("aaaab").isFailure())
+        Assertions.assertTrue(p.parse("aaaab").isFailure)
     }
 }

@@ -8,7 +8,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class OptionalRuleTest {
     private fun a_or_nay(): OptionalRule {
@@ -24,8 +23,8 @@ internal class OptionalRuleTest {
         // If the rule is a EpsilonTerm, the #create(...) method is free to create something other than a OptionalRule,
         // but the same input still must mean equivalent output.
         Assertions.assertEquals(
-            OptionalRule.create(EpsilonTerm.getDefault()),
-            OptionalRule.create(EpsilonTerm.getDefault())
+            OptionalRule.create(EpsilonTerm.default),
+            OptionalRule.create(EpsilonTerm.default)
         )
 
         // If the rule is a OptionalRule, the #create(...) method is free to not create a new rule,
@@ -44,11 +43,11 @@ internal class OptionalRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(a_or_nay(), string_a()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(a_or_nay(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
 
-        val pN = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule?>(string_a(), a_or_nay(), string_a()))))
+        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), a_or_nay(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
 
@@ -56,7 +55,7 @@ internal class OptionalRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule?>(
+                    listOf(
                         a_or_nay(),
                         a_or_nay(),
                         a_or_nay(),
@@ -81,12 +80,12 @@ internal class OptionalRuleTest {
 
     @Test
     fun fullParseConcat() {
-        val pN = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule?>(string_a(), a_or_nay(), a_or_nay()))))
+        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), a_or_nay(), a_or_nay()))))
         Assertions.assertEquals(PT.create("S", "a"), pN.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
 
-        val pM = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule?>(a_or_nay(), a_or_nay(), a_or_nay()))))
+        val pM = parser(Gr.grammar("S", ConcatRule.create(listOf(a_or_nay(), a_or_nay(), a_or_nay()))))
         Assertions.assertEquals(PT.create("S", "a"), pM.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), pM.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pM.parse("aaa"))
@@ -95,13 +94,13 @@ internal class OptionalRuleTest {
     @Test
     fun fullParseError() {
         val p = parser(Gr.grammar("S", a_or_nay()))
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
     fun getRule() {
         val r = OptionalRule.create(string_a()) as OptionalRule
-        Assertions.assertEquals(string_a(), r.getRule())
+        Assertions.assertEquals(string_a(), r.rule)
     }
 
     @Test
@@ -113,15 +112,15 @@ internal class OptionalRuleTest {
             .withReduction(ReductionType.taggedTree(sym("A"))) as OptionalRule
 
         // As expected.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
-        Assertions.assertEquals(ni, nr.getRule())
+        Assertions.assertEquals(ni, nr.rule)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -133,17 +132,17 @@ internal class OptionalRuleTest {
             .withReduction(ReductionType.taggedTree(sym("A"))) as OptionalRule
 
         // As expected.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
-        Assertions.assertEquals(ni, nr.getRule())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rule)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -157,10 +156,10 @@ internal class OptionalRuleTest {
         Assertions.assertEquals(a_or_nay().withHideTag(true), a_or_nay().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(a_or_nay().withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(a_or_nay().includeInResult().isHiddenInResult())
-        Assertions.assertTrue(a_or_nay().withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(a_or_nay().hideInResult().isHiddenInResult())
+        Assertions.assertFalse(a_or_nay().withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(a_or_nay().includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(a_or_nay().withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(a_or_nay().hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(a_or_nay().withHideTag(false), a_or_nay().includeInResult())
@@ -257,7 +256,7 @@ internal class OptionalRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         a_or_nay().withReduction(ReductionType.taggedTree(sym("B"))),
                         OptionalRule.create(StringTerm.create("b", false))
                     )

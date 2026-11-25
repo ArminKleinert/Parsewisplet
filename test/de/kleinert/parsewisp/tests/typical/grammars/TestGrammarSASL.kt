@@ -30,13 +30,13 @@ internal class TestGrammarSASL {
     @Test
     fun helloWorld() {
         val text = "def hello = \"Hello World\" . nil"
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
     fun fnWithMultipleArgs() {
         val text = "def add a b = a+b . nil"
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
@@ -100,6 +100,6 @@ internal class TestGrammarSASL {
                 at 19 fib where fib = 1:1:(zipWith plus fib (tl fib))
                 
                 """.trimIndent()
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 }

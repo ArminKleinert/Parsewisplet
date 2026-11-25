@@ -26,15 +26,15 @@ internal class UnhideOptionsTest {
         )
         Assertions.assertEquals(
             PT.create("S", "a", PT.create("B", "b")),
-            p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT))
+            p.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.CONTENT))
         )
         Assertions.assertEquals(
             PT.create("S", PT.create("A", "a")),
-            p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS))
+            p.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.TAGS))
         )
         Assertions.assertEquals(
             PT.create("S", PT.create("A", "a"), PT.create("B", "b")),
-            p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL))
+            p.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.ALL))
         )
     }
 }

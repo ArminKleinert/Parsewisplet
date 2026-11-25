@@ -30,14 +30,14 @@ internal class TestGrammarJava {
         val p = parser()
         val g = p.grammar
         val stats = g.analyze()
-        println(stats.getUnusedNTs())
+        println(stats.unusedNTs)
     }
 
     @Test
     fun helloWorld() {
         val text =
             "public class Main { public static void main(String[] args) { System.out.println(\"Hello World!\"); } }"
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
@@ -65,7 +65,7 @@ internal class TestGrammarJava {
                 
                 """.trimIndent()
         val res = parser().parse(text)
-        Assertions.assertTrue(res.isSuccess())
+        Assertions.assertTrue(res.isSuccess)
     }
 
     @Test
@@ -150,7 +150,7 @@ internal class TestGrammarJava {
                 
                 """.trimIndent()
         val res = parser().parse(text)
-        Assertions.assertTrue(res.isSuccess())
+        Assertions.assertTrue(res.isSuccess)
     }
 
 //    @Test
@@ -163,7 +163,7 @@ internal class TestGrammarJava {
 //        text += "private static void doNothing(List opts, boolean run) {}".repeat(500)
 //        text += "}"
 //        val res = parser().parse(text)
-//        Assertions.assertTrue(res.isSuccess())
+//        Assertions.assertTrue(res.isSuccess)
 //    }
 
 //    @Test
@@ -176,7 +176,7 @@ internal class TestGrammarJava {
 //        text += "private static void doNothing(List opts, boolean run) {}".repeat(1000) // Note: Maximum repeat as of 2026.11.21: 3537
 //        text += "}"
 //        val res = parser().parse(text)
-//        Assertions.assertTrue(res.isSuccess())
+//        Assertions.assertTrue(res.isSuccess)
 //    }
 
 //    @Test
@@ -205,7 +205,7 @@ internal class TestGrammarJava {
 //            var res = p.parse(s);
 //            end = System.nanoTime();
 //            Assertions.assertTrue(
-//                    res.isSuccess(),
+//                    res.isSuccess,
 //                    () -> "Failed testcase.\n" + res.castToParseFailure());
 //            long diffMillis = (end - start) / 1_000_000;
 //            totalTime += diffMillis;

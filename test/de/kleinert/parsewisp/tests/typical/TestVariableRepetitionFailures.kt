@@ -15,7 +15,7 @@ internal class TestVariableRepetitionFailures {
     @Test
     fun parseWithPartial1() {
         val text = "aaaaaa"
-        val treesPartial = Set.of<ParseTree?>(
+        val treesPartial = setOf<ParseTree>(
             PT.create("S", "a"),
             PT.create("S", "a", "a"),
             PT.create("S", "a", "a", "a"),
@@ -23,8 +23,8 @@ internal class TestVariableRepetitionFailures {
             PT.create("S", "a", "a", "a", "a", "a"),
             PT.create("S", "a", "a", "a", "a", "a", "a")
         )
-        val partialOpts = ParsingOptions.getDefault().withPartial(true)
-        val creationOpts = ParserCreationOptions.getDefault()
+        val partialOpts = ParsingOptions.default.withPartial(true)
+        val creationOpts = ParserCreationOptions.default
         val repeated_a = parser(
             """
                         S = 'a'{0,6} 'a'
@@ -47,8 +47,8 @@ internal class TestVariableRepetitionFailures {
             PT.create("S", "b", "a", "a", "a", "a"),
             PT.create("S", "b", "a", "a", "a", "a", "a")
         )
-        val partialOpts = ParsingOptions.getDefault().withPartial(true)
-        val creationOpts = ParserCreationOptions.getDefault()
+        val partialOpts = ParsingOptions.default.withPartial(true)
+        val creationOpts = ParserCreationOptions.default
         val repeated_a = parser(
             """
                         S = 'b' 'a'{0,6}
@@ -71,8 +71,8 @@ internal class TestVariableRepetitionFailures {
             PT.create("S", "a", "a", "a", "a", "a"),
             PT.create("S", "a", "a", "a", "a", "a", "a")
         )
-        val partialOpts = ParsingOptions.getDefault().withPartial(true)
-        val creationOpts = ParserCreationOptions.getDefault()
+        val partialOpts = ParsingOptions.default.withPartial(true)
+        val creationOpts = ParserCreationOptions.default
         val repeated_a = parser(
             """
                         S = 'a'{1,6}
@@ -87,12 +87,12 @@ internal class TestVariableRepetitionFailures {
     @Test
     fun parseRepetitionMinMax() {
         val p = parser("S = 'a' {2,4}")
-        Assertions.assertTrue(p.parse("").isFailure())
-        Assertions.assertTrue(p.parse("a").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
+        Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"))
-        Assertions.assertTrue(p.parse("aaaaa").isFailure())
+        Assertions.assertTrue(p.parse("aaaaa").isFailure)
     }
 
     @Test

@@ -36,7 +36,7 @@ internal class NonTerminalTest {
     fun getKeyword() {
         Assertions.assertEquals(
             sym("S"),
-            NonTerminal.create(sym("S")).getKeyword()
+            NonTerminal.create(sym("S")).keyword
         )
     }
 
@@ -46,7 +46,7 @@ internal class NonTerminalTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         nt("A"),
                         nt("B")
                     )
@@ -70,7 +70,7 @@ internal class NonTerminalTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         nt("A"),
                         nt("B")
                     )
@@ -81,8 +81,8 @@ internal class NonTerminalTest {
                 StringTerm.create("b", false)
             )
         )
-        Assertions.assertTrue(p.parse("cb").isFailure())
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("cb").isFailure)
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
@@ -105,7 +105,7 @@ internal class NonTerminalTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         nt("A"),
                         nt("B")
                     )
@@ -129,7 +129,7 @@ internal class NonTerminalTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         nt("A"),
                         nt("B")
                     )
@@ -140,8 +140,8 @@ internal class NonTerminalTest {
                 StringTerm.create("a", false)
             )
         )
-        Assertions.assertTrue(p.parse("cb").isFailure())
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("cb").isFailure)
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
@@ -155,10 +155,10 @@ internal class NonTerminalTest {
         Assertions.assertEquals(simpleRuleForTests().withHideTag(true), simpleRuleForTests().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(simpleRuleForTests().withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(simpleRuleForTests().includeInResult().isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests().withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests().hideInResult().isHiddenInResult())
+        Assertions.assertFalse(simpleRuleForTests().withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(simpleRuleForTests().includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests().withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests().hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(simpleRuleForTests().withHideTag(false), simpleRuleForTests().includeInResult())
@@ -259,7 +259,7 @@ internal class NonTerminalTest {
             Gr.grammar(
                 "S", nt("A"),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         nt("B").withReduction(ReductionType.taggedTree(sym("C"))),
                         StringTerm.create("b", false)
                     )

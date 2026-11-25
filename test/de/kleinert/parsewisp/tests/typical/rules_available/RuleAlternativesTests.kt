@@ -17,9 +17,9 @@ internal class RuleAlternativesTests {
                 """.trimIndent()
         )
 
-        Assertions.assertTrue(p1.parse("").isFailure())
-        Assertions.assertTrue(p2.parse("").isFailure())
-        Assertions.assertTrue(p3.parse("").isFailure())
+        Assertions.assertTrue(p1.parse("").isFailure)
+        Assertions.assertTrue(p2.parse("").isFailure)
+        Assertions.assertTrue(p3.parse("").isFailure)
 
         Assertions.assertEquals(p1.parse("aa"), p2.parse("aa"))
         Assertions.assertEquals(p1.parse("aa"), p3.parse("aa"))

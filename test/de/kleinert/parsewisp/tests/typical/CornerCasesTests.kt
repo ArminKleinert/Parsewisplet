@@ -55,7 +55,7 @@ internal class CornerCasesTests {
             HashSet<ParseTree?>(
                 parser("S = 'a' E {1,3} 'b'\nE = eps").parses(
                     "ab",
-                    ParsingOptions.getDefault().withStopEarlyOnEmptyRepetition(false)
+                    ParsingOptions.default.withStopEarlyOnEmptyRepetition(false)
                 )
             )
         )

@@ -14,7 +14,7 @@ import java.util.regex.Pattern
 internal class NegativeLookaheadRuleTest {
     @Test
     fun create() {
-        val laEps = NegativeLookaheadRule.create(EpsilonTerm.getDefault())
+        val laEps = NegativeLookaheadRule.create(EpsilonTerm.default)
         Assertions.assertTrue((laEps is EpsilonTerm) || (laEps is NegativeLookaheadRule))
 
         Assertions.assertEquals(
@@ -28,7 +28,7 @@ internal class NegativeLookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule?>(
+                    listOf(
                         NegativeLookaheadRule.create(RegexTerm.create(Pattern.compile("[a-zA-Z]"))),  // Look for any letter
                         NegativeLookaheadRule.create(RegexTerm.create(Pattern.compile("[a-fA-F0-9]"))),  // Look for any hex digit
                         RegexTerm.create(Pattern.compile("[\\x00-\\xFF]+")) // Any 8-bit ascii
@@ -39,7 +39,7 @@ internal class NegativeLookaheadRuleTest {
         for (c in 0.toChar()..255.toChar()) {
             val text = "" + c
             if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')) {
-                Assertions.assertTrue(p.parse(text).isFailure())
+                Assertions.assertTrue(p.parse(text).isFailure)
             } else {
                 Assertions.assertEquals(PT.create("S", text), p.parse(text))
             }
@@ -52,7 +52,7 @@ internal class NegativeLookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule?>(
+                    listOf(
                         NegativeLookaheadRule.create(StringTerm.create("b", false)),
                         NegativeLookaheadRule.create(StringTerm.create("b", false)),
                         RegexTerm.create(Pattern.compile("[a-z]"))
@@ -61,7 +61,7 @@ internal class NegativeLookaheadRuleTest {
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("b").isFailure)
         Assertions.assertEquals(PT.create("S", "c"), p.parse("c"))
     }
 
@@ -77,7 +77,7 @@ internal class NegativeLookaheadRuleTest {
                 )
             )
         )
-        Assertions.assertTrue(p.parse("a").isFailure())
+        Assertions.assertTrue(p.parse("a").isFailure)
     }
 
     @Test
@@ -111,18 +111,18 @@ internal class NegativeLookaheadRuleTest {
     fun fullParseError() {
         val p = parser(
             Gr.grammar(
-                "S", NegativeLookaheadRule.create(EpsilonTerm.getDefault())
+                "S", NegativeLookaheadRule.create(EpsilonTerm.default)
             )
         )
-        Assertions.assertTrue(p.parse("a").isFailure()) // Nope, expected empty.
-        Assertions.assertTrue(p.parse("").isFailure()) // Nope, expected not epsilon.
+        Assertions.assertTrue(p.parse("a").isFailure) // Nope, expected empty.
+        Assertions.assertTrue(p.parse("").isFailure) // Nope, expected not epsilon.
     }
 
     @Test
     fun getRule() {
         val i = StringTerm.create("a", false)
         val r = NegativeLookaheadRule.create(i) as NegativeLookaheadRule
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -131,16 +131,16 @@ internal class NegativeLookaheadRuleTest {
         val r = NegativeLookaheadRule.create(i) as NegativeLookaheadRule
 
         // Expected
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         val ni = StringTerm.createDirect("c", false)
         val nr = r.withRule(ni)
 
         // The new rule.
-        Assertions.assertEquals(ni, nr.getRule())
+        Assertions.assertEquals(ni, nr.rule)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -152,17 +152,17 @@ internal class NegativeLookaheadRuleTest {
             .withReduction(ReductionType.taggedTree(sym("A"))) as NegativeLookaheadRule
 
         // As expected.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
-        Assertions.assertEquals(ni, nr.getRule())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rule)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -178,10 +178,10 @@ internal class NegativeLookaheadRuleTest {
         Assertions.assertEquals(r.withHideTag(true), r.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(r.withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(r.includeInResult().isHiddenInResult())
-        Assertions.assertTrue(r.withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(r.hideInResult().isHiddenInResult())
+        Assertions.assertFalse(r.withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(r.includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(r.withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(r.hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(r.withHideTag(false), r.includeInResult())
@@ -196,7 +196,7 @@ internal class NegativeLookaheadRuleTest {
         val pDefault = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         r,
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -204,13 +204,13 @@ internal class NegativeLookaheadRuleTest {
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pDefault.parse("a"))
-        Assertions.assertTrue(pDefault.parse("b").isFailure())
+        Assertions.assertTrue(pDefault.parse("b").isFailure)
 
         // With explicit show, also not hidden, but this type adds nothing to the tree
         val pShow = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         r.withHideTag(false),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -218,7 +218,7 @@ internal class NegativeLookaheadRuleTest {
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pShow.parse("a"))
-        Assertions.assertTrue(pShow.parse("b").isFailure())
+        Assertions.assertTrue(pShow.parse("b").isFailure)
 
         // With explicit hide
         val pHide = parser(
@@ -232,7 +232,7 @@ internal class NegativeLookaheadRuleTest {
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pHide.parse("a"))
-        Assertions.assertTrue(pHide.parse("b").isFailure())
+        Assertions.assertTrue(pHide.parse("b").isFailure)
     }
 
     @Test
@@ -259,7 +259,7 @@ internal class NegativeLookaheadRuleTest {
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("A", "a")), pDefault.parse("a"))
-        Assertions.assertTrue(pDefault.parse("b").isFailure())
+        Assertions.assertTrue(pDefault.parse("b").isFailure)
     }
 
     @Test

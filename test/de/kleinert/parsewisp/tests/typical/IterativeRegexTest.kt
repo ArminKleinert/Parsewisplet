@@ -15,12 +15,12 @@ internal class IterativeRegexTest {
         val p = parser("S = #'A+'")
         val parses = p.parses(
             "AAAA",
-            ParsingOptions.getDefault()
+            ParsingOptions.default
                 .withIterativeDeepening(true)
                 .withPartial(true)
         )
         Assertions.assertEquals(
-            List.of<ParseTree?>(
+            listOf(
                 PT.create("S", "A"),
                 PT.create("S", "AA"),
                 PT.create("S", "AAA"),
@@ -39,7 +39,7 @@ internal class IterativeRegexTest {
 
         val parses = p.parses(
             "AAAA",
-            ParsingOptions.getDefault().withIterativeDeepening(true)
+            ParsingOptions.default.withIterativeDeepening(true)
         )
         Assertions.assertEquals(
             Set.of<ParseTree?>(
@@ -60,7 +60,7 @@ internal class IterativeRegexTest {
 
         val parses = p.parses(
             "AAAA",
-            ParsingOptions.getDefault().withIterativeDeepening(true)
+            ParsingOptions.default.withIterativeDeepening(true)
         )
         Assertions.assertEquals(
             Set.of<ParseTree?>(
@@ -81,7 +81,7 @@ internal class IterativeRegexTest {
 
         val parses = p.parses(
             "AAAA",
-            ParsingOptions.getDefault().withIterativeDeepening(true)
+            ParsingOptions.default.withIterativeDeepening(true)
         )
         Assertions.assertEquals(
             Set.of<ParseTree?>(
@@ -96,7 +96,7 @@ internal class IterativeRegexTest {
     @Test
     fun defaultTest() {
         val p = parser("S = #'A+' 'A'")
-        val opts = ParsingOptions.getDefault().withIterativeDeepening(true)
+        val opts = ParsingOptions.default.withIterativeDeepening(true)
         Assertions.assertEquals(
             PT.create("S", "AA", "A"),
             p.parse("AAA", opts)

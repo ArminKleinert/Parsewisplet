@@ -17,7 +17,7 @@ internal class GrammarTest {
         val g = parser("S = '1' | '2' S").grammar
         val ga = g.analyze()
 
-        Assertions.assertTrue(ga.isValid())
+        Assertions.assertTrue(ga.isValid)
 
         Assertions.assertEquals(Set.of<Sym>(sym("S")), HashSet<Sym?>(ga.usedNTs()))
         Assertions.assertEquals(Set.of<Sym>(sym("S")), HashSet<Sym?>(ga.definedNTs()))
@@ -39,10 +39,10 @@ internal class GrammarTest {
                 
                 """.trimIndent()
         ).grammar.analyze()
-        Assertions.assertFalse(ga.getUnusedNTs().contains(sym("S")))
+        Assertions.assertFalse(ga.unusedNTs.contains(sym("S")))
 
         val ga2 = parser("S = 'a'").grammar.analyze()
-        Assertions.assertFalse(ga2.getUnusedNTs().contains(sym("S")))
+        Assertions.assertFalse(ga2.unusedNTs.contains(sym("S")))
     }
 
     @Test
@@ -66,10 +66,10 @@ internal class GrammarTest {
         )
         Assertions.assertEquals(
             Set.of<Sym>(sym("B"), sym("C")),
-            ga.getUnusedNTs()
+            ga.unusedNTs
         )
-        Assertions.assertFalse(ga.getUnusedNTs().contains(sym("S")))
-        Assertions.assertTrue(ga.isValid())
+        Assertions.assertFalse(ga.unusedNTs.contains(sym("S")))
+        Assertions.assertTrue(ga.isValid)
     }
 
     @Test
@@ -137,7 +137,7 @@ internal class GrammarTest {
 
     @Test
     fun grammarIsProductiveTest() {
-        val noCheckOpts = ParserCreationOptions.getDefault().withCorrectnessCheck(false)
+        val noCheckOpts = ParserCreationOptions.default.withCorrectnessCheck(false)
         Assertions.assertFalse(parser("S = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
         Assertions.assertTrue(parser("S = S | epsilon", noCheckOpts).grammar.analyze().isProductive(sym("S")))
 

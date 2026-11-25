@@ -8,39 +8,39 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
 internal class CharRangeTest {
-    private val options = ParserCreationOptions.getDefault()
+    private val options = ParserCreationOptions.default
 
     @Test
     fun unicodeCodepointSingleParse() {
         val parser = parser("S = %x1F381", options)
-        Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure)
         Assertions.assertEquals(PT.create("S", "🎁"), parser.parse("🎁"))
-        Assertions.assertTrue(parser.parse("\uD83C\uDF82").isFailure())
-        Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF82").isFailure)
+        Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure)
     }
 
     @Test
     fun unicodeCodepointSingleParse2() {
         val parser = parser("S = %x1F381-1F381", options)
-        Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure)
         Assertions.assertEquals(PT.create("S", "🎁"), parser.parse("🎁"))
-        Assertions.assertTrue(parser.parse("\uD83C\uDF82").isFailure())
-        Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF82").isFailure)
+        Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure)
     }
 
     @Test
     fun unicodeCodepointShortRangeParse() {
         val parser = parser("S = %x1F381-1F382", options)
-        Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure)
         Assertions.assertEquals(PT.create("S", "🎁"), parser.parse("🎁"))
         Assertions.assertEquals(PT.create("S", "\uD83C\uDF82"), parser.parse("\uD83C\uDF82"))
-        Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure)
     }
 
     @Test
     fun unicodeCodepointLongRangeParse() {
         val parser = parser("S = %x41-1F382", options)
-        Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF83").isFailure)
         Assertions.assertEquals(PT.create("S", "A"), parser.parse("A"))
         Assertions.assertEquals(PT.create("S", "🎁"), parser.parse("🎁"))
         Assertions.assertEquals(PT.create("S", "\uD83C\uDF82"), parser.parse("\uD83C\uDF82"))
@@ -49,10 +49,10 @@ internal class CharRangeTest {
     @Test
     fun unicodeCodepointSmallCharParse() {
         val parser = parser("S = %x41-5A", options)
-        Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF80").isFailure)
         Assertions.assertEquals(PT.create("S", "A"), parser.parse("A"))
         Assertions.assertEquals(PT.create("S", "Z"), parser.parse("Z"))
-        Assertions.assertTrue(parser.parse("\uD83C\uDF81").isFailure())
+        Assertions.assertTrue(parser.parse("\uD83C\uDF81").isFailure)
     }
 
     @Test

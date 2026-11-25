@@ -25,7 +25,7 @@ object Parsewisp {
     @JvmOverloads
     fun parser(
         grammar: String,
-        options: ParserCreationOptions = ParserCreationOptions.getDefault()
+        options: ParserCreationOptions = ParserCreationOptions.default
     ): Parser {
         val grammarForParsingGrammars = CfgGrammar.makeCfg()
         val g = Cfg.make(options).buildGrammar(grammar, grammarForParsingGrammars)
@@ -52,7 +52,7 @@ object Parsewisp {
         options: ParserCreationOptions?
     ): Parser {
         var options = options
-        if (options == null) options = ParserCreationOptions.getDefault()
+        if (options == null) options = ParserCreationOptions.default
 
         if (options.startProduction != null && !grammar.containsKey(options.startProduction)) throw ParserCreationFailure(
             "The start production " + options.startProduction + " is not in the grammar."
@@ -101,8 +101,8 @@ object Parsewisp {
         }
         if (predefinedWsParsers == null) {
             predefinedWsParsers = mapOf(
-                "standard" to parser("whitespace = #'\\s+'", ParserCreationOptions.getDefault()),
-                "comma" to parser("whitespace = #'[,\\s]+'", ParserCreationOptions.getDefault())
+                "standard" to parser("whitespace = #'\\s+'", ParserCreationOptions.default),
+                "comma" to parser("whitespace = #'[,\\s]+'", ParserCreationOptions.default)
             )
         }
         return predefinedWsParsers!![wsParserName]

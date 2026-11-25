@@ -20,7 +20,7 @@ internal class ParserAsFunctionTest {
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj<String>(IntFunction { it: Int -> it.toChar().toString() })
                 .toList()
         Assertions.assertEquals(
-            strings.stream().map<ParseResult?> { it: String -> p.parse(it, ParsingOptions.getDefault()) }.toList(),
+            strings.stream().map<ParseResult?> { it: String -> p.parse(it, ParsingOptions.default) }.toList(),
             strings.stream().map<ParseResult?> { text: String -> p.parse(text) }.toList()
         )
     }

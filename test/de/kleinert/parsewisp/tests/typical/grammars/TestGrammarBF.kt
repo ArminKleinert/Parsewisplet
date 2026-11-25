@@ -29,7 +29,7 @@ internal class TestGrammarBF {
     fun helloWorld() {
         val text =
             "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
@@ -46,13 +46,13 @@ internal class TestGrammarBF {
                   <<      Move the pointer back to cell0
                 ]       End while
                 """.trimIndent()
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
     fun cat() {
         val text = ",[.,]"
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
@@ -66,13 +66,13 @@ internal class TestGrammarBF {
                 >>>[>]++++>++++[--[+>+>++++<<[-->>--<<[->-<[--->>+<<[+>+++<[+>>++<<]]]]]]>+++[>+
                 ++++++++++++++<-]>--.<<<]
                 """.trimIndent()
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
     fun xkcdRandom() {
         val text = "+c+h+o+s[e-n> +b+y+ <f]a>i+r[ -d>i+c+e+ +r<o]l-l+>;\n" +
                 "Guaranteed to be random."
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 }

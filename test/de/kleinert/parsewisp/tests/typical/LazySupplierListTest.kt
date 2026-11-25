@@ -11,14 +11,14 @@ internal class LazySupplierListTest {
     fun simpleTest() {
         val lsl = LazySupplierList<Int?>(IntFunction { i: Int -> if (i < 15) i else null }, Int.MAX_VALUE)
 
-        Assertions.assertFalse(lsl.isFullyEvaluated())
+        Assertions.assertFalse(lsl.isFullyEvaluated)
 
-        Assertions.assertEquals(0, lsl.getFirst())
+        Assertions.assertEquals(0, lsl.first())
         Assertions.assertEquals(5, lsl.get(5))
         Assertions.assertEquals(15, lsl.size)
         Assertions.assertEquals(5, lsl.get(5))
 
-        Assertions.assertTrue(lsl.isFullyEvaluated())
+        Assertions.assertTrue(lsl.isFullyEvaluated)
 
         Assertions.assertThrows<IndexOutOfBoundsException?>(
             IndexOutOfBoundsException::class.java,
@@ -32,11 +32,11 @@ internal class LazySupplierListTest {
     fun emptyTest() {
         val lsl = LazySupplierList<Any?>(IntFunction { i: Int -> null }, Int.MAX_VALUE)
 
-        Assertions.assertFalse(lsl.isFullyEvaluated())
+        Assertions.assertFalse(lsl.isFullyEvaluated)
         Assertions.assertNull(lsl.getOrNull(0))
-        Assertions.assertTrue(lsl.isFullyEvaluated())
+        Assertions.assertTrue(lsl.isFullyEvaluated)
         Assertions.assertEquals(0, lsl.size)
-        Assertions.assertTrue(lsl.isFullyEvaluated())
+        Assertions.assertTrue(lsl.isFullyEvaluated)
 
         Assertions.assertThrows<IndexOutOfBoundsException?>(
             IndexOutOfBoundsException::class.java,

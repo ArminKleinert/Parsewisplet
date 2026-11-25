@@ -63,7 +63,7 @@ internal class RegexTermTest {
     fun parseEager() {
         val gN = Gr.grammar("S", ConcatRule.create(List.of<Rule>(number(), digit())))
         val pN = parser(gN)
-        Assertions.assertTrue(pN.parse("1234").isFailure())
+        Assertions.assertTrue(pN.parse("1234").isFailure)
     }
 
     @Test
@@ -72,7 +72,7 @@ internal class RegexTermTest {
         val pN = parser(gN)
         Assertions.assertEquals(
             PT.create("S", "123", "4"),
-            pN.parse("1234", ParsingOptions.getDefault().withIterativeDeepening(true))
+            pN.parse("1234", ParsingOptions.default.withIterativeDeepening(true))
         )
     }
 
@@ -80,9 +80,9 @@ internal class RegexTermTest {
     fun parseError() {
         val g = Gr.grammar("S", ConcatRule.create(List.of<Rule>(digit(), digit())))
         val p = parser(g)
-        Assertions.assertTrue(p.parse("-1").isFailure())
-        Assertions.assertTrue(p.parse("1").isFailure())
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("-1").isFailure)
+        Assertions.assertTrue(p.parse("1").isFailure)
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
@@ -110,9 +110,9 @@ internal class RegexTermTest {
     fun fullParseError() {
         val g = Gr.grammar("S", number())
         val p = parser(g)
-        Assertions.assertTrue(p.parse("").isFailure())
-        Assertions.assertTrue(p.parse("a").isFailure())
-        Assertions.assertTrue(p.parse("&1").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
+        Assertions.assertTrue(p.parse("a").isFailure)
+        Assertions.assertTrue(p.parse("&1").isFailure)
     }
 
     @Test
@@ -120,11 +120,11 @@ internal class RegexTermTest {
         val pattern = Pattern.compile("[0-9]")
         Assertions.assertEquals(
             pattern,
-            (RegexTerm.create(pattern) as RegexTerm).getRegexp()
+            (RegexTerm.create(pattern) as RegexTerm).regexp
         )
         Assertions.assertEquals(
             pattern.pattern(),
-            (RegexTerm.create(pattern) as RegexTerm).getRegexp().pattern()
+            (RegexTerm.create(pattern) as RegexTerm).regexp.pattern()
         )
     }
 
@@ -139,10 +139,10 @@ internal class RegexTermTest {
         Assertions.assertEquals(digit().withHideTag(true), digit().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(digit().withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(digit().includeInResult().isHiddenInResult())
-        Assertions.assertTrue(digit().withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(digit().hideInResult().isHiddenInResult())
+        Assertions.assertFalse(digit().withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(digit().includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(digit().withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(digit().hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(digit().withHideTag(false), digit().includeInResult())

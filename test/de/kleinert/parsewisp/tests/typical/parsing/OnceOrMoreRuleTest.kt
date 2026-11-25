@@ -24,8 +24,8 @@ internal class OnceOrMoreRuleTest {
         // If the rule is a EpsilonTerm, the #create(...) method is free to create something other than a OnceOrMoreRule,
         // but the same input still must mean equivalent output.
         Assertions.assertEquals(
-            OnceOrMoreRule.create(EpsilonTerm.getDefault()),
-            OnceOrMoreRule.create(EpsilonTerm.getDefault())
+            OnceOrMoreRule.create(EpsilonTerm.default),
+            OnceOrMoreRule.create(EpsilonTerm.default)
         )
 
         // If the rule is a OnceOrMoreRule, the #create(...) method is free to not create a new rule,
@@ -48,13 +48,13 @@ internal class OnceOrMoreRuleTest {
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
 
-        val pN = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule?>(string_a(), rep_a(), string_a()))))
+        val pN = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(string_a(), rep_a(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a", "a"), pN.parse("aaaaa"))
 
         val pM = parser(
             Gr.grammar(
-                "S", ConcatRule.create(List.of<Rule?>(rep_a(), rep_a(), rep_a(), rep_a(), rep_a(), string_a()))
+                "S", ConcatRule.create(List.of<Rule>(rep_a(), rep_a(), rep_a(), rep_a(), rep_a(), string_a()))
             )
         )
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a", "a", "a"), pM.parse("aaaaaa"))
@@ -64,8 +64,8 @@ internal class OnceOrMoreRuleTest {
     @Test
     fun parseError() {
         val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a(), string_a()))))
-        Assertions.assertTrue(p.parse("a").isFailure())
-        Assertions.assertTrue(p.parse("ba").isFailure())
+        Assertions.assertTrue(p.parse("a").isFailure)
+        Assertions.assertTrue(p.parse("ba").isFailure)
     }
 
     @Test
@@ -81,7 +81,7 @@ internal class OnceOrMoreRuleTest {
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
 
-        val pM = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a(), rep_a()))))
+        val pM = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), rep_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), pM.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pM.parse("aaa"))
     }
@@ -89,13 +89,13 @@ internal class OnceOrMoreRuleTest {
     @Test
     fun fullParseError() {
         val p = parser(Gr.grammar("S", rep_a()))
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
     fun getRule() {
         val r = OnceOrMoreRule.create(string_a()) as OnceOrMoreRule
-        Assertions.assertEquals(string_a(), r.getRule())
+        Assertions.assertEquals(string_a(), r.rule)
     }
 
     @Test
@@ -104,16 +104,16 @@ internal class OnceOrMoreRuleTest {
         val r = OnceOrMoreRule.create(i) as OnceOrMoreRule
 
         // Expected
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         val ni = StringTerm.createDirect("c", false)
         val nr = r.withRule(ni)
 
         // The new rule.
-        Assertions.assertEquals(ni, nr.getRule())
+        Assertions.assertEquals(ni, nr.rule)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -125,17 +125,17 @@ internal class OnceOrMoreRuleTest {
             .withReduction(ReductionType.taggedTree(sym("A"))) as OnceOrMoreRule
 
         // As expected.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
-        Assertions.assertEquals(ni, nr.getRule())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rule)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -149,10 +149,10 @@ internal class OnceOrMoreRuleTest {
         Assertions.assertEquals(rep_a().withHideTag(true), rep_a().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(rep_a().withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(rep_a().includeInResult().isHiddenInResult())
-        Assertions.assertTrue(rep_a().withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(rep_a().hideInResult().isHiddenInResult())
+        Assertions.assertFalse(rep_a().withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(rep_a().includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(rep_a().withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(rep_a().hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(rep_a().withHideTag(false), rep_a().includeInResult())

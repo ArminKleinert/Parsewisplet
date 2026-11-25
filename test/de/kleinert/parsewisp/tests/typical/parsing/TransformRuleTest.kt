@@ -8,13 +8,11 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.*
-import java.util.List
 import java.util.function.BiFunction
 
 internal class TransformRuleTest {
-    private val simple_f =
-        BiFunction { r: MutableList<Any?>?, i: Int? -> List.of<Any?>((r!!.get(0) as String).repeat(2)) }
+    private val simple_f:BiFunction<List<Any?>, Int, List<Any?>> =
+        BiFunction { r: List<Any?>, i: Int -> listOf((r[0] as String).repeat(2)) }
 
     @Test
     fun create() {
@@ -32,7 +30,7 @@ internal class TransformRuleTest {
                     listOf(
                         TransformRule.create(
                             StringTerm.create("abc", false),
-                            { r: MutableList<Any?>?, i: Int? ->
+                            { r, i ->
                                 (r!!.get(0) as String).split("".toRegex()).filterNot { it.isEmpty() }
                             }),
                         StringTerm.create("def", false)
@@ -52,7 +50,7 @@ internal class TransformRuleTest {
             Gr.grammar(
                 "S", TransformRule.create(
                     StringTerm.create("abc", false)
-                ) { r: MutableList<Any?>?, i: Int? -> mutableListOf<Any?>("a", "b", "c") }))
+                ) { r: List<Any?>, i: Int -> listOf("a", "b", "c") }))
         Assertions.assertEquals(
             PT.create("S", "a", "b", "c"),
             p.parse("abc")
@@ -68,7 +66,7 @@ internal class TransformRuleTest {
                         StringTerm.create("abc", false),
                         TransformRule.create(
                             StringTerm.create("def", false)
-                        ) { r: MutableList<Any?>?, i: Int? ->
+                        ) { r, i ->
                                 (r!!.get(0) as String).split("".toRegex()).filterNot { it.isEmpty() }
                         }
                     )
@@ -85,7 +83,7 @@ internal class TransformRuleTest {
     fun getRule() {
         val inner = StringTerm.create("a", false)
         val r = TransformRule.create(inner, simple_f) as TransformRule
-        Assertions.assertEquals(inner, r.getRule())
+        Assertions.assertEquals(inner, r.rule)
     }
 
     @Test
@@ -94,16 +92,16 @@ internal class TransformRuleTest {
         val r = TransformRule.create(i, simple_f) as TransformRule
 
         // Expected
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         val ni = StringTerm.createDirect("c", false)
         val nr = r.withRule(ni)
 
         // The new rule.
-        Assertions.assertEquals(ni, nr.getRule())
+        Assertions.assertEquals(ni, nr.rule)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -114,17 +112,17 @@ internal class TransformRuleTest {
             .withReduction(ReductionType.taggedTree(sym("A"))) as TransformRule
 
         // As expected.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
-        Assertions.assertEquals(ni, nr.getRule())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rule)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -140,10 +138,10 @@ internal class TransformRuleTest {
         Assertions.assertEquals(r.withHideTag(true), r.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(r.withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(r.includeInResult().isHiddenInResult())
-        Assertions.assertTrue(r.withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(r.hideInResult().isHiddenInResult())
+        Assertions.assertFalse(r.withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(r.includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(r.withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(r.hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(r.withHideTag(false), r.includeInResult())
@@ -253,7 +251,7 @@ internal class TransformRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf<Rule>(
                         simple_a.withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.createDirect("b", false)
                     )

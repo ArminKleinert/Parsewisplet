@@ -20,8 +20,8 @@ internal class TestGrammarEdn {
         }
     }
 
-    private fun symbolList(): MutableList<String> {
-        return mutableListOf<String>("a", "+", "*", "<a>", "a:", "+:", "*#", "<a>#")
+    private fun symbolList(): List<String> {
+        return listOf("a", "+", "*", "<a>", "a:", "+:", "*#", "<a>#")
     }
 
     private fun symbolListWithNS(): List<String> {
@@ -41,7 +41,7 @@ internal class TestGrammarEdn {
     fun verifyWithFile() {
         val parser = parser()
         val text = Files.readString(Path.of("testres/other/edntest.edn"))
-        Assertions.assertTrue(parser.parse(text).isSuccess())
+        Assertions.assertTrue(parser.parse(text).isSuccess)
     }
 
     @Test
@@ -341,66 +341,66 @@ internal class TestGrammarEdn {
     @Test
     fun verifyMap() {
         val parser = parser()
-        Assertions.assertTrue(parser.parse("{}").isSuccess())
-        Assertions.assertTrue(parser.parse("{12}").isFailure())
-        Assertions.assertTrue(parser.parse("{1 2}").isSuccess())
-        Assertions.assertTrue(parser.parse("{ (1) []}").isSuccess())
+        Assertions.assertTrue(parser.parse("{}").isSuccess)
+        Assertions.assertTrue(parser.parse("{12}").isFailure)
+        Assertions.assertTrue(parser.parse("{1 2}").isSuccess)
+        Assertions.assertTrue(parser.parse("{ (1) []}").isSuccess)
     }
 
     @Test
     fun verifyTypeDispatch() {
         val parser = parser()
-        Assertions.assertTrue(parser.parse("#m/n {}").isSuccess())
-        Assertions.assertTrue(parser.parse("#m/n {:name \"abc\"}").isSuccess())
+        Assertions.assertTrue(parser.parse("#m/n {}").isSuccess)
+        Assertions.assertTrue(parser.parse("#m/n {:name \"abc\"}").isSuccess)
     }
 
     @Test
     fun verifyInts() {
         val parser = parser()
-        Assertions.assertTrue(parser.parse("0").isSuccess())
-        Assertions.assertTrue(parser.parse("+0").isSuccess())
-        Assertions.assertTrue(parser.parse("-0").isSuccess())
-        Assertions.assertTrue(parser.parse("1").isSuccess())
-        Assertions.assertTrue(parser.parse("+1").isSuccess())
-        Assertions.assertTrue(parser.parse("-1").isSuccess())
+        Assertions.assertTrue(parser.parse("0").isSuccess)
+        Assertions.assertTrue(parser.parse("+0").isSuccess)
+        Assertions.assertTrue(parser.parse("-0").isSuccess)
+        Assertions.assertTrue(parser.parse("1").isSuccess)
+        Assertions.assertTrue(parser.parse("+1").isSuccess)
+        Assertions.assertTrue(parser.parse("-1").isSuccess)
     }
 
     @Test
     fun verifyFloat() {
         val parser = parser()
-        Assertions.assertTrue(parser.parse("1.0").isSuccess())
-        Assertions.assertTrue(parser.parse("+1.0").isSuccess())
-        Assertions.assertTrue(parser.parse("-1.0").isSuccess())
+        Assertions.assertTrue(parser.parse("1.0").isSuccess)
+        Assertions.assertTrue(parser.parse("+1.0").isSuccess)
+        Assertions.assertTrue(parser.parse("-1.0").isSuccess)
     }
 
     @Test
     fun verifyFloatExpFormat() {
         val parser = parser()
-        Assertions.assertTrue(parser.parse("1e+1").isSuccess())
-        Assertions.assertTrue(parser.parse("1e-1").isSuccess())
-        Assertions.assertTrue(parser.parse("1E+1").isSuccess())
-        Assertions.assertTrue(parser.parse("1E-1").isSuccess())
-        Assertions.assertTrue(parser.parse("1.0e+1").isSuccess())
-        Assertions.assertTrue(parser.parse("1.0e-1").isSuccess())
-        Assertions.assertTrue(parser.parse("1.0E+1").isSuccess())
-        Assertions.assertTrue(parser.parse("1.0E-1").isSuccess())
+        Assertions.assertTrue(parser.parse("1e+1").isSuccess)
+        Assertions.assertTrue(parser.parse("1e-1").isSuccess)
+        Assertions.assertTrue(parser.parse("1E+1").isSuccess)
+        Assertions.assertTrue(parser.parse("1E-1").isSuccess)
+        Assertions.assertTrue(parser.parse("1.0e+1").isSuccess)
+        Assertions.assertTrue(parser.parse("1.0e-1").isSuccess)
+        Assertions.assertTrue(parser.parse("1.0E+1").isSuccess)
+        Assertions.assertTrue(parser.parse("1.0E-1").isSuccess)
 
-        Assertions.assertTrue(parser.parse("+1e+1").isSuccess())
-        Assertions.assertTrue(parser.parse("+1e-1").isSuccess())
-        Assertions.assertTrue(parser.parse("+1E+1").isSuccess())
-        Assertions.assertTrue(parser.parse("+1E-1").isSuccess())
-        Assertions.assertTrue(parser.parse("+1.0e+1").isSuccess())
-        Assertions.assertTrue(parser.parse("+1.0e-1").isSuccess())
-        Assertions.assertTrue(parser.parse("+1.0E+1").isSuccess())
-        Assertions.assertTrue(parser.parse("+1.0E-1").isSuccess())
+        Assertions.assertTrue(parser.parse("+1e+1").isSuccess)
+        Assertions.assertTrue(parser.parse("+1e-1").isSuccess)
+        Assertions.assertTrue(parser.parse("+1E+1").isSuccess)
+        Assertions.assertTrue(parser.parse("+1E-1").isSuccess)
+        Assertions.assertTrue(parser.parse("+1.0e+1").isSuccess)
+        Assertions.assertTrue(parser.parse("+1.0e-1").isSuccess)
+        Assertions.assertTrue(parser.parse("+1.0E+1").isSuccess)
+        Assertions.assertTrue(parser.parse("+1.0E-1").isSuccess)
 
-        Assertions.assertTrue(parser.parse("-1e+1").isSuccess())
-        Assertions.assertTrue(parser.parse("-1e-1").isSuccess())
-        Assertions.assertTrue(parser.parse("-1E+1").isSuccess())
-        Assertions.assertTrue(parser.parse("-1E-1").isSuccess())
-        Assertions.assertTrue(parser.parse("-1.0e+1").isSuccess())
-        Assertions.assertTrue(parser.parse("-1.0e-1").isSuccess())
-        Assertions.assertTrue(parser.parse("-1.0E+1").isSuccess())
-        Assertions.assertTrue(parser.parse("-1.0E-1").isSuccess())
+        Assertions.assertTrue(parser.parse("-1e+1").isSuccess)
+        Assertions.assertTrue(parser.parse("-1e-1").isSuccess)
+        Assertions.assertTrue(parser.parse("-1E+1").isSuccess)
+        Assertions.assertTrue(parser.parse("-1E-1").isSuccess)
+        Assertions.assertTrue(parser.parse("-1.0e+1").isSuccess)
+        Assertions.assertTrue(parser.parse("-1.0e-1").isSuccess)
+        Assertions.assertTrue(parser.parse("-1.0E+1").isSuccess)
+        Assertions.assertTrue(parser.parse("-1.0E-1").isSuccess)
     }
 }

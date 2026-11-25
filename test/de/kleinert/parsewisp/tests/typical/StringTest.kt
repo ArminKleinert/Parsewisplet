@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class StringTest {
     @Test
     fun explicitStringCaseInsensitivity() {
-        val opts = ParserCreationOptions.getDefault()
+        val opts = ParserCreationOptions.default
         Assertions.assertEquals(
             PT.create("S", "A"),
             parser("S = %i\"A\"", opts).parse("A")
@@ -22,13 +22,13 @@ internal class StringTest {
 
     @Test
     fun explicitStringCaseSensitivity() {
-        val opts = ParserCreationOptions.getDefault()
+        val opts = ParserCreationOptions.default
         Assertions.assertEquals(
             PT.create("S", "A"),
             parser("S = %s\"A\"", opts).parse("A")
         )
         Assertions.assertTrue(
-            parser("S = %s\"A\"", opts).parse("a").isFailure()
+            parser("S = %s\"A\"", opts).parse("a").isFailure
         )
     }
 }

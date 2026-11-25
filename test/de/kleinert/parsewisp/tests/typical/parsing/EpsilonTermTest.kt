@@ -17,21 +17,21 @@ internal class EpsilonTermTest {
 
     @Test
     fun getDefault() {
-        Assertions.assertEquals(EpsilonTerm.getDefault(), EpsilonTerm.getDefault())
+        Assertions.assertEquals(EpsilonTerm.default, EpsilonTerm.default)
     }
 
     @Test
     fun parse() {
         val p1 = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.getDefault(), string_a()))
+                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, string_a()))
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), p1.parse("a"))
 
         val p2 = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.getDefault(), EpsilonTerm.getDefault()))
+                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), p2.parse(""))
@@ -41,7 +41,7 @@ internal class EpsilonTermTest {
     // @Test void parseError() {}
     @Test
     fun fullParseSingle() {
-        val p = parser(Gr.grammar("S", EpsilonTerm.getDefault()))
+        val p = parser(Gr.grammar("S", EpsilonTerm.default))
         Assertions.assertEquals(PT.create("S"), p.parse(""))
     }
 
@@ -49,14 +49,14 @@ internal class EpsilonTermTest {
     fun fullParseConcat() {
         val pE = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.getDefault(), EpsilonTerm.getDefault()))
+                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), pE.parse(""))
 
         val pA = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(string_a(), EpsilonTerm.getDefault()))
+                "S", ConcatRule.createDirect(List.of<Rule>(string_a(), EpsilonTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pA.parse("a"))
@@ -64,46 +64,46 @@ internal class EpsilonTermTest {
 
     @Test
     fun fullParseError() {
-        val p = parser(Gr.grammar("S", EpsilonTerm.getDefault()))
-        Assertions.assertTrue(p.parse("a").isFailure())
+        val p = parser(Gr.grammar("S", EpsilonTerm.default))
+        Assertions.assertTrue(p.parse("a").isFailure)
     }
 
     @Test
     fun withHideTag() {
         // By default, not hidden in result. May create a new object, but the output must be equal to the original.
-        Assertions.assertEquals(EpsilonTerm.getDefault(), EpsilonTerm.getDefault().withHideTag(false))
-        Assertions.assertEquals(EpsilonTerm.getDefault(), EpsilonTerm.getDefault().includeInResult())
+        Assertions.assertEquals(EpsilonTerm.default, EpsilonTerm.default.withHideTag(false))
+        Assertions.assertEquals(EpsilonTerm.default, EpsilonTerm.default.includeInResult())
 
         // Same input -> Equivalent output
         Assertions.assertEquals(
-            EpsilonTerm.getDefault().withHideTag(false),
-            EpsilonTerm.getDefault().withHideTag(false)
+            EpsilonTerm.default.withHideTag(false),
+            EpsilonTerm.default.withHideTag(false)
         )
-        Assertions.assertEquals(EpsilonTerm.getDefault().withHideTag(true), EpsilonTerm.getDefault().withHideTag(true))
+        Assertions.assertEquals(EpsilonTerm.default.withHideTag(true), EpsilonTerm.default.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(EpsilonTerm.getDefault().withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(EpsilonTerm.getDefault().includeInResult().isHiddenInResult())
-        Assertions.assertTrue(EpsilonTerm.getDefault().withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(EpsilonTerm.getDefault().hideInResult().isHiddenInResult())
+        Assertions.assertFalse(EpsilonTerm.default.withHideTag(false).isHiddenInResult)
+        Assertions.assertFalse(EpsilonTerm.default.includeInResult().isHiddenInResult)
+        Assertions.assertTrue(EpsilonTerm.default.withHideTag(true).isHiddenInResult)
+        Assertions.assertTrue(EpsilonTerm.default.hideInResult().isHiddenInResult)
 
         // Alternative names give equivalent output
-        Assertions.assertEquals(EpsilonTerm.getDefault().withHideTag(false), EpsilonTerm.getDefault().includeInResult())
-        Assertions.assertEquals(EpsilonTerm.getDefault().withHideTag(true), EpsilonTerm.getDefault().hideInResult())
+        Assertions.assertEquals(EpsilonTerm.default.withHideTag(false), EpsilonTerm.default.includeInResult())
+        Assertions.assertEquals(EpsilonTerm.default.withHideTag(true), EpsilonTerm.default.hideInResult())
     }
 
     @Test
     fun withHideTagParse() {
         // By default, not hidden in output, but this type adds nothing to the tree
-        val pDefault = parser(Gr.grammar("S", EpsilonTerm.getDefault()))
+        val pDefault = parser(Gr.grammar("S", EpsilonTerm.default))
         Assertions.assertEquals(PT.create("S"), pDefault.parse(""))
 
         // With explicit show, also not hidden, but this type adds nothing to the tree
-        val pShow = parser(Gr.grammar("S", EpsilonTerm.getDefault().withHideTag(false)))
+        val pShow = parser(Gr.grammar("S", EpsilonTerm.default.withHideTag(false)))
         Assertions.assertEquals(PT.create("S"), pShow.parse(""))
 
         // With explicit hide
-        val pHide = parser(Gr.grammar("S", EpsilonTerm.getDefault().withHideTag(true)))
+        val pHide = parser(Gr.grammar("S", EpsilonTerm.default.withHideTag(true)))
         Assertions.assertEquals(PT.create("S"), pHide.parse(""))
     }
 
@@ -111,8 +111,8 @@ internal class EpsilonTermTest {
     fun withReduction() {
         // Default.
         Assertions.assertEquals(
-            EpsilonTerm.getDefault(),
-            EpsilonTerm.getDefault().withReduction(ReductionType.initial())
+            EpsilonTerm.default,
+            EpsilonTerm.default.withReduction(ReductionType.initial())
         )
 
         // Default: Don't merge up
@@ -120,7 +120,7 @@ internal class EpsilonTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
-                "A", EpsilonTerm.getDefault()
+                "A", EpsilonTerm.default
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("A")), pDefault.parse(""))
@@ -133,7 +133,7 @@ internal class EpsilonTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
-                "A", EpsilonTerm.getDefault().withReduction(ReductionType.merging())
+                "A", EpsilonTerm.default.withReduction(ReductionType.merging())
             )
         )
         Assertions.assertEquals(PT.create("S"), pMerge.parse(""))
@@ -145,7 +145,7 @@ internal class EpsilonTermTest {
         val pMerge2 = parser(
             Gr.grammarS(
                 "S",
-                "S", EpsilonTerm.getDefault().withReduction(ReductionType.taggedTree(sym("B")))
+                "S", EpsilonTerm.default.withReduction(ReductionType.taggedTree(sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
@@ -155,7 +155,7 @@ internal class EpsilonTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
-                "A", EpsilonTerm.getDefault().withReduction(ReductionType.taggedTree(sym("B")))
+                "A", EpsilonTerm.default.withReduction(ReductionType.taggedTree(sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -170,8 +170,8 @@ internal class EpsilonTermTest {
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
                     List.of<Rule>(
-                        EpsilonTerm.getDefault().withReduction(ReductionType.taggedTree(sym("B"))),
-                        EpsilonTerm.getDefault()
+                        EpsilonTerm.default.withReduction(ReductionType.taggedTree(sym("B"))),
+                        EpsilonTerm.default
                     )
                 )
             )

@@ -56,7 +56,7 @@ internal class ValueRangeTermTest {
 
         // Will use parse(...) for "a" and fullParse(...) for "b"
         val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a, fullUnicode))))
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
@@ -86,23 +86,23 @@ internal class ValueRangeTermTest {
         val simple_a = ValueRangeTerm.create('a'.code, 'a'.code) as ValueRangeTerm
 
         val p = parser(Gr.grammar("S", simple_a)) // Will use parse(...) for "a" and fullParse(...) for "b"
-        Assertions.assertTrue(p.parse("").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
     }
 
     @Test
     fun getLo() {
         val r1 = ValueRangeTerm.create(0, 0x10FFFF) as ValueRangeTerm
         val r2 = ValueRangeTerm.create(0x10FFFF, 0x10FFFF) as ValueRangeTerm
-        Assertions.assertEquals(0, r1.getLo())
-        Assertions.assertEquals(0x10FFFF, r2.getLo())
+        Assertions.assertEquals(0, r1.lo)
+        Assertions.assertEquals(0x10FFFF, r2.lo)
     }
 
     @Test
     fun getHi() {
         val r1 = ValueRangeTerm.create(0, 0x10FFFF) as ValueRangeTerm
         val r2 = ValueRangeTerm.create(0, 0) as ValueRangeTerm
-        Assertions.assertEquals(0x10FFFF, r1.getHi())
-        Assertions.assertEquals(0, r2.getHi())
+        Assertions.assertEquals(0x10FFFF, r1.hi)
+        Assertions.assertEquals(0, r2.hi)
     }
 
     @Test
@@ -118,10 +118,10 @@ internal class ValueRangeTermTest {
         Assertions.assertEquals(simpleRuleForTests.withHideTag(true), simpleRuleForTests.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult())
+        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(simpleRuleForTests.withHideTag(false), simpleRuleForTests.includeInResult())

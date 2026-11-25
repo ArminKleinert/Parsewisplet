@@ -16,7 +16,7 @@ internal class RuleExamplesTests {
         Assertions.assertEquals(PT.create("S", "ab"), p1.parse("ab"))
 
         val opts = ParserCreationOptions
-            .getDefault()
+            .default
             .withRedefinitionOption(RedefinitionOption.CHOICE)
         val p2 = parser(
             """

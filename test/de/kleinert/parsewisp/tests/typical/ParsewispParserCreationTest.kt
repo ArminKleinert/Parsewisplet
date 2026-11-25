@@ -108,7 +108,7 @@ internal class ParsewispParserCreationTest {
             null, sym("C"),
             null,
             true,
-            GrammarPrinter.getDefault()
+            GrammarPrinter.default
         )
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,

@@ -5,9 +5,7 @@ import de.kleinert.parsewisp.grammar.GrammarBuilder
 import de.kleinert.parsewisp.parser_options.RedefinitionOption
 import de.kleinert.parsewisp.parsing.EOFTerm
 import de.kleinert.parsewisp.parsing.Rule
-import java.util.*
-import java.util.List
-import java.util.function.Function
+import java.util.Optional
 import java.util.regex.Pattern
 
 /**
@@ -25,37 +23,37 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
         addProduction(
             "rules", catUnsafe(
                 listOf(
-                    cWsp, onceOrMore(catUnsafe(List.of<Rule>(nt("rule"), cWsp)))
+                    cWsp, onceOrMore(catUnsafe(listOf(nt("rule"), cWsp)))
                 )
             )
         )
 
         addProduction(
             "rule", catUnsafe(
-                List.of<Rule?>(
-                    altUnsafe(List.of<Rule>(ntNt, nt("hide-nt"))),
+                listOf(
+                    altUnsafe(listOf(ntNt, nt("hide-nt"))),
                     cWsp,
                     altUnsafe(
-                        List.of<Rule?>(
+                        listOf(
                             stringCS(":="), stringCS("::="), stringCS("=/"),
                             stringCS("="), stringCS(":")
                         )
                     ).hideInResult(),
                     cWsp,
                     altNt,
-                    opt(altUnsafe(List.of<Rule>(string(";"), string("."))))
+                    opt(altUnsafe(listOf(string(";"), string("."))))
                 )
             )
         )
 
         addProduction(
             "alt", catUnsafe(
-                List.of<Rule?>(
+                listOf(
                     nt("ord"),
                     cWsp,
                     zeroOrMore(
                         catUnsafe(
-                            List.of<Rule?>(
+                            listOf(
                                 hide(string("|")),
                                 cWsp,
                                 nt("ord")
@@ -68,12 +66,12 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "ord", catUnsafe(
-                List.of<Rule?>(
+                listOf(
                     nt("cat"),
                     cWsp,
                     zeroOrMore(
                         catUnsafe(
-                            List.of<Rule?>(
+                            listOf(
                                 hide(string("/")),
                                 cWsp,
                                 nt("cat")
@@ -86,16 +84,16 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "cat", catUnsafe(
-                List.of<Rule>(
+                listOf(
                     nt("term"),
-                    zeroOrMore(catUnsafe(List.of<Rule>(cWsp, nt("term"))))
+                    zeroOrMore(catUnsafe(listOf(cWsp, nt("term"))))
                 )
             )
         )
 
         addProduction(
             "term", altUnsafe(
-                List.of<Rule?>(
+                listOf(
                     nt("exclude"), nt("look"), nt("neg")
                 )
             ).mergeToTop()
@@ -103,25 +101,25 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "exclude", catUnsafe(
-                List.of<Rule?>(
-                    factorNt, cWsp, opt(catUnsafe(List.of<Rule?>(string("-").hideInResult(), cWsp, factorNt)))
+                listOf(
+                    factorNt, cWsp, opt(catUnsafe(listOf(string("-").hideInResult(), cWsp, factorNt)))
                 )
             )
         )
 
-        addProduction("look", catUnsafe(List.of<Rule?>(string("&").hideInResult(), cWsp, factorNt)))
-        addProduction("neg", catUnsafe(List.of<Rule?>(string("!").hideInResult(), cWsp, factorNt)))
+        addProduction("look", catUnsafe(listOf(string("&").hideInResult(), cWsp, factorNt)))
+        addProduction("neg", catUnsafe(listOf(string("!").hideInResult(), cWsp, factorNt)))
 
         addProduction(
             "factor", catUnsafe(
-                List.of<Rule>(
+                listOf(
                     nt("primary"),
                     zeroOrMore(
                         catUnsafe(
-                            List.of<Rule>(
+                            listOf(
                                 cWsp,
                                 altUnsafe(
-                                    List.of<Rule?>(
+                                    listOf(
                                         string("?"), string("*"), string("+"),
                                         regex(Pattern.compile("\\{\\d*(,\\d*)?}(?x) # Numbered repetition"))
                                     )
@@ -135,7 +133,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "primary", altUnsafe(
-                List.of<Rule?>(
+                listOf(
                     nt("string"), nt("regexp"), nt("opt"),
                     nt("opt_rep"), nt("paren"), nt("hide"),  //nt("epsilon"),
                     nt("abnf-range"),  //nt("eof"),
@@ -146,7 +144,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "string", altUnsafe(
-                List.of<Rule>(
+                listOf(
                     regex(Pattern.compile("(%[is])?\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"(?x) # Double quoted string")),
                     regex(Pattern.compile("(%[is])?'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'(?x) # Single quoted string"))
                 )
@@ -155,7 +153,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "regexp", altUnsafe(
-                List.of<Rule>(
+                listOf(
                     regex(Pattern.compile("#'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'(?x) # Single quoted string")),
                     regex(Pattern.compile("#\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"(?x) # Double quoted regex"))
                 )
@@ -164,7 +162,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "opt", catUnsafe(
-                List.of<Rule?>(
+                listOf(
                     string("[").hideInResult(), cWsp, altNt, cWsp, string("]").hideInResult()
                 )
             )
@@ -172,7 +170,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "opt_rep", catUnsafe(
-                List.of<Rule?>(
+                listOf(
                     string("{").hideInResult(), cWsp, altNt, cWsp, string("}").hideInResult()
                 )
             )
@@ -180,7 +178,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "paren", catUnsafe(
-                List.of<Rule?>(
+                listOf(
                     string("(").hideInResult(), cWsp, altNt, cWsp, string(")").hideInResult()
                 )
             )
@@ -188,7 +186,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "hide", catUnsafe(
-                List.of<Rule?>(
+                listOf(
                     string("<").hideInResult(), cWsp, altNt, cWsp, string(">").hideInResult()
                 )
             )
@@ -226,7 +224,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "hide-nt", catUnsafe(
-                listOf<Rule?>(
+                listOf(
                     string("<").hideInResult(),
                     cWsp,
                     ntNt,
@@ -240,7 +238,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
             "cWsp", hide(
                 onceOrMore(
                     altUnsafe(
-                        List.of<Rule>(
+                        listOf(
                             nt("comment"),
                             regex(Pattern.compile("[,\\s]*"))
                         )
@@ -251,11 +249,11 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "comment", catUnsafe(
-                List.of<Rule?>(
+                listOf(
                     string("(*"),
                     onceOrMore(
                         altUnsafe(
-                            List.of<Rule>(
+                            listOf(
                                 regex("(?s)(?:(?!\\(\\*|\\*\\)).)*(?x) # Comment text"),
                                 nt("comment")
                             )

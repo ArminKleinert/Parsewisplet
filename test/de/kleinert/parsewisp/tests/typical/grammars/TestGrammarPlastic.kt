@@ -130,7 +130,7 @@ internal class TestGrammarPlastic {
                 }
                 
                 """.trimIndent()
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
@@ -281,7 +281,7 @@ internal class TestGrammarPlastic {
                 eval(code)
                 
                 """.trimIndent()
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 
     @Test
@@ -294,6 +294,6 @@ internal class TestGrammarPlastic {
                 'Quote \'"'
                 
                 """.trimIndent()
-        Assertions.assertTrue(parser().parse(text).isSuccess())
+        Assertions.assertTrue(parser().parse(text).isSuccess)
     }
 }

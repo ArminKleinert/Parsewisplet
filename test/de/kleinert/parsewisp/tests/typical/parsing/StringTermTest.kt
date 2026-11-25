@@ -157,7 +157,7 @@ internal class StringTermTest {
 
         // Will use parse(...) for "a" and fullParse(...) for "b"
         val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a, simple_b))))
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
@@ -192,26 +192,26 @@ internal class StringTermTest {
         val simple_a = StringTerm.createDirect("a", false)
 
         val p = parser(Gr.grammar("S", simple_a)) // Will use parse(...) for "a" and fullParse(...) for "b"
-        Assertions.assertTrue(p.parse("").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
     }
 
     @Test
     fun getString() {
-        Assertions.assertEquals("", StringTerm.createDirect("", false).getString())
-        Assertions.assertEquals("", StringTerm.createDirect("", true).getString())
-        Assertions.assertEquals("a", StringTerm.createDirect("a", false).getString())
-        Assertions.assertEquals("a", StringTerm.createDirect("a", true).getString())
+        Assertions.assertEquals("", StringTerm.createDirect("", false).string)
+        Assertions.assertEquals("", StringTerm.createDirect("", true).string)
+        Assertions.assertEquals("a", StringTerm.createDirect("a", false).string)
+        Assertions.assertEquals("a", StringTerm.createDirect("a", true).string)
 
-        Assertions.assertEquals("\"", StringTerm.createDirect("\"", false).getString())
-        Assertions.assertEquals("\"", StringTerm.createDirect("\"", true).getString())
+        Assertions.assertEquals("\"", StringTerm.createDirect("\"", false).string)
+        Assertions.assertEquals("\"", StringTerm.createDirect("\"", true).string)
     }
 
     @Test
     fun isCaseInsensitive() {
-        Assertions.assertFalse(StringTerm.createDirect("", false).isCaseInsensitive())
-        Assertions.assertTrue(StringTerm.createDirect("", true).isCaseInsensitive())
-        Assertions.assertFalse(StringTerm.createDirect("a", false).isCaseInsensitive())
-        Assertions.assertTrue(StringTerm.createDirect("a", true).isCaseInsensitive())
+        Assertions.assertFalse(StringTerm.createDirect("", false).isCaseInsensitive)
+        Assertions.assertTrue(StringTerm.createDirect("", true).isCaseInsensitive)
+        Assertions.assertFalse(StringTerm.createDirect("a", false).isCaseInsensitive)
+        Assertions.assertTrue(StringTerm.createDirect("a", true).isCaseInsensitive)
     }
 
     @Test
@@ -227,10 +227,10 @@ internal class StringTermTest {
         Assertions.assertEquals(simpleRuleForTests.withHideTag(true), simpleRuleForTests.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult())
+        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(simpleRuleForTests.withHideTag(false), simpleRuleForTests.includeInResult())

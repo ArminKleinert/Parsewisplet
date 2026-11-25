@@ -24,8 +24,8 @@ internal class VariableRepetitionRuleTest {
     fun create() {
         // Epsilon as input may return Epsilon
         Assertions.assertEquals(
-            VariableRepetitionRule.create(EpsilonTerm.getDefault(), 2, 4),
-            VariableRepetitionRule.create(EpsilonTerm.getDefault(), 2, 4)
+            VariableRepetitionRule.create(EpsilonTerm.default, 2, 4),
+            VariableRepetitionRule.create(EpsilonTerm.default, 2, 4)
         )
 
         // Zero min and zero max -> may create epsilon
@@ -61,18 +61,18 @@ internal class VariableRepetitionRuleTest {
 
         // Negative min
         Assertions.assertThrows<IllegalArgumentException?>(
-            IllegalArgumentException::class.java,
-            Executable { VariableRepetitionRule.create(string_a(), -4, 4) })
+            IllegalArgumentException::class.java
+        ) { VariableRepetitionRule.create(string_a(), -4, 4) }
 
         // Negative max
         Assertions.assertThrows<IllegalArgumentException?>(
-            IllegalArgumentException::class.java,
-            Executable { VariableRepetitionRule.create(string_a(), 4, -4) })
+            IllegalArgumentException::class.java
+        ) { VariableRepetitionRule.create(string_a(), 4, -4) }
 
         // min > max
         Assertions.assertThrows<IllegalArgumentException?>(
-            IllegalArgumentException::class.java,
-            Executable { VariableRepetitionRule.create(string_a(), 9, 1) })
+            IllegalArgumentException::class.java
+        ) { VariableRepetitionRule.create(string_a(), 9, 1) }
     }
 
     @Test
@@ -87,8 +87,8 @@ internal class VariableRepetitionRuleTest {
     @Test
     fun parseError() {
         val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a14(), string_a()))))
-        Assertions.assertTrue(p.parse("a").isFailure())
-        Assertions.assertTrue(p.parse("aaaaaa").isFailure())
+        Assertions.assertTrue(p.parse("a").isFailure)
+        Assertions.assertTrue(p.parse("aaaaaa").isFailure)
     }
 
     @Test
@@ -121,33 +121,33 @@ internal class VariableRepetitionRuleTest {
     @Test
     fun fullParseError() {
         val p = parser(Gr.grammar("S", rep_a14()))
-        Assertions.assertTrue(p.parse("").isFailure())
-        Assertions.assertTrue(p.parse("aaaaa").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
+        Assertions.assertTrue(p.parse("aaaaa").isFailure)
     }
 
     @Test
     fun getRule() {
         val r = VariableRepetitionRule.create(string_a(), 2, 4) as VariableRepetitionRule
-        Assertions.assertEquals(string_a(), r.getRule())
+        Assertions.assertEquals(string_a(), r.rule)
     }
 
     @Test
     fun getMin() {
         Assertions.assertEquals(
             0,
-            (VariableRepetitionRule.create(string_a(), 0, 1) as VariableRepetitionRule).getMin()
+            (VariableRepetitionRule.create(string_a(), 0, 1) as VariableRepetitionRule).min
         )
         Assertions.assertEquals(
             0,
-            (VariableRepetitionRule.create(string_a(), 0, 2) as VariableRepetitionRule).getMin()
+            (VariableRepetitionRule.create(string_a(), 0, 2) as VariableRepetitionRule).min
         )
         Assertions.assertEquals(
             2,
-            (VariableRepetitionRule.create(string_a(), 2, 4) as VariableRepetitionRule).getMin()
+            (VariableRepetitionRule.create(string_a(), 2, 4) as VariableRepetitionRule).min
         )
         Assertions.assertEquals(
             4,
-            (VariableRepetitionRule.create(string_a(), 4, 4) as VariableRepetitionRule).getMin()
+            (VariableRepetitionRule.create(string_a(), 4, 4) as VariableRepetitionRule).min
         )
     }
 
@@ -155,19 +155,19 @@ internal class VariableRepetitionRuleTest {
     fun getMax() {
         Assertions.assertEquals(
             1,
-            (VariableRepetitionRule.create(string_a(), 0, 1) as VariableRepetitionRule).getMax()
+            (VariableRepetitionRule.create(string_a(), 0, 1) as VariableRepetitionRule).max
         )
         Assertions.assertEquals(
             2,
-            (VariableRepetitionRule.create(string_a(), 0, 2) as VariableRepetitionRule).getMax()
+            (VariableRepetitionRule.create(string_a(), 0, 2) as VariableRepetitionRule).max
         )
         Assertions.assertEquals(
             4,
-            (VariableRepetitionRule.create(string_a(), 2, 4) as VariableRepetitionRule).getMax()
+            (VariableRepetitionRule.create(string_a(), 2, 4) as VariableRepetitionRule).max
         )
         Assertions.assertEquals(
             4,
-            (VariableRepetitionRule.create(string_a(), 4, 4) as VariableRepetitionRule).getMax()
+            (VariableRepetitionRule.create(string_a(), 4, 4) as VariableRepetitionRule).max
         )
     }
 
@@ -177,16 +177,16 @@ internal class VariableRepetitionRuleTest {
         val r = VariableRepetitionRule.create(i, 1, 3) as VariableRepetitionRule
 
         // Expected
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         val ni = StringTerm.createDirect("c", false)
         val nr = r.withRule(ni)
 
         // The new rule.
-        Assertions.assertEquals(ni, nr.getRule())
+        Assertions.assertEquals(ni, nr.rule)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -198,17 +198,17 @@ internal class VariableRepetitionRuleTest {
             .withReduction(ReductionType.taggedTree(sym("A"))) as VariableRepetitionRule
 
         // As expected.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
-        Assertions.assertEquals(ni, nr.getRule())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rule)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRule())
+        Assertions.assertEquals(i, r.rule)
     }
 
     @Test
@@ -222,10 +222,10 @@ internal class VariableRepetitionRuleTest {
         Assertions.assertEquals(rep_a14().withHideTag(true), rep_a14().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(rep_a14().withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(rep_a14().includeInResult().isHiddenInResult())
-        Assertions.assertTrue(rep_a14().withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(rep_a14().hideInResult().isHiddenInResult())
+        Assertions.assertFalse(rep_a14().withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(rep_a14().includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(rep_a14().withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(rep_a14().hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(rep_a14().withHideTag(false), rep_a14().includeInResult())

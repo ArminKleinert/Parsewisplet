@@ -12,18 +12,18 @@ internal class RedefinitionOptionTest {
     @Test
     fun optionOverrideTest() {
         val redefinitionOpts = ParserCreationOptions
-            .getDefault()
+            .default
             .withRedefinitionOption(RedefinitionOption.OVERRIDE)
         val p = parser("S = 'A'\nS = 'B'\nS = 'C'", redefinitionOpts)
-        Assertions.assertTrue(p.parse("A").isFailure())
-        Assertions.assertTrue(p.parse("B").isFailure())
+        Assertions.assertTrue(p.parse("A").isFailure)
+        Assertions.assertTrue(p.parse("B").isFailure)
         Assertions.assertEquals(PT.create("S", "C"), p.parse("C"))
     }
 
     @Test
     fun optionErrorTest() {
         val redefinitionOpts = ParserCreationOptions
-            .getDefault()
+            .default
             .withRedefinitionOption(RedefinitionOption.ERROR)
 
         // Only one production -> No duplicates, no problem
@@ -46,7 +46,7 @@ internal class RedefinitionOptionTest {
     @Test
     fun optionChoiceTest() {
         val redefinitionOpts = ParserCreationOptions
-            .getDefault()
+            .default
             .withRedefinitionOption(RedefinitionOption.CHOICE)
         val p = parser("S = 'A'\nS = 'B'\nS = 'C'", redefinitionOpts)
         Assertions.assertEquals(PT.create("S", "A"), p.parse("A"))
@@ -57,11 +57,11 @@ internal class RedefinitionOptionTest {
     @Test
     fun optionKeepTest() {
         val redefinitionOpts = ParserCreationOptions
-            .getDefault()
+            .default
             .withRedefinitionOption(RedefinitionOption.KEEP)
         val p = parser("S = 'A'\nS = 'B'\nS = 'C'", redefinitionOpts)
         Assertions.assertEquals(PT.create("S", "A"), p.parse("A"))
-        Assertions.assertTrue(p.parse("B").isFailure())
-        Assertions.assertTrue(p.parse("C").isFailure())
+        Assertions.assertTrue(p.parse("B").isFailure)
+        Assertions.assertTrue(p.parse("C").isFailure)
     }
 }

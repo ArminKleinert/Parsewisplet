@@ -23,8 +23,8 @@ internal class OrderedChoiceRuleTest {
     @Test
     fun create() {
         Assertions.assertEquals(
-            OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())),
-            OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b()))
+            OrderedChoiceRule.create(listOf(string_a(), string_b())),
+            OrderedChoiceRule.create(listOf(string_a(), string_b()))
         )
     }
 
@@ -37,7 +37,7 @@ internal class OrderedChoiceRuleTest {
         )
 
         Assertions.assertEquals(
-            parser(Gr.grammar("S", EpsilonTerm.getDefault())).parse(""),
+            parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
             parser(Gr.grammar("S", OrderedChoiceRule.create(mutableListOf<Rule>()))).parse("")
         )
     }
@@ -47,20 +47,20 @@ internal class OrderedChoiceRuleTest {
         // create(...) called with only one element in the input list, it may return only that one element.
         // This behavior is not mandatory.
         Assertions.assertEquals(
-            OrderedChoiceRule.create(List.of<Rule>(string_a())),
-            OrderedChoiceRule.create(List.of<Rule>(string_a()))
+            OrderedChoiceRule.create(listOf(string_a())),
+            OrderedChoiceRule.create(listOf(string_a()))
         )
 
         Assertions.assertEquals(
             parser(Gr.grammar("S", string_a())).parse("a"),
-            parser(Gr.grammar("S", OrderedChoiceRule.create(List.of<Rule>(string_a())))).parse("a")
+            parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a())))).parse("a")
         )
     }
 
     @Test
     fun createManySimilar() {
         // If an element in the input is repeated, create(...) can (and should) make the inputs distinct.
-        val l = List.of<Rule?>(
+        val l = listOf(
             string_a(),
             string_b(),
             string_a(),
@@ -70,7 +70,7 @@ internal class OrderedChoiceRuleTest {
             string_a(),
             string_b()
         )
-        val lDistinct = l.stream().distinct().toList()
+        val lDistinct = l.distinct()
         Assertions.assertTrue(
             OrderedChoiceRule.create(lDistinct) == OrderedChoiceRule.create(l)
                     || OrderedChoiceRule.create(lDistinct) == OrderedChoiceRule.create(l)
@@ -88,8 +88,8 @@ internal class OrderedChoiceRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
-                        OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())),
+                    listOf(
+                        OrderedChoiceRule.create(listOf(string_a(), string_b())),
                         string_a()
                     )
                 )
@@ -106,9 +106,9 @@ internal class OrderedChoiceRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         OrderedChoiceRule.create(
-                            List.of<Rule>(
+                            listOf(
                                 string_a(),
                                 string_a(),
                                 string_a()
@@ -130,19 +130,19 @@ internal class OrderedChoiceRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
-                        OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())),
+                    listOf(
+                        OrderedChoiceRule.create(listOf(string_a(), string_b())),
                         string_a()
                     )
                 )
             )
         )
-        Assertions.assertTrue(p_ab.parse("ca").isFailure())
+        Assertions.assertTrue(p_ab.parse("ca").isFailure)
     }
 
     @Test
     fun fullParseSingle() {
-        val p_ab = parser(Gr.grammar("S", OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b()))))
+        val p_ab = parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_b()))))
         Assertions.assertEquals(PT.create("S", "a"), p_ab.parse("a"))
         Assertions.assertEquals(PT.create("S", "b"), p_ab.parse("b"))
     }
@@ -153,9 +153,9 @@ internal class OrderedChoiceRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         string_a(),
-                        OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b()))
+                        OrderedChoiceRule.create(listOf(string_a(), string_b()))
                     )
                 )
             )
@@ -167,7 +167,7 @@ internal class OrderedChoiceRuleTest {
     @Test
     fun fullParseRepeatedCasesDoNotMakeDuplicateTrees() {
         // Tests the grammar `S = "a" | "a" | "a"` on input "a". The expectation is that it creates exactly one tree, not three different ones.
-        val p_a = parser(Gr.grammar("S", OrderedChoiceRule.create(List.of<Rule>(string_a(), string_a(), string_a()))))
+        val p_a = parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_a(), string_a()))))
         Assertions.assertEquals(
             List.of<ParseTree?>(PT.create("S", "a")),
             p_a.parses("a")
@@ -176,59 +176,59 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun fullParseError() {
-        val p_ab = parser(Gr.grammar("S", OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b()))))
-        Assertions.assertTrue(p_ab.parse("c").isFailure())
+        val p_ab = parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_b()))))
+        Assertions.assertTrue(p_ab.parse("c").isFailure)
     }
 
     @Test
     fun getRules() {
-        val r = OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())) as OrderedChoiceRule
-        Assertions.assertEquals(List.of<Rule>(string_a(), string_b()), r.getRules())
+        val r = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
+        Assertions.assertEquals(listOf(string_a(), string_b()), r.rules)
     }
 
     @Test
     fun withRules() {
-        val i = List.of<Rule>(string_a(), string_b())
+        val i = listOf(string_a(), string_b())
         val r = OrderedChoiceRule.create(i) as OrderedChoiceRule
 
         // Expected
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
 
-        val ni = List.of<Rule>(string_a(), StringTerm.createDirect("c", false))
+        val ni = listOf(string_a(), StringTerm.createDirect("c", false))
         val nr = r.withRules(ni)
 
         // The new rule.
-        Assertions.assertEquals(ni, nr.getRules())
+        Assertions.assertEquals(ni, nr.rules)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
     }
 
     @Test
     fun withRulesPreservesHideAndRed() {
-        val i = List.of<Rule>(string_a(), string_b())
+        val i = listOf(string_a(), string_b())
         val r = OrderedChoiceRule
             .create(i)
             .withHideTag(true)
             .withReduction(ReductionType.taggedTree(sym("A"))) as OrderedChoiceRule
 
         // As expected.
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
-        val ni = List.of<Rule>(string_a(), StringTerm.createDirect("c", false))
+        val ni = listOf(string_a(), StringTerm.createDirect("c", false))
         val nr = r.withRules(ni)
-        Assertions.assertEquals(ni, nr.getRules())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rules)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
     }
 
     @Test
     fun withHideTag() {
-        val simpleRuleForTests = OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())) as OrderedChoiceRule
+        val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
 
         // By default, not hidden in result. May create a new object, but the output must be equal to the original.
         Assertions.assertEquals(simpleRuleForTests, simpleRuleForTests.withHideTag(false))
@@ -239,10 +239,10 @@ internal class OrderedChoiceRuleTest {
         Assertions.assertEquals(simpleRuleForTests.withHideTag(true), simpleRuleForTests.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult())
+        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(simpleRuleForTests.withHideTag(false), simpleRuleForTests.includeInResult())
@@ -251,7 +251,7 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun withHideTagParse() {
-        val simpleRuleForTests = OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())) as OrderedChoiceRule
+        val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
 
         // By default, not hidden in output
         val pDefault = parser(
@@ -274,7 +274,7 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun withReduction() {
-        val simpleRuleForTests = OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())) as OrderedChoiceRule
+        val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
 
         // Default.
         Assertions.assertEquals(
@@ -295,7 +295,7 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun withReductionMergeUp() {
-        val simpleRuleForTests = OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())) as OrderedChoiceRule
+        val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
         // Merge upwards
         val pMerge = parser(
             Gr.grammarS(
@@ -309,7 +309,7 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun withReductionTaggedTree() {
-        val simpleRuleForTests = OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())) as OrderedChoiceRule
+        val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
         // Add to parse tree with potentially different name (Top-level)
         val pMerge2 = parser(
             Gr.grammarS(
@@ -333,13 +333,13 @@ internal class OrderedChoiceRuleTest {
     @Test
     fun withReductionNotDirectRhs() {
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val simpleRuleForTests = OrderedChoiceRule.create(List.of<Rule>(string_a(), string_b())) as OrderedChoiceRule
+        val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
         val pMerge4 = parser(
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.create("b", false)
                     )
@@ -357,7 +357,7 @@ internal class OrderedChoiceRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", OrderedChoiceRule.create(
-                    List.of<Rule>(
+                    listOf(
                         NonTerminal.create(sym("A")),
                         NonTerminal.create(sym("B")),
                         NonTerminal.create(sym("C")),
@@ -365,11 +365,11 @@ internal class OrderedChoiceRuleTest {
                         NonTerminal.create(sym("E"))
                     )
                 ),
-                "A", EpsilonTerm.getDefault(),
-                "B", EpsilonTerm.getDefault(),
-                "C", EpsilonTerm.getDefault(),
-                "D", EpsilonTerm.getDefault(),
-                "E", EpsilonTerm.getDefault()
+                "A", EpsilonTerm.default,
+                "B", EpsilonTerm.default,
+                "C", EpsilonTerm.default,
+                "D", EpsilonTerm.default,
+                "E", EpsilonTerm.default
             )
         )
 
@@ -391,9 +391,9 @@ internal class OrderedChoiceRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", OrderedChoiceRule.create(
-                    List.of<Rule>(
+                    listOf(
                         ConcatRule.create(
-                            List.of<Rule>(
+                            listOf(
                                 string_a(), NonTerminal.create(sym("S")), string_a()
                             )
                         ),
@@ -427,10 +427,10 @@ internal class OrderedChoiceRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", OrderedChoiceRule.create(
-                    List.of<Rule>(
+                    listOf(
                         string_a(),
                         ConcatRule.create(
-                            List.of<Rule>(
+                            listOf(
                                 NonTerminal.create(sym("S")), NonTerminal.create(sym("S"))
                             )
                         )

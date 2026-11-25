@@ -53,17 +53,17 @@ internal class Cfg private constructor(private val options: ParserCreationOption
 
         fun buildRuleRule(
             tree: ParseTree
-        ): MutableMap.MutableEntry<Sym?, Rule?> {
-            val allContents = tree.getContent()
+        ): Pair<Sym, Rule> {
+            val allContents = tree.content
             val nt = allContents.get(0).content() as ParseTree
             val altOrOrd = allContents.get(1).content() as ParseTree
-            var content = nt.getContent().get(0)
+            var content = nt.content.get(0)
 
             val key: Sym
             val rule: Rule
 
-            if (sym("hide-nt") == nt.getTag().content) {
-                content = (content.content() as ParseTree).getContent().get(0)
+            if (sym("hide-nt") == nt.tag.content) {
+                content = (content.content() as ParseTree).content.get(0)
                 key = sym(content.content().toString())
                 rule = (buildRule(altOrOrd) as Rule).mergeToTop()
             } else {
@@ -71,7 +71,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                 rule = buildRule(altOrOrd) as Rule
             }
 
-            return Map.entry<Sym?, Rule?>(key, rule)
+            return key to rule
         }
 
         private val strParser = StrParser()
@@ -80,70 +80,67 @@ internal class Cfg private constructor(private val options: ParserCreationOption
         fun buildRule(tree1: ParseTree): Any {
             var tree = tree1
             while (true) {
-                if (tree.getTag() == ParseTree.NULL_TAG) {
-                    tree = tree.getContent().get(0).content() as ParseTree
+                if (tree.tag == ParseTree.NULL_TAG) {
+                    tree = tree.content.get(0).content() as ParseTree
                     continue
                 }
 
-                val tag = tree.getTag().content.name()
+                val tag = tree.tag.content.name()
                 when (tag) {
                     "rule" -> {
                         return buildRuleRule(tree)
                     }
 
                     "ntOrEpsOrEof" -> {
-                        val name = tree.getContent().get(0).content() as String
-                        if (epsNames.contains(name)) return EpsilonTerm.getDefault()
-                        if (name == EOFTerm.text()) return EOFTerm.getDefault()
+                        val name = tree.content.get(0).content() as String
+                        if (epsNames.contains(name)) return EpsilonTerm.default
+                        if (name == EOFTerm.text()) return EOFTerm.default
                         return nt(sym(name))
                     }
 
                     "nt" -> {
-                        val name = tree.getContent().get(0).content() as String
+                        val name = tree.content.get(0).content() as String
                         return nt(sym(name))
                     }
 
                     "paren" -> {
                         // The parse tree is wrapped in hidden "(" ")".
-                        tree = tree.getContent().get(0).content() as ParseTree
+                        tree = tree.content.get(0).content() as ParseTree
                         continue  // Open up the grouping and take it to the top.
                     }
 
                     "alt" -> {
                         return alt(
                             tree
-                                .getContent()
-                                .stream()
-                                .map<Rule?> { c: Node? -> buildRule(c!!.content() as ParseTree) as Rule }
+                                .content
+                                .map { c: Node? -> buildRule(c!!.content() as ParseTree) as Rule }
                                 .toList())
                     }
 
                     "ord" -> {
                         return ordAlt(
                             tree
-                                .getContent()
-                                .stream()
-                                .map<Rule?> { c: Node? -> buildRule(c!!.content() as ParseTree) as Rule }
+                                .content
+                                .map { c: Node? -> buildRule(c!!.content() as ParseTree) as Rule }
                                 .toList())
                     }
 
                     "hide" -> {
                         return (buildRule(
-                            (tree.getContent().get(0) as NodeParseTree).content
+                            (tree.content.get(0) as NodeParseTree).content
                         ) as Rule).hideInResult()
                     }
 
                     "cat" -> {
                         return cat(
                             tree
-                                .getContent()
-                                .stream()
-                                .map<Rule?> { c: Node? -> buildRule(c!!.content() as ParseTree) as Rule }
+                                .content
+                                .map { c: Node? -> buildRule(c!!.content() as ParseTree) as Rule }
                                 .toList())
                     }
 
                     "string" -> {
-                        val s = tree.getContent().get(0).content() as String
+                        val s = tree.content.get(0).content() as String
                         if (s.startsWith("%")) {
                             val caseInsensitive = when (s.get(1)) {
                                 'i' -> true
@@ -161,7 +158,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "regexp" -> {
                         return regex(
                             strParser.processRegexp(
-                                tree.getContent().get(0).content() as String,
+                                tree.content.get(0).content() as String,
                                 2, 1
                             )
                         )
@@ -170,7 +167,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "neg" -> {
                         return neg(
                             buildRule(
-                                tree.getContent().get(0).content() as ParseTree
+                                tree.content.get(0).content() as ParseTree
                             ) as Rule
                         )
                     }
@@ -178,7 +175,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "opt" -> {
                         return opt(
                             buildRule(
-                                tree.getContent().get(0).content() as ParseTree
+                                tree.content.get(0).content() as ParseTree
                             ) as Rule
                         )
                     }
@@ -186,7 +183,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "opt_rep" -> {
                         return zeroOrMore(
                             buildRule(
-                                tree.getContent().get(0).content() as ParseTree
+                                tree.content.get(0).content() as ParseTree
                             ) as Rule
                         )
                     }
@@ -194,13 +191,13 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "look" -> {
                         return look(
                             buildRule(
-                                tree.getContent().get(0).content() as ParseTree
+                                tree.content.get(0).content() as ParseTree
                             ) as Rule
                         )
                     }
 
                     "abnf-range" -> {
-                        val content = tree.getContent()
+                        val content = tree.content
                         val parts =
                             (content.get(0).content() as String).split("-".toRegex()).dropLastWhile { it.isEmpty() }
                                 .toTypedArray()
@@ -219,19 +216,19 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     }
 
                     "epsilon" -> {
-                        return EpsilonTerm.getDefault()
+                        return EpsilonTerm.default
                     }
 
                     "exclude" -> {
-                        val rule1 = buildRule(tree.getContent().get(0).content() as ParseTree) as Rule
-                        if (tree.getContent().size == 1) return rule1
+                        val rule1 = buildRule(tree.content.get(0).content() as ParseTree) as Rule
+                        if (tree.content.size == 1) return rule1
 
-                        val rule2 = buildRule(tree.getContent().get(1).content() as ParseTree) as Rule
+                        val rule2 = buildRule(tree.content.get(1).content() as ParseTree) as Rule
                         return exclude(rule1, rule2)
                     }
 
                     "factor" -> {
-                        val ruleAndPostfixStringIter = tree.getContent().iterator()
+                        val ruleAndPostfixStringIter = tree.content.iterator()
                         var rule = buildRule(ruleAndPostfixStringIter.next()!!.content() as ParseTree) as Rule
                         while (ruleAndPostfixStringIter.hasNext()) {
                             val postfix = ruleAndPostfixStringIter.next()!!.string()
@@ -263,7 +260,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
             val rules = Gll.parse(
                 grammarGrammar,
                 sym("rules"),
-                spec, false, false, GrammarPrinter.getDefault()
+                spec, false, false, GrammarPrinter.default
             )
 
             if (rules is ParseFailure) {
@@ -272,9 +269,9 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                 )
             }
 
-            for (rule in rules.castToParseSuccess().getContent()) {
+            for (rule in rules.castToParseSuccess().content) {
                 val sc = buildRuleRule(rule.content() as ParseTree)
-                addProduction(sc.key!!, sc.value!!)
+                addProduction(sc.first, sc.second)
             }
         }
     }

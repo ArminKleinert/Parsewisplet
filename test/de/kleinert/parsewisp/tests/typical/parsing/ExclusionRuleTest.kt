@@ -9,7 +9,6 @@ import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
-import java.util.List
 import java.util.regex.Pattern
 
 internal class ExclusionRuleTest {
@@ -19,7 +18,7 @@ internal class ExclusionRuleTest {
 
     private fun keywords(): Rule {
         return AlternationRule.create(
-            List.of<Rule>(
+            listOf(
                 StringTerm.create("int", false),
                 StringTerm.create("float", false)
             )
@@ -56,7 +55,7 @@ internal class ExclusionRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         wordButNotKeyword(),
                         StringTerm.create(";", false) // Required so the exclusion calls "parse" instead of "fullParse".
                     )
@@ -74,15 +73,15 @@ internal class ExclusionRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         wordButNotKeyword(),
                         StringTerm.create(";", false) // Required so the exclusion calls "parse" instead of "fullParse".
                     )
                 )
             )
         )
-        Assertions.assertTrue(p.parse("int;").isFailure()) // Matched by exclusion
-        Assertions.assertTrue(p.parse("...;").isFailure()) // Invalid for inclusion
+        Assertions.assertTrue(p.parse("int;").isFailure) // Matched by exclusion
+        Assertions.assertTrue(p.parse("...;").isFailure) // Invalid for inclusion
     }
 
     @Test
@@ -99,7 +98,7 @@ internal class ExclusionRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         StringTerm.create(";", false),
                         wordButNotKeyword()
                     )
@@ -115,28 +114,28 @@ internal class ExclusionRuleTest {
     @Test
     fun fullParseError() {
         val p = parser(Gr.grammar("S", wordButNotKeyword()))
-        Assertions.assertTrue(p.parse("int").isFailure()) // Matched by exclusion
-        Assertions.assertTrue(p.parse("...").isFailure()) // Invalid for inclusion
+        Assertions.assertTrue(p.parse("int").isFailure) // Matched by exclusion
+        Assertions.assertTrue(p.parse("...").isFailure) // Invalid for inclusion
     }
 
     @Test
     fun getExpected() {
         val expected = word()
         val r = ExclusionRule.create(expected, keywords()) as ExclusionRule
-        Assertions.assertSame(expected, r.getExpected())
+        Assertions.assertSame(expected, r.expected)
     }
 
     @Test
     fun getExcluded() {
         val excluded = keywords()
         val r = ExclusionRule.create(word(), excluded) as ExclusionRule
-        Assertions.assertSame(excluded, r.getExcluded())
+        Assertions.assertSame(excluded, r.excluded)
     }
 
     @Test
     fun getRules() {
         val r = ExclusionRule.create(word(), keywords()) as ExclusionRule
-        Assertions.assertEquals(List.of<Rule>(word(), keywords()), r.getRules())
+        Assertions.assertEquals(listOf(word(), keywords()), r.rules)
     }
 
     @Test
@@ -144,15 +143,15 @@ internal class ExclusionRuleTest {
         val r = ExclusionRule.create(word(), keywords()) as ExclusionRule
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable { r.withRules(mutableListOf<Rule?>()) })
+            { r.withRules(listOf()) })
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable { r.withRules(List.of<Rule?>(word())) })
+            { r.withRules(listOf(word())) })
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable {
+            {
                 r.withRules(
-                    List.of<Rule?>(
+                    listOf(
                         word(), keywords(),
                         RegexTerm.create(Pattern.compile("[a-zA-Z]"))
                     )
@@ -160,9 +159,9 @@ internal class ExclusionRuleTest {
             })
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable {
+            {
                 r.withRules(
-                    List.of<Rule?>(
+                    listOf(
                         word(), keywords(),
                         RegexTerm.create(Pattern.compile("[a-zA-Z]")),
                         RegexTerm.create(Pattern.compile("[0-9]"))
@@ -173,42 +172,42 @@ internal class ExclusionRuleTest {
 
     @Test
     fun withRules() {
-        val i = List.of<Rule>(word(), keywords())
+        val i = listOf(word(), keywords())
         val r = ExclusionRule.create(word(), keywords()) as ExclusionRule
 
         // Expected
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
 
-        val ni = List.of<Rule>(word(), StringTerm.createDirect("c", false))
+        val ni = listOf(word(), StringTerm.createDirect("c", false))
         val nr = r.withRules(ni)
 
         // The new rule.
-        Assertions.assertEquals(ni, nr.getRules())
+        Assertions.assertEquals(ni, nr.rules)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
     }
 
     @Test
     fun withRulesPreservesHideAndRed() {
-        val i = List.of<Rule>(word(), keywords())
+        val i = listOf(word(), keywords())
         val r = ExclusionRule
             .create(word(), keywords())
             .withHideTag(true)
             .withReduction(ReductionType.taggedTree(sym("A"))) as ExclusionRule
 
         // Expected
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
-        val ni = List.of<Rule>(word(), StringTerm.createDirect("c", false))
+        val ni = listOf(word(), StringTerm.createDirect("c", false))
         val nr = r.withRules(ni)
-        Assertions.assertEquals(ni, nr.getRules())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rules)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
     }
 
     @Test
@@ -224,10 +223,10 @@ internal class ExclusionRuleTest {
         Assertions.assertEquals(simpleRuleForTests.withHideTag(true), simpleRuleForTests.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult())
+        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(simpleRuleForTests.withHideTag(false), simpleRuleForTests.includeInResult())
@@ -327,7 +326,7 @@ internal class ExclusionRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.create(";", false)
                     )

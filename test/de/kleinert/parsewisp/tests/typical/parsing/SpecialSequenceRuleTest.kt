@@ -39,7 +39,7 @@ internal class SpecialSequenceRuleTest {
             Function { s: String? -> if (s!!.startsWith("a")) Optional.of<String>("a") else Optional.empty<String>() }
         Assertions.assertEquals(
             f,
-            (SpecialSequenceRule.create("match \"a\"", f) as SpecialSequenceRule).getFunction()
+            (SpecialSequenceRule.create("match \"a\"", f) as SpecialSequenceRule).function
         )
     }
 
@@ -71,7 +71,7 @@ internal class SpecialSequenceRuleTest {
     @Test
     fun parseError() {
         val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a(), simple_b()))))
-        Assertions.assertTrue(p.parse("b").isFailure())
+        Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
@@ -93,7 +93,7 @@ internal class SpecialSequenceRuleTest {
     @Test
     fun fullParseError() {
         val p = parser(Gr.grammar("S", simple_a()))
-        Assertions.assertTrue(p.parse("").isFailure())
+        Assertions.assertTrue(p.parse("").isFailure)
     }
 
     @Test
@@ -107,10 +107,10 @@ internal class SpecialSequenceRuleTest {
         Assertions.assertEquals(simpleRuleForTests().withHideTag(true), simpleRuleForTests().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(simpleRuleForTests().withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(simpleRuleForTests().includeInResult().isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests().withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests().hideInResult().isHiddenInResult())
+        Assertions.assertFalse(simpleRuleForTests().withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(simpleRuleForTests().includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests().withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests().hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(simpleRuleForTests().withHideTag(false), simpleRuleForTests().includeInResult())

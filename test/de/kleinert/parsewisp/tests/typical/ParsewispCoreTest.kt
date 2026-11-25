@@ -35,7 +35,7 @@ internal class ParsewispCoreTest {
 
         Assertions.assertEquals(
             tree,
-            as_and_bs.parse(text, ParsingOptions.getDefault())
+            as_and_bs.parse(text, ParsingOptions.default)
         )
 
         Assertions.assertEquals(
@@ -64,7 +64,7 @@ internal class ParsewispCoreTest {
 
         Assertions.assertEquals(
             tree,
-            as_and_bs_regex.parse(text, ParsingOptions.getDefault())
+            as_and_bs_regex.parse(text, ParsingOptions.default)
         )
 
         Assertions.assertEquals(
@@ -106,7 +106,7 @@ internal class ParsewispCoreTest {
 
         Assertions.assertEquals(
             treeHiccup,
-            as_and_bs.parse(text, ParsingOptions.getDefault()).castToParseSuccess().toRawList()
+            as_and_bs.parse(text, ParsingOptions.default).castToParseSuccess().toRawList()
         )
     }
 
@@ -179,9 +179,9 @@ internal class ParsewispCoreTest {
             ")"
         )
 
-        Assertions.assertEquals(tree, paren_ab.parse(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(tree, paren_ab.parse(text, ParsingOptions.default))
 
-        Assertions.assertEquals(paren_ab.parse(text, ParsingOptions.getDefault()), paren_ab.parse(text))
+        Assertions.assertEquals(paren_ab.parse(text, ParsingOptions.default), paren_ab.parse(text))
     }
 
     @Test
@@ -199,9 +199,9 @@ internal class ParsewispCoreTest {
             PT.create("seq-of-A-or-B", "a", "b", "a")
         )
 
-        Assertions.assertEquals(tree, paren_ab_hide_parens.parse(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(tree, paren_ab_hide_parens.parse(text, ParsingOptions.default))
         Assertions.assertEquals(
-            paren_ab_hide_parens.parse(text, ParsingOptions.getDefault()),
+            paren_ab_hide_parens.parse(text, ParsingOptions.default),
             paren_ab_hide_parens.parse(text)
         )
     }
@@ -217,9 +217,9 @@ internal class ParsewispCoreTest {
         val text = "(aba)"
         val tree = PT.create("paren-wrapped", "a", "b", "a")
 
-        Assertions.assertEquals(tree, paren_ab_manually_flattened.parse(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(tree, paren_ab_manually_flattened.parse(text, ParsingOptions.default))
         Assertions.assertEquals(
-            paren_ab_manually_flattened.parse(text, ParsingOptions.getDefault()),
+            paren_ab_manually_flattened.parse(text, ParsingOptions.default),
             paren_ab_manually_flattened.parse(text)
         )
     }
@@ -236,9 +236,9 @@ internal class ParsewispCoreTest {
         val text = "(aba)"
         val tree = PT.create("paren-wrapped", "a", "b", "a")
 
-        Assertions.assertEquals(tree, paren_ab_hide_tag.parse(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(tree, paren_ab_hide_tag.parse(text, ParsingOptions.default))
         Assertions.assertEquals(
-            paren_ab_hide_tag.parse(text, ParsingOptions.getDefault()),
+            paren_ab_hide_tag.parse(text, ParsingOptions.default),
             paren_ab_hide_tag.parse(text)
         )
     }
@@ -262,9 +262,9 @@ internal class ParsewispCoreTest {
         // That raw output can be achieved by manual conversion:
         Assertions.assertEquals(mutableListOf<String?>("a", "b", "a"), tree.toRawList())
 
-        Assertions.assertEquals(tree, paren_ab_hide_both_tags.parse(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(tree, paren_ab_hide_both_tags.parse(text, ParsingOptions.default))
         Assertions.assertEquals(
-            paren_ab_hide_both_tags.parse(text, ParsingOptions.getDefault()),
+            paren_ab_hide_both_tags.parse(text, ParsingOptions.default),
             paren_ab_hide_both_tags.parse(text)
         )
     }
@@ -323,7 +323,7 @@ internal class ParsewispCoreTest {
         )
 
         Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text))
-        Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(treesAmbiguous, ambiguous.parses(text, ParsingOptions.default))
     }
 
     @Test
@@ -342,7 +342,7 @@ internal class ParsewispCoreTest {
         )
 
         Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text))
-        Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(treesUnambiguous, not_ambiguous.parses(text, ParsingOptions.default))
     }
 
     @Test
@@ -356,7 +356,7 @@ internal class ParsewispCoreTest {
         val text = "abaaaab"
         val tree = PT.create("S", "a", "b", "a", "a", "a", "a", "b")
         Assertions.assertEquals(tree, lookahead_example.parse(text))
-        Assertions.assertEquals(tree, lookahead_example.parse(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(tree, lookahead_example.parse(text, ParsingOptions.default))
     }
 
     @Test
@@ -369,8 +369,8 @@ internal class ParsewispCoreTest {
         )
         val text = "bbaaaab"
 
-        Assertions.assertFalse(lookahead_example.parse(text).isSuccess())
-        Assertions.assertTrue(lookahead_example.parse(text).isFailure())
+        Assertions.assertFalse(lookahead_example.parse(text).isSuccess)
+        Assertions.assertTrue(lookahead_example.parse(text).isFailure)
     }
 
     @Test
@@ -397,8 +397,8 @@ internal class ParsewispCoreTest {
         )
         val text = "abaaaab"
 
-        Assertions.assertFalse(negative_lookahead_example.parse(text).isSuccess())
-        Assertions.assertTrue(negative_lookahead_example.parse(text).isFailure())
+        Assertions.assertFalse(negative_lookahead_example.parse(text).isSuccess)
+        Assertions.assertTrue(negative_lookahead_example.parse(text).isFailure)
     }
 
     @Test
@@ -472,7 +472,7 @@ internal class ParsewispCoreTest {
             )
         )
         val parses =
-            setOf(*ambiguous_tokenizer.parses(text, ParsingOptions.getDefault()).toTypedArray())
+            setOf(*ambiguous_tokenizer.parses(text, ParsingOptions.default).toTypedArray())
         Assertions.assertEquals(trees, parses)
     }
 
@@ -498,7 +498,7 @@ internal class ParsewispCoreTest {
             )
         )
 
-        Assertions.assertEquals(trees, unambiguous_tokenizer.parses(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(trees, unambiguous_tokenizer.parses(text, ParsingOptions.default))
     }
 
     @Test
@@ -544,7 +544,7 @@ internal class ParsewispCoreTest {
             )
         )
         val parses =
-            setOf(*preferential_tokenizer.parses(text, ParsingOptions.getDefault()).toTypedArray())
+            setOf(*preferential_tokenizer.parses(text, ParsingOptions.default).toTypedArray())
         Assertions.assertEquals(trees, parses)
     }
 
@@ -562,9 +562,9 @@ internal class ParsewispCoreTest {
             PT.create("S", "a", "a", "a", "a", "a", "a")
         )
 
-        Assertions.assertEquals(trees, repeated_a.parses(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(trees, repeated_a.parses(text, ParsingOptions.default))
 
-        val partialOpts = ParsingOptions.getDefault().withPartial(true)
+        val partialOpts = ParsingOptions.default.withPartial(true)
         val treesPartial = listOf<ParseTree?>(
             PT.create("S", "a"),
             PT.create("S", "a", "a"),
@@ -601,7 +601,7 @@ internal class ParsewispCoreTest {
 
         Assertions.assertEquals(
             tree,
-            words_and_numbers_one_character_at_a_time.parse(text, ParsingOptions.getDefault())
+            words_and_numbers_one_character_at_a_time.parse(text, ParsingOptions.default)
         )
     }
 
@@ -647,7 +647,7 @@ internal class ParsewispCoreTest {
             )
         )
 
-        Assertions.assertEquals(tree, arithmetic.parse(text, ParsingOptions.getDefault()))
+        Assertions.assertEquals(tree, arithmetic.parse(text, ParsingOptions.default))
     }
 
     @Test
@@ -659,15 +659,15 @@ internal class ParsewispCoreTest {
                         B = 'b' '='
                         
                         """.trimIndent(),
-            ParserCreationOptions.getDefault().withStartProduction(sym("S"))
+            ParserCreationOptions.default.withStartProduction(sym("S"))
         )
         val text1 = "==="
         val text2 = "b="
         val tree1 = PT.create("S", "=", "=", "=")
         val tree2 = PT.create("S", PT.create("B", "b", "="))
 
-        Assertions.assertEquals(tree1, tricky_ebnf_build.parse(text1, ParsingOptions.getDefault()))
-        Assertions.assertEquals(tree2, tricky_ebnf_build.parse(text2, ParsingOptions.getDefault()))
+        Assertions.assertEquals(tree1, tricky_ebnf_build.parse(text1, ParsingOptions.default))
+        Assertions.assertEquals(tree2, tricky_ebnf_build.parse(text2, ParsingOptions.default))
     }
 
     @Test
@@ -739,15 +739,15 @@ internal class ParsewispCoreTest {
         Assertions.assertEquals(treeNormal, p.parse(text))
         Assertions.assertEquals(
             treeWParen,
-            p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.CONTENT))
+            p.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.CONTENT))
         )
         Assertions.assertEquals(
             treeWParen,
-            p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL))
+            p.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.ALL))
         )
         Assertions.assertEquals(
             treeNormal,
-            p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS))
+            p.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.TAGS))
         )
     }
 
@@ -780,18 +780,18 @@ internal class ParsewispCoreTest {
 
         Assertions.assertEquals(
             treeWTag,
-            p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.TAGS))
+            p.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.TAGS))
         )
 
         Assertions.assertEquals(
             treeWAll,
-            p.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL))
+            p.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.ALL))
         )
     }
 
     @Test
     fun testEpsEquivalence() {
-        val opts = ParserCreationOptions.getDefault()
+        val opts = ParserCreationOptions.default
         Assertions.assertEquals(
             PT.create("S"),
             parser("S = eps", opts).parse("")
@@ -816,31 +816,31 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testEpsFail() {
-        val opts = ParserCreationOptions.getDefault()
+        val opts = ParserCreationOptions.default
         Assertions.assertTrue(
             parser("S = eps", opts)
                 .parse("a")
-                .isFailure()
+                .isFailure
         )
         Assertions.assertTrue(
             parser("S = epsilon", opts)
                 .parse("a")
-                .isFailure()
+                .isFailure
         )
         Assertions.assertTrue(
             parser("S = Epsilon", opts)
                 .parse("a")
-                .isFailure()
+                .isFailure
         )
         Assertions.assertTrue(
             parser("S = EPSILON", opts)
                 .parse("a")
-                .isFailure()
+                .isFailure
         )
         Assertions.assertTrue(
             parser("S = ε", opts)
                 .parse("a")
-                .isFailure()
+                .isFailure
         )
     }
 
@@ -875,7 +875,7 @@ internal class ParsewispCoreTest {
 
         Assertions.assertEquals(
             treeFull,
-            words_and_numbers.parse(text, ParsingOptions.getDefault().withUnhide(UnhideOptions.ALL))
+            words_and_numbers.parse(text, ParsingOptions.default.withUnhide(UnhideOptions.ALL))
         )
     }
 
@@ -889,7 +889,7 @@ internal class ParsewispCoreTest {
                         number = #'[0-9]+'
                         
                         """.trimIndent(),
-            ParserCreationOptions.getDefault().withWhitespaceParser(parser("whitespace = #'\\s+'"))
+            ParserCreationOptions.default.withWhitespaceParser(parser("whitespace = #'\\s+'"))
         )
         val p2 = parser(
             """
@@ -899,7 +899,7 @@ internal class ParsewispCoreTest {
                         number = #'[0-9]+'
                         
                         """.trimIndent(),
-            ParserCreationOptions.getDefault().withWhitespaceParser(
+            ParserCreationOptions.default.withWhitespaceParser(
                 getPredefinedWhitespaceParser("standard")
             )
         )
@@ -927,7 +927,7 @@ internal class ParsewispCoreTest {
                         inside-comment =  !'*)' !'(*' #'.' | comment
                         
                         """.trimIndent(),
-            ParserCreationOptions.getDefault().withWhitespaceParser(parser("whitespace = #'\\s+'"))
+            ParserCreationOptions.default.withWhitespaceParser(parser("whitespace = #'\\s+'"))
         )
         val words_and_numbers_auto_whitespace_and_comments = parser(
             """
@@ -937,7 +937,7 @@ internal class ParsewispCoreTest {
                         number = #'[0-9]+'
                         
                         """.trimIndent(),
-            ParserCreationOptions.getDefault().withWhitespaceParser(ws)
+            ParserCreationOptions.default.withWhitespaceParser(ws)
         )
         val tree = PT.create(
             "sentence",
@@ -962,7 +962,7 @@ internal class ParsewispCoreTest {
     fun testEatA() {
         val p = parser(
             "Aeater = #'[a]'+",
-            ParserCreationOptions.getDefault()
+            ParserCreationOptions.default
         )
         val tree = PT.create(
             "Aeater",
@@ -972,7 +972,7 @@ internal class ParsewispCoreTest {
 
         val text = "aaaaaaaabbbbbb"
 
-        Assertions.assertEquals(tree, p.parse(text, ParsingOptions.getDefault().withEmbedFailureInParseTree(true)))
+        Assertions.assertEquals(tree, p.parse(text, ParsingOptions.default.withEmbedFailureInParseTree(true)))
     }
 
     @Test
@@ -986,7 +986,7 @@ internal class ParsewispCoreTest {
                         Input = ConstExpr <ws> ConstExpr;
                         
                         """.trimIndent(),
-            ParserCreationOptions.getDefault().withStartProduction(sym("Input"))
+            ParserCreationOptions.default.withStartProduction(sym("Input"))
         )
         val tree = PT.create(
             "Input",
@@ -1027,14 +1027,14 @@ internal class ParsewispCoreTest {
     fun testStarRepetitionFailures() {
         val p = parser("S = 'a'*")
 
-        Assertions.assertTrue(p.parse("AaaAaa").isFailure())
-        Assertions.assertTrue(p.parse("").isSuccess())
+        Assertions.assertTrue(p.parse("AaaAaa").isFailure)
+        Assertions.assertTrue(p.parse("").isSuccess)
     }
 
     @Test
     fun testStarRepetitionFailuresTotal() {
         val p = parser("S = 'a'*")
-        val opts = ParsingOptions.getDefault().withEmbedFailureInParseTree(true)
+        val opts = ParsingOptions.default.withEmbedFailureInParseTree(true)
 
         Assertions.assertEquals(
             PT.create(
@@ -1048,21 +1048,21 @@ internal class ParsewispCoreTest {
             p.parse("AaaAaa", opts)
         )
 
-        Assertions.assertTrue(p.parse("", opts).isSuccess())
+        Assertions.assertTrue(p.parse("", opts).isSuccess)
     }
 
     @Test
     fun testPlusRepetitionFailures() {
         val p = parser("S = 'a'+")
 
-        Assertions.assertTrue(p.parse("AaaAaa").isFailure())
-        Assertions.assertTrue(p.parse("").isFailure())
+        Assertions.assertTrue(p.parse("AaaAaa").isFailure)
+        Assertions.assertTrue(p.parse("").isFailure)
     }
 
     @Test
     fun testPlusRepetitionFailuresTotal() {
         val p = parser("S = 'a'+")
-        val opts = ParsingOptions.getDefault().withEmbedFailureInParseTree(true)
+        val opts = ParsingOptions.default.withEmbedFailureInParseTree(true)
 
         Assertions.assertEquals(
             PT.create(
@@ -1094,7 +1094,7 @@ internal class ParsewispCoreTest {
         val text = "AaaAaa"
 
         val pStandard1 = parser("S = %s'a'+")
-        Assertions.assertTrue(pStandard1.parse(text).isFailure())
+        Assertions.assertTrue(pStandard1.parse(text).isFailure)
 
         val tree = PT.create("S", "a", "a", "a", "a", "a", "a")
         val pCaseInsensitive = parser("S = %i'a'+")
@@ -1110,7 +1110,7 @@ internal class ParsewispCoreTest {
                         <B> = #'\d+'
                         
                         """.trimIndent(),
-            ParserCreationOptions.getDefault().withWhitespaceParser(parser("whitespace = #'\\s+'"))
+            ParserCreationOptions.default.withWhitespaceParser(parser("whitespace = #'\\s+'"))
         )
         val tree = PT.create("S", "foo", "123")
         val text = "foo 123"
@@ -1127,7 +1127,7 @@ internal class ParsewispCoreTest {
                         <B> = #'\d+'
                         
                         """.trimIndent(),
-            ParserCreationOptions.getDefault().withWhitespaceParser(
+            ParserCreationOptions.default.withWhitespaceParser(
                 getPredefinedWhitespaceParser("standard")
             )
         )
@@ -1140,13 +1140,13 @@ internal class ParsewispCoreTest {
     @Test
     fun testRegexFail() {
         Assertions.assertTrue(
-            parser("f = #'asdf'").parse("asdf").isSuccess()
+            parser("f = #'asdf'").parse("asdf").isSuccess
         )
         Assertions.assertTrue(
-            parser("f = #'asdf'").parse("").isFailure()
+            parser("f = #'asdf'").parse("").isFailure
         )
         Assertions.assertFalse(
-            parser("f = #'asdf'").parse("").isSuccess()
+            parser("f = #'asdf'").parse("").isSuccess
         )
     }
 
@@ -1174,9 +1174,9 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testOptionFailureIfEmpty() {
-        val opts = ParsingOptions.getDefault().withFailureIfEmpty(true)
+        val opts = ParsingOptions.default.withFailureIfEmpty(true)
         val p = parser("S = 'a'")
         Assertions.assertTrue(p.parses("b").isEmpty())
-        Assertions.assertFalse(p.parses("b", opts).isSuccess())
+        Assertions.assertFalse(p.parses("b", opts).isSuccess)
     }
 }

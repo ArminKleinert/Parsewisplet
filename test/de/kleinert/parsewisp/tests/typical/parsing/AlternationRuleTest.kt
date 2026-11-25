@@ -9,8 +9,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
-import java.util.Set
 
 internal class AlternationRuleTest {
     private fun string_a(): Rule {
@@ -24,8 +22,8 @@ internal class AlternationRuleTest {
     @Test
     fun create() {
         Assertions.assertEquals(
-            AlternationRule.create(List.of<Rule>(string_a(), string_b())),
-            AlternationRule.create(List.of<Rule>(string_a(), string_b()))
+            AlternationRule.create(listOf(string_a(), string_b())),
+            AlternationRule.create(listOf(string_a(), string_b()))
         )
     }
 
@@ -38,7 +36,7 @@ internal class AlternationRuleTest {
         )
 
         Assertions.assertEquals(
-            parser(Gr.grammar("S", EpsilonTerm.getDefault())).parse(""),
+            parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
             parser(Gr.grammar("S", AlternationRule.create(mutableListOf<Rule>()))).parse("")
         )
     }
@@ -48,20 +46,20 @@ internal class AlternationRuleTest {
         // create(...) called with only one element in the input list, it may return only that one element.
         // This behavior is not mandatory.
         Assertions.assertEquals(
-            AlternationRule.create(List.of<Rule>(string_a())),
-            AlternationRule.create(List.of<Rule>(string_a()))
+            AlternationRule.create(listOf(string_a())),
+            AlternationRule.create(listOf(string_a()))
         )
 
         Assertions.assertEquals(
             parser(Gr.grammar("S", string_a())).parse("a"),
-            parser(Gr.grammar("S", AlternationRule.create(List.of<Rule>(string_a())))).parse("a")
+            parser(Gr.grammar("S", AlternationRule.create(listOf(string_a())))).parse("a")
         )
     }
 
     @Test
     fun createManySimilar() {
         // If an element in the input is repeated, create(...) can (and should) make the inputs distinct.
-        val l = List.of<Rule?>(
+        val l = listOf<Rule>(
             string_a(),
             string_b(),
             string_a(),
@@ -71,7 +69,7 @@ internal class AlternationRuleTest {
             string_a(),
             string_b()
         )
-        val lDistinct = l.stream().distinct().toList()
+        val lDistinct = l.distinct()
         Assertions.assertTrue(
             AlternationRule.altUnsafe(lDistinct) == AlternationRule.create(l)
                     || AlternationRule.create(lDistinct) == AlternationRule.create(l)
@@ -86,12 +84,12 @@ internal class AlternationRuleTest {
     @Test
     fun altUnsafe() {
         Assertions.assertEquals(
-            AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a(), string_a())),
-            AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a(), string_a()))
+            AlternationRule.altUnsafe(listOf(string_a(), string_a(), string_a())),
+            AlternationRule.altUnsafe(listOf(string_a(), string_a(), string_a()))
         )
         Assertions.assertEquals(
-            AlternationRule.create(List.of<Rule>(string_a(), string_b())),
-            AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_b()))
+            AlternationRule.create(listOf(string_a(), string_b())),
+            AlternationRule.altUnsafe(listOf(string_a(), string_b()))
         )
 
         Assertions.assertEquals(
@@ -100,38 +98,38 @@ internal class AlternationRuleTest {
         )
 
         Assertions.assertEquals(
-            AlternationRule.altUnsafe(List.of<Rule>(EpsilonTerm.getDefault(), EpsilonTerm.getDefault())),
-            AlternationRule.altUnsafe(List.of<Rule>(EpsilonTerm.getDefault(), EpsilonTerm.getDefault()))
+            AlternationRule.altUnsafe(listOf(EpsilonTerm.default, EpsilonTerm.default)),
+            AlternationRule.altUnsafe(listOf(EpsilonTerm.default, EpsilonTerm.default))
         )
         Assertions.assertNotEquals(
-            AlternationRule.altUnsafe(List.of<Rule>(EpsilonTerm.getDefault())),
-            AlternationRule.altUnsafe(List.of<Rule>(EpsilonTerm.getDefault(), EpsilonTerm.getDefault()))
+            AlternationRule.altUnsafe(listOf(EpsilonTerm.default)),
+            AlternationRule.altUnsafe(listOf(EpsilonTerm.default, EpsilonTerm.default))
         )
         Assertions.assertEquals(
             2,
-            AlternationRule.altUnsafe(List.of<Rule>(EpsilonTerm.getDefault(), EpsilonTerm.getDefault())).getRules().size
+            AlternationRule.altUnsafe(listOf(EpsilonTerm.default, EpsilonTerm.default)).rules.size
         )
 
-        val flat = AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a(), string_a(), string_a()))
+        val flat = AlternationRule.altUnsafe(listOf(string_a(), string_a(), string_a(), string_a()))
         val nest1 = AlternationRule.altUnsafe(
-            List.of<Rule>(
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a())),
+            listOf(
+                AlternationRule.altUnsafe(listOf(string_a(), string_a())),
                 string_a(),
                 string_a()
             )
         )
         val nest2 = AlternationRule.altUnsafe(
-            List.of<Rule>(
+            listOf(
                 string_a(),
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a())),
+                AlternationRule.altUnsafe(listOf(string_a(), string_a())),
                 string_a()
             )
         )
         val nest3 = AlternationRule.altUnsafe(
-            List.of<Rule>(
+            listOf(
                 string_a(),
                 string_a(),
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a()))
+                AlternationRule.altUnsafe(listOf(string_a(), string_a()))
             )
         )
         Assertions.assertNotEquals(flat, nest1)
@@ -145,8 +143,8 @@ internal class AlternationRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
-                        AlternationRule.create(List.of<Rule>(string_a(), string_b())),
+                    listOf(
+                        AlternationRule.create(listOf(string_a(), string_b())),
                         string_a()
                     )
                 )
@@ -163,9 +161,9 @@ internal class AlternationRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         AlternationRule.create(
-                            List.of<Rule>(
+                            listOf(
                                 string_a(),
                                 string_a(),
                                 string_a()
@@ -176,7 +174,7 @@ internal class AlternationRuleTest {
             )
         )
         Assertions.assertEquals(
-            List.of<ParseTree?>(PT.create("S", "a", "a")),
+            listOf<ParseTree?>(PT.create("S", "a", "a")),
             p_a.parses("aa")
         )
     }
@@ -187,19 +185,19 @@ internal class AlternationRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
-                        AlternationRule.create(List.of<Rule>(string_a(), string_b())),
+                    listOf(
+                        AlternationRule.create(listOf(string_a(), string_b())),
                         string_a()
                     )
                 )
             )
         )
-        Assertions.assertTrue(p_ab.parse("ca").isFailure())
+        Assertions.assertTrue(p_ab.parse("ca").isFailure)
     }
 
     @Test
     fun fullParseSingle() {
-        val p_ab = parser(Gr.grammar("S", AlternationRule.create(List.of<Rule>(string_a(), string_b()))))
+        val p_ab = parser(Gr.grammar("S", AlternationRule.create(listOf(string_a(), string_b()))))
         Assertions.assertEquals(PT.create("S", "a"), p_ab.parse("a"))
         Assertions.assertEquals(PT.create("S", "b"), p_ab.parse("b"))
     }
@@ -210,9 +208,9 @@ internal class AlternationRuleTest {
             Gr.grammar(
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         string_a(),
-                        AlternationRule.create(List.of<Rule>(string_a(), string_b()))
+                        AlternationRule.create(listOf(string_a(), string_b()))
                     )
                 )
             )
@@ -224,111 +222,111 @@ internal class AlternationRuleTest {
     @Test
     fun fullParseRepeatedCasesDoNotMakeDuplicateTrees() {
         // Tests the grammar `S = "a" | "a" | "a"` on input "a". The expectation is that it creates exactly one tree, not three different ones.
-        val p_a = parser(Gr.grammar("S", AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a(), string_a()))))
+        val p_a = parser(Gr.grammar("S", AlternationRule.altUnsafe(listOf(string_a(), string_a(), string_a()))))
         Assertions.assertEquals(
-            List.of<ParseTree?>(PT.create("S", "a")),
+            listOf<ParseTree?>(PT.create("S", "a")),
             p_a.parses("a")
         )
     }
 
     @Test
     fun fullParseError() {
-        val p_ab = parser(Gr.grammar("S", AlternationRule.create(List.of<Rule>(string_a(), string_b()))))
-        Assertions.assertTrue(p_ab.parse("c").isFailure())
+        val p_ab = parser(Gr.grammar("S", AlternationRule.create(listOf(string_a(), string_b()))))
+        Assertions.assertTrue(p_ab.parse("c").isFailure)
     }
 
     @Test
     fun getRules() {
-        val flat = AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a(), string_a(), string_a()))
+        val flat = AlternationRule.altUnsafe(listOf(string_a(), string_a(), string_a(), string_a()))
         val nest1 = AlternationRule.altUnsafe(
-            List.of<Rule>(
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a())),
+            listOf(
+                AlternationRule.altUnsafe(listOf(string_a(), string_a())),
                 string_a(),
                 string_a()
             )
         )
         val nest2 = AlternationRule.altUnsafe(
-            List.of<Rule>(
+            listOf(
                 string_a(),
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a())),
+                AlternationRule.altUnsafe(listOf(string_a(), string_a())),
                 string_a()
             )
         )
         val nest3 = AlternationRule.altUnsafe(
-            List.of<Rule>(
+            listOf(
                 string_a(),
                 string_a(),
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a()))
+                AlternationRule.altUnsafe(listOf(string_a(), string_a()))
             )
         )
 
-        Assertions.assertEquals(List.of<Rule?>(string_a(), string_a(), string_a(), string_a()), flat.getRules())
+        Assertions.assertEquals(listOf<Rule?>(string_a(), string_a(), string_a(), string_a()), flat.rules)
         Assertions.assertEquals(
-            List.of<Rule?>(
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a())),
+            listOf<Rule?>(
+                AlternationRule.altUnsafe(listOf(string_a(), string_a())),
                 string_a(),
                 string_a()
-            ), nest1.getRules()
+            ), nest1.rules
         )
         Assertions.assertEquals(
-            List.of<Rule?>(
+            listOf<Rule?>(
                 string_a(),
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a())),
+                AlternationRule.altUnsafe(listOf(string_a(), string_a())),
                 string_a()
-            ), nest2.getRules()
+            ), nest2.rules
         )
         Assertions.assertEquals(
-            List.of<Rule?>(
+            listOf<Rule?>(
                 string_a(),
                 string_a(),
-                AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_a()))
-            ), nest3.getRules()
+                AlternationRule.altUnsafe(listOf(string_a(), string_a()))
+            ), nest3.rules
         )
     }
 
     @Test
     fun withRules() {
-        val i = List.of<Rule>(string_a(), string_b())
+        val i = listOf(string_a(), string_b())
         val r = AlternationRule.altUnsafe(i)
 
         // Expected
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
 
-        val ni = List.of<Rule>(string_a(), StringTerm.createDirect("c", false))
+        val ni = listOf(string_a(), StringTerm.createDirect("c", false))
         val nr = r.withRules(ni)
 
         // The new rule.
-        Assertions.assertEquals(ni, nr.getRules())
+        Assertions.assertEquals(ni, nr.rules)
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
     }
 
     @Test
     fun withRulesPreservesHideAndRed() {
-        val i = List.of<Rule>(string_a(), string_b())
+        val i = listOf(string_a(), string_b())
         val r = AlternationRule
             .altUnsafe(i)
             .withHideTag(true)
             .withReduction(ReductionType.taggedTree(sym("A")))
 
         // Expected
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
-        val ni = List.of<Rule>(string_a(), StringTerm.createDirect("c", false))
+        val ni = listOf(string_a(), StringTerm.createDirect("c", false))
         val nr = r.withRules(ni)
-        Assertions.assertEquals(ni, nr.getRules())
-        Assertions.assertEquals(r.isHiddenInResult(), nr.isHiddenInResult())
-        Assertions.assertEquals(r.getReduction(), nr.getReduction())
+        Assertions.assertEquals(ni, nr.rules)
+        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
+        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
 
         // Original left untouched.
-        Assertions.assertEquals(i, r.getRules())
+        Assertions.assertEquals(i, r.rules)
     }
 
     @Test
     fun withHideTag() {
-        val simpleRuleForTests = AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_b()))
+        val simpleRuleForTests = AlternationRule.altUnsafe(listOf(string_a(), string_b()))
 
         // By default, not hidden in result. May create a new object, but the output must be equal to the original.
         Assertions.assertEquals(simpleRuleForTests, simpleRuleForTests.withHideTag(false))
@@ -339,10 +337,10 @@ internal class AlternationRuleTest {
         Assertions.assertEquals(simpleRuleForTests.withHideTag(true), simpleRuleForTests.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult())
-        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult())
-        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult())
+        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult1())
+        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult1())
+        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult1())
 
         // Alternative names give equivalent output
         Assertions.assertEquals(simpleRuleForTests.withHideTag(false), simpleRuleForTests.includeInResult())
@@ -369,7 +367,7 @@ internal class AlternationRuleTest {
 
     @Test
     fun withReduction() {
-        val simpleRuleForTests = AlternationRule.altUnsafe(List.of<Rule>(string_a(), string_b()))
+        val simpleRuleForTests = AlternationRule.altUnsafe(listOf(string_a(), string_b()))
 
         // Default.
         Assertions.assertEquals(
@@ -422,7 +420,7 @@ internal class AlternationRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.create("b", false)
                     )
@@ -441,7 +439,7 @@ internal class AlternationRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", AlternationRule.altUnsafe(
-                    List.of<Rule>(
+                    listOf(
                         NonTerminal.create(sym("A")),
                         NonTerminal.create(sym("B")),
                         NonTerminal.create(sym("C")),
@@ -449,16 +447,16 @@ internal class AlternationRuleTest {
                         NonTerminal.create(sym("E"))
                     )
                 ),
-                "A", EpsilonTerm.getDefault(),
-                "B", EpsilonTerm.getDefault(),
-                "C", EpsilonTerm.getDefault(),
-                "D", EpsilonTerm.getDefault(),
-                "E", EpsilonTerm.getDefault()
+                "A", EpsilonTerm.default,
+                "B", EpsilonTerm.default,
+                "C", EpsilonTerm.default,
+                "D", EpsilonTerm.default,
+                "E", EpsilonTerm.default
             )
         )
 
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf<ParseTree?>(
                 PT.create("S", PT.create("A")),
                 PT.create("S", PT.create("B")),
                 PT.create("S", PT.create("C")),
@@ -475,9 +473,9 @@ internal class AlternationRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", AlternationRule.altUnsafe(
-                    List.of<Rule>(
+                    listOf(
                         ConcatRule.create(
-                            List.of<Rule>(
+                            listOf(
                                 string_a(), NonTerminal.create(sym("S")), string_a()
                             )
                         ),
@@ -488,7 +486,7 @@ internal class AlternationRuleTest {
         )
 
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf<ParseTree?>(
                 PT.create(
                     "S",
                     "a",
@@ -511,10 +509,10 @@ internal class AlternationRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", AlternationRule.altUnsafe(
-                    List.of<Rule>(
+                    listOf(
                         string_a(),
                         ConcatRule.create(
-                            List.of<Rule>(
+                            listOf(
                                 NonTerminal.create(sym("S")), NonTerminal.create(sym("S"))
                             )
                         )
@@ -525,7 +523,7 @@ internal class AlternationRuleTest {
 
         // Results for parsing "aaa"
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf<ParseTree?>(
                 PT.create(
                     "S",
                     PT.create("S", "a"),
@@ -550,7 +548,7 @@ internal class AlternationRuleTest {
 
         // Results for parsing "aaaaa" (5x "a")
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf<ParseTree?>(
                 PT.create(
                     "S",
                     PT.create("S", "a"),

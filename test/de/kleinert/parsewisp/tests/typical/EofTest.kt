@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class EofTest {
     @Test
     fun basicTest1() {
-        val opts = ParserCreationOptions.getDefault()
+        val opts = ParserCreationOptions.default
 
         Assertions.assertEquals(
             PT.create("S"),

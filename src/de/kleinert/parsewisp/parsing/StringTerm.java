@@ -1,0 +1,127 @@
+package de.kleinert.parsewisp.parsing;
+
+import de.kleinert.parsewisp.reduction.ReductionType;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
+
+/**
+ * Represents string terminals (both case-sensitive or case-insensitive).<br/>
+ * Syntax: can be written with double quotes or single quotes, so {@code "..."} and {@code '...'} are equivalent.
+ *
+ * @since 0.9.7
+ */
+public final class StringTerm extends Terminal {
+    private final @NotNull String string;
+    private final boolean caseInsensitive;
+
+    private StringTerm(final boolean hide,
+                       final @NotNull ReductionType red,
+                       final @NotNull String string,
+                       final boolean caseInsensitive) {
+        super(hide, red);
+        this.string = string;
+        this.caseInsensitive = caseInsensitive;
+    }
+
+    /**
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
+     * The implementation is allowed to create other types of rules, like {@link RegexTerm} or {@link EpsilonTerm}.
+     *
+     * @param string          The string to match.
+     * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    public static @NotNull Rule create(final @NotNull String string, final boolean caseInsensitive) {
+        if (string.isEmpty()) {
+            return EpsilonTerm.getDefault();
+        }
+        return new StringTerm(defaultHidden, defaultReductionType, string, caseInsensitive);
+    }
+
+    /**
+     * Create a new instance. Depending on the implementation, allows for buffering.
+     * Unlike {@link #create(String, boolean)}, the output must be a {@link StringTerm} and can not be replaced by other types.
+     *
+     * @param string          The string to match.
+     * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    public static @NotNull StringTerm createDirect(final @NotNull String string, final boolean caseInsensitive) {
+        return new StringTerm(defaultHidden, defaultReductionType, string, caseInsensitive);
+    }
+
+    @Override
+    public void parse(final int index, final @NotNull Gll runner) {
+        final @NotNull var text = runner.tramp().getText();
+        final var end = Integer.min(text.length(), index + getString().length());
+        final @NotNull var head = text.substring(index, end);
+
+        final @NotNull var nodeKey = makeKey(index, this);
+        if (caseInsensitive ? getString().equalsIgnoreCase(head) : getString().equals(head)) {
+            runner.pushSuccessMessage(nodeKey, getString(), end);
+        } else {
+            runner.fail(nodeKey, index, this, false);
+        }
+    }
+
+    @Override
+    public void fullParse(final int index, final @NotNull Gll runner) {
+        final @NotNull var text = runner.tramp().getText();
+        final var end = Integer.min(text.length(), getString().length() + index);
+        final @NotNull var head = text.substring(index, end);
+        final @NotNull var nodeKey = makeKey(index, this);
+        if (text.length() == end && (caseInsensitive ? getString().equalsIgnoreCase(head) : getString().equals(head))) {
+            runner.pushSuccessMessage(nodeKey, getString(), end);
+        } else {
+            runner.fail(nodeKey, index, this, true);
+        }
+    }
+
+    /**
+     * Returns the string.
+     *
+     * @return The string.
+     * @since 0.9.7
+     */
+    public @NotNull String getString() {
+        return string;
+    }
+
+    /**
+     * True if the casing doesn't matter, false if it does matter.
+     *
+     * @return True if the casing doesn't matter, false if it does matter.
+     * @since 0.9.7
+     */
+    public boolean isCaseInsensitive() {
+        return caseInsensitive;
+    }
+
+    @Override
+    public @NotNull StringTerm withHideTag(final boolean hide) {
+        return isHiddenInResult() == hide ? this : new StringTerm(hide, red, string, caseInsensitive);
+    }
+
+    @Override
+    public @NotNull StringTerm withReduction(final @NotNull ReductionType red) {
+        return getReduction() == red ? this : new StringTerm(hide, red, string, caseInsensitive);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof StringTerm that)) return false;
+        if (this == that) return true;
+        return hide == that.hide
+                && Objects.equals(red, that.red)
+                && Objects.equals(string, that.getString())
+                && (string.isEmpty() || caseInsensitive == that.caseInsensitive);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(hide, red, string, caseInsensitive);
+    }
+}

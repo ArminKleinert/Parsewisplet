@@ -1,0 +1,45 @@
+package de.kleinert.parsewisp.tests.typical
+
+import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.parser_options.ParserCreationOptions
+import de.kleinert.parsewisp.parsing.EOFTerm
+import de.kleinert.parsewisp.testutil.PT
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+
+internal class EofTest {
+    @Test
+    fun basicTest1() {
+        val opts = ParserCreationOptions.getDefault()
+
+        Assertions.assertEquals(
+            PT.create("S"),
+            parser("S = " + EOFTerm.text(), opts).parse("")
+        )
+
+        Assertions.assertEquals(
+            PT.create("S"),
+            parser("S = <' '>" + EOFTerm.text(), opts).parse(" ")
+        )
+
+        Assertions.assertEquals(
+            PT.create("S", "a"),
+            parser("S = 'a' " + EOFTerm.text(), opts).parse("a")
+        )
+    }
+
+    @Test
+    fun eofInParserWithWhitespace() {
+        val opts = ParserCreationOptions.newWithStandardWhitespace()
+
+        Assertions.assertEquals(
+            PT.create("S"),
+            parser("S = " + EOFTerm.text(), opts).parse("")
+        )
+
+        Assertions.assertEquals(
+            PT.create("S"),
+            parser("S = " + EOFTerm.text(), opts).parse(" ")
+        )
+    }
+}

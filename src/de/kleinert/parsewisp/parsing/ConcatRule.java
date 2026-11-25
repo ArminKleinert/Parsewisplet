@@ -1,0 +1,143 @@
+package de.kleinert.parsewisp.parsing;
+
+import de.kleinert.parsewisp.collections.FlatResultSeq;
+import de.kleinert.parsewisp.functions.Listener;
+import de.kleinert.parsewisp.reduction.ReductionType;
+import de.kleinert.parsewisp.trampoline.ListenerKey;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * This class represents a concatenation of productions, written as {@code p1 p2 p3 ...} (where p1, p2, etc. are instances of {@link Rule}).
+ * When parsing, it tries to match p1, then p2, then p3 and so on.
+ *
+ * @since 0.9.7
+ */
+public final class ConcatRule extends RuleWithManyChildren {
+    private ConcatRule(final boolean hide,
+                       final @NotNull ReductionType red,
+                       final @NotNull List<Rule> parsers) {
+        super(hide, red, parsers);
+    }
+
+    /**
+     * Create a new instance. Depending on the implementation, allows for buffering or create a different type of rule.
+     *
+     * @param rules The wrapped rules.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    public static @NotNull Rule create(final @NotNull List<Rule> rules) {
+        if (rules.isEmpty())
+            return EpsilonTerm.getDefault();
+        if (rules.size() == 1)
+            return rules.get(0);
+
+        var compressedResult = new ArrayList<Rule>();
+
+        for (@NotNull Rule rule : rules) {
+            if (rule instanceof ConcatRule cc && !cc.isHiddenInResult() && cc.red.equals(defaultReductionType)) {
+                compressedResult.addAll(cc.getRules());
+            } else {
+                compressedResult.add(rule);
+            }
+        }
+
+        return new ConcatRule(
+                defaultHidden, defaultReductionType,
+                Collections.unmodifiableList(compressedResult));
+    }
+
+    /**
+     * Like {@link #create(List)}, except it assumes that (1) the input includes no epsilons and (2) there are at least two rules in the input.
+     * This makes the method perform fewer optimizations, saving a miniscule amount of time.
+     *
+     * @param rules The rules.
+     * @return A concatenation rule.
+     * @since 0.9.7
+     */
+    public static @NotNull ConcatRule createDirect(
+            final @NotNull List<Rule> rules) {
+        return new ConcatRule(defaultHidden, defaultReductionType, rules);
+    }
+
+    @Override
+    public void parse(final int index, final @NotNull Gll runner) {
+        final @NotNull List< Rule> parsers = getRules();
+        runner.pushListener(
+                makeKey(index, parsers.get(0)),
+                catListener(FlatResultSeq.make(), parsers.subList(1, parsers.size()), makeKey(index, this), runner));
+    }
+
+    @Override
+    public void fullParse(final int index, final @NotNull Gll runner) {
+        final @NotNull List< Rule> parsers = getRules();
+        runner.pushListener(
+                makeKey(index, parsers.get(0)),
+                catFullListener(FlatResultSeq.make(), parsers.subList(1, parsers.size()), makeKey(index, this), runner));
+    }
+
+    private @NotNull Listener catListener(final @NotNull FlatResultSeq resultsSoFar,
+                                          final @NotNull List<Rule> parserSequence,
+                                          final @NotNull ListenerKey nodeKey,
+                                          final @NotNull Gll runner) {
+        return result -> {
+            final int continueIndex = result.index();
+            final @NotNull FlatResultSeq newResultsSoFar = resultsSoFar.appendOrConcat(result.getResult());
+
+            if (parserSequence.isEmpty()) {
+                runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
+            } else {
+                runner.pushListener(
+                        makeKey(continueIndex, parserSequence.get(0)),
+                        catListener(
+                                newResultsSoFar,
+                                parserSequence.subList(1, parserSequence.size()),
+                                nodeKey,
+                                runner)
+                );
+            }
+        };
+    }
+
+    private @NotNull Listener catFullListener(final @NotNull FlatResultSeq resultsSoFar,
+                                              final @NotNull List<Rule> parserSequence,
+                                              final @NotNull ListenerKey nodeKey,
+                                              final @NotNull Gll runner) {
+        return result -> {
+            final var continueIndex = result.index();
+            final @NotNull var newResultsSoFar = resultsSoFar.appendOrConcat(result.getResult());
+
+            if (!parserSequence.isEmpty()) {
+                var listenerKey = makeKey(continueIndex, parserSequence.get(0));
+                var listener = catFullListener(
+                        newResultsSoFar,
+                        parserSequence.subList(1, parserSequence.size()),
+                        nodeKey, runner);
+
+                if (parserSequence.size() == 1) runner.pushFullListener(listenerKey, listener);
+                else runner.pushListener(listenerKey, listener);
+            } else {
+                runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex);
+            }
+        };
+    }
+
+    @Override
+    public @NotNull Rule withHideTag(boolean hide) {
+        return isHiddenInResult() == hide ? this : new ConcatRule(hide, getReduction(), getRules());
+    }
+
+    @Override
+    public @NotNull Rule withReduction(@NotNull ReductionType red) {
+        return getReduction() == red ? this : new ConcatRule(isHiddenInResult(), red, getRules());
+    }
+
+    @Override
+    public @NotNull ConcatRule withRules(@NotNull List< Rule> rules) {
+        return new ConcatRule(isHiddenInResult(), getReduction(), rules);
+    }
+}

@@ -1,0 +1,774 @@
+package de.kleinert.parsewisp.grammar;
+
+import de.kleinert.parsewisp.Sym;
+import de.kleinert.parsewisp.error.IllegalGrammarException;
+import de.kleinert.parsewisp.parser.Parser;
+import de.kleinert.parsewisp.parser_options.ParserCreationOptions;
+import de.kleinert.parsewisp.parser_options.RedefinitionOption;
+import de.kleinert.parsewisp.parsing.*;
+import de.kleinert.parsewisp.reduction.ReductionType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
+/**
+ * This class provides an easy way to construct grammars. To use it, it needs to be inherited and the {@link #make()} method overridden.
+ * Using a GrammarBuilder is much faster than constructing grammars from strings.
+ * <p>
+ * In the following example, two equivalent grammars and parsers are constructed from a string and from a builder. The assertions show that the grammars are equal and that the parsers give equivalent outputs.
+ * <pre>
+ * {@code
+ *     var gFromString = Parsewisp.parser("""
+ *                     S = NUMBER NUMBER*
+ *                     NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+ *                     """)
+ *             .grammar();
+ *     var gFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {
+ *         @Override
+ *         public void make() {
+ *             addProduction("S", cat(nt("NUMBER"), zeroOrMore(nt(Sym.sym("NUMBER")))));
+ *             addProduction("NUMBER", alt("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"));
+ *         }
+ *     }.build();
+ *
+ *     Assertions.assertEquals(gFromString, gFromGB);
+ *
+ *     var pFromString = Parsewisp.parser(gFromString, ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
+ *     var pFromGB = Parsewisp.parser(gFromGB, ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));
+ *     var text = "0123456789";
+ *     Assertions.assertEquals(pFromString.parse(text), pFromGB.parse(text));
+ * }
+ * </pre>
+ * <p>
+ * The {@link #addProduction(Sym, Rule)} method can be used to add new productions.
+ *
+ * @since 0.9.7
+ */
+public abstract class GrammarBuilder {
+    private final @NotNull LinkedHashMap<Sym, Rule> productions;
+    private final BufferForRules buffer;
+    private final RedefinitionOption redefinitionOpt;
+    private boolean wasMakeCalled = false;
+
+    /**
+     * The starting production.
+     */
+    protected @Nullable Sym startProduction;
+
+    /**
+     * Default constructor. Calls {@link GrammarBuilder(RedefinitionOption)} with the default value {@link RedefinitionOption#defaultOption}.
+     *
+     * @since 0.9.7
+     */
+    protected GrammarBuilder() {
+        this(RedefinitionOption.defaultOption);
+    }
+
+    /**
+     * Creates a new builder with the given option for redefinitions.
+     *
+     * @param redefinitionOption Option used when a production is added multiple times (see {@link #addProduction(Sym, Rule)}).
+     * @since 0.9.7
+     */
+    protected GrammarBuilder(final @NotNull RedefinitionOption redefinitionOption) {
+        this.productions = new LinkedHashMap<>();
+        this.redefinitionOpt = redefinitionOption;
+        this.buffer = new BufferForRules();
+    }
+
+    /**
+     * Override this to create a grammar. Used in {@link #build()}.
+     *
+     * @since 0.9.7
+     */
+    protected void make() {
+    }
+
+    /**
+     * Use this to construct the grammar.
+     *
+     * @return The grammar.
+     * @since 0.9.7
+     */
+    public final @NotNull Grammar build() {
+        return buildWithWhitespace(null, null, true);
+    }
+
+    /**
+     * Use this to construct the grammar. Productions can be added before starting the builder.
+     *
+     * @param startProduction  Starting production. Set to null to use the first production that was added.
+     * @param wsParser         Whitespace parser to include.
+     * @param checkCorrectness Whether to check the grammar for validity.
+     * @return The grammar.
+     * @since 0.9.7
+     */
+    public final @NotNull Grammar buildWithWhitespace(
+            final @Nullable Sym startProduction,
+            final @Nullable Parser wsParser,
+            boolean checkCorrectness) {
+        final @NotNull Sym start;
+
+        if (!wasMakeCalled) {
+            make();
+            wasMakeCalled = true;
+        }
+
+        var resultProductions = new LinkedHashMap<>(productions);
+
+        if (startProduction != null) {
+            start = startProduction;
+        } else if (this.startProduction != null) {
+            start = this.startProduction;
+        } else {
+            start = resultProductions.keySet().iterator().next();
+        }
+
+        //compress(resultProductions);
+
+        ReductionType.applyStandardReductionToProductions(resultProductions);
+        if (wsParser != null) {
+            autoWhitespace(resultProductions, start, wsParser.grammar(), wsParser.startProduction());
+        }
+
+        var g = new Grammar(start, resultProductions);
+
+        if (checkCorrectness) {
+            final @NotNull var analysisResult = g.analyze();
+            if (!analysisResult.isValid())
+                throw new IllegalGrammarException(
+                        stringBuildGrammarCreationFailureMessage(analysisResult));
+        }
+
+        return g;
+    }
+
+    private String stringBuildGrammarCreationFailureMessage(Grammar.GrammarInfo analysisResult) {
+        throw new IllegalGrammarException(
+                "The grammar is invalid. Undefined productions: "
+                        + analysisResult.getUndefinedUsedNTs()
+                        + "; number of terminals: "
+                        + analysisResult.definedTerminals().size()
+                        + " (a valid grammar has at least one terminal)");
+    }
+
+    /**
+     * Set the start production symbol for the grammar.
+     *
+     * @param startProduction Name of the start production.
+     * @since 0.9.7
+     * @since 0.9.7
+     */
+    protected void setStartProduction(@Nullable Sym startProduction) {
+        this.startProduction = startProduction;
+    }
+
+    /**
+     * Add multiple entries.
+     *
+     * @param entries The entries.
+     * @see #addProduction(Sym, Rule)
+     * @since 0.9.7
+     */
+    protected final void addAllProductions(
+            final @NotNull Collection<Map.Entry<Sym, Rule>> entries) {
+        for (final @NotNull var entry : entries) {
+            addProduction(entry.getKey(), entry.getValue());
+        }
+    }
+
+    /**
+     * Adds a production to the output. The specific behavior depends on the {@link ParserCreationOptions#getRedefinitionOption()} used.
+     *
+     * @param lhs The production's key. (left-hand-side)
+     * @param rhs The production's right-hand-side.
+     * @since 0.9.7
+     */
+    protected final void addProduction(
+            final @NotNull Sym lhs, final @NotNull Rule rhs) {
+        var existing = productions.putIfAbsent(lhs, rhs);
+        if (existing == null)
+            return;
+
+        switch (redefinitionOpt) {
+            case OVERRIDE -> productions.put(lhs, rhs);
+            case ERROR -> throw new IllegalArgumentException(
+                    "Production already in grammar: " + lhs);
+            case CHOICE -> productions.put(lhs, alt(existing, rhs));
+            case KEEP -> {
+            }
+        }
+    }
+
+    /**
+     * Adds a production to the output. This method is a convenient alternative to {@link #addProduction(Sym, Rule)} if you do not want to make the string into a symbol yourself.
+     *
+     * @param lhs The production's key. (left-hand-side)
+     * @param rhs The production's right-hand-side.
+     * @see #addProduction(Sym, Rule)
+     * @since 0.9.7
+     */
+    protected final void addProduction(
+            final @NotNull String lhs, final @NotNull Rule rhs) {
+        addProduction(Sym.sym(lhs), rhs);
+    }
+
+    /**
+     * Create a {@link RegexTerm}. The rule might be buffered.
+     * If the regex can only ever match a single string, a {@link StringTerm} might be returned instead.
+     *
+     * @param p The input regex.
+     * @return A {@link RegexTerm} or something that returns equivalent outputs when parsing.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule regex(final @NotNull Pattern p) {
+        return buffer.getOrAddRegex(p);
+    }
+
+    /**
+     * See {@link #regex(Pattern)}.
+     *
+     * @param s The input regex.
+     * @return A {@link RegexTerm} or something that returns equivalent outputs when parsing.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule regex(final @NotNull String s) {
+        return buffer.getOrAddRegex(Pattern.compile(s));
+    }
+
+    /**
+     * Creates a {@link LookaheadRule}.
+     * The output can be a {@link EpsilonTerm} if the input is epsilon.
+     *
+     * @param input The rule to look for.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule look(final @NotNull Rule input) {
+        return LookaheadRule.create(input);
+    }
+
+    /**
+     * Creates a {@link NegativeLookaheadRule}.
+     * The output can be a {@link EpsilonTerm} if the input is epsilon.
+     *
+     * @param input The rule to avoid.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule neg(final @NotNull Rule input) {
+        return NegativeLookaheadRule.create(input);
+    }
+
+    /**
+     * Creates a {@link Rule} to match the codepoint range.
+     * This can be any kind of {@link Rule} capable of accomplishing that task.
+     *
+     * @param lo The minimum codepoint.
+     * @param hi The maximum codepoint.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected @NotNull Rule numVal(final int lo, final int hi) {
+        return ValueRangeTerm.create(lo, hi);
+    }
+
+    /**
+     * Creates a {@link Rule} to match the codepoint.
+     * This can be any kind of {@link Rule} capable of accomplishing that task.
+     *
+     * @param loHi The codepoint.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected @NotNull Rule numVal(final int loHi) {
+        return ValueRangeTerm.create(loHi, loHi);
+    }
+
+    /**
+     * Creates a {@link OrderedChoiceRule}.
+     * <ul>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
+     * <li>If there is only one element in the list, it is returned.</li>
+     * <li>Otherwise, returns a {@link OrderedChoiceRule}, as expected.</li>
+     * </ul>
+     *
+     * @param inputRules The parsers for the output.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule ordAlt(final @NotNull List<Rule> inputRules) {
+        return OrderedChoiceRule.create(inputRules);
+    }
+
+    /**
+     * Create a {@link NonTerminal} from the input symbol. The output might be buffered.
+     *
+     * @param name The name symbol of the output rule.
+     * @return A {@link NonTerminal}.
+     * @since 0.9.7
+     */
+    protected @NotNull NonTerminal nt(final @NotNull Sym name) {
+        return buffer.getOrAddNt(name);
+    }
+
+    /**
+     * Equivalent to {@link #nt(Sym)} with the symbol creates from the input string.
+     *
+     * @param name The name symbol of the output rule.
+     * @return A {@link NonTerminal}.
+     * @since 0.9.7
+     */
+    protected @NotNull NonTerminal nt(final @NotNull String name) {
+        return buffer.getOrAddNt(Sym.sym(name));
+    }
+
+    /**
+     * Creates a {@link StringTerm}
+     * or {@link EpsilonTerm} if the string is empty.
+     *
+     * @param string          The string to match.
+     * @param caseInsensitive Whether the Terminal will match case-insensitive.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected @NotNull Rule string(final @NotNull String string, final boolean caseInsensitive) {
+        return buffer.getOrAddString(string, caseInsensitive);
+    }
+
+    /**
+     * Creates a case-sensitive {@link StringTerm}
+     * or {@link EpsilonTerm} if the string is empty.
+     *
+     * @param string The string to match.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule stringCS(final @NotNull String string) {
+        return string(string, false);
+    }
+
+    /**
+     * Creates a case-insensitive {@link StringTerm}
+     * or {@link EpsilonTerm} if the string is empty.
+     *
+     * @param string The string to match.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule stringCI(final @NotNull String string) {
+        return string(string, true);
+    }
+
+    /**
+     * Creates a {@link StringTerm}
+     * or {@link EpsilonTerm} if the string is empty
+     * . The case-sensitivity depends on the options used for this {@link GrammarBuilder}.
+     *
+     * @param string The string to match.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule string(final @NotNull String string) {
+        return string(string, false);
+    }
+
+    /**
+     * Creates a {@link TransformRule}.
+     *
+     * @param rule      The rule.
+     * @param transform The transformer function for the result.
+     * @return The new rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule transform(final @NotNull Rule rule, final @NotNull BiFunction<List<Object>, Integer, List<Object>> transform) {
+        return TransformRule.create(rule, transform);
+    }
+
+    /**
+     * Create a copy of the input for which {@link Rule#isHiddenInResult} returns true.
+     *
+     * @param o The input.
+     * @return A copy of the input for which {@link Rule#isHiddenInResult} returns true.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule hide(final @NotNull Rule o) {
+        return o.hideInResult();
+    }
+
+    /**
+     * Get an epsilon rule.
+     *
+     * @return An {@link EpsilonTerm}.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule eps() {
+        return EpsilonTerm.getDefault();
+    }
+
+    /**
+     * Create a rule which matches end of input.
+     *
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule eof() {
+        return EOFTerm.getDefault();
+    }
+
+    /**
+     * Creates a {@link ConcatRule}.
+     * <ul>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
+     * <li>If there is only one element in the list, it is returned.</li>
+     * <li>Otherwise, returns a {@link ConcatRule}, as expected.</li>
+     * </ul>
+     *
+     * @param rule  First rule for the output.
+     * @param rules More rules for the output.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule cat(
+            final @NotNull Rule rule, final @NotNull Rule... rules) {
+        return cat(Stream.concat(Stream.of(rule), Arrays.stream(rules)).toList());
+    }
+
+    /**
+     * Creates a {@link ConcatRule}.
+     * <ul>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
+     * <li>If there is only one element in the list, it is returned.</li>
+     * <li>Otherwise, returns a {@link ConcatRule}, as expected.</li>
+     * </ul>
+     *
+     * @param rules The rules for the output.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule cat(
+            final @NotNull List< Rule> rules) {
+        return ConcatRule.create(rules);
+    }
+
+    /**
+     * Like {@link #cat(List)}, except it assumes that (1) the input is not empty and (2) the input does not include epsilons.
+     *
+     * @param rules The rules.
+     * @return A {@link ConcatRule}.
+     * @since 0.9.7
+     */
+    protected @NotNull ConcatRule catUnsafe(
+            final @NotNull List<Rule> rules) {
+        return ConcatRule.createDirect(rules);
+    }
+
+    /**
+     * Creates a {@link AlternationRule}.
+     * <ul>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
+     * <li>If there is only one element in the list, it is returned.</li>
+     * <li>Otherwise, returns a {@link AlternationRule}, as expected.</li>
+     * </ul>
+     *
+     * @param rule  The first element for the output.
+     * @param rules More elements.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule alt(
+            final @NotNull Rule rule, final @NotNull Rule... rules) {
+        final @NotNull List< Rule> result = Stream
+                .concat(Stream.of(rule), Arrays.stream(rules))
+                .toList();
+        return alt(result);
+    }
+
+    /**
+     * Creates a {@link AlternationRule}.
+     * <ul>
+     * <li>If the argument List is empty, a {@link EpsilonTerm} is returned instead.</li>
+     * <li>If there is only one element in the list, it is returned.</li>
+     * <li>Otherwise, returns a {@link AlternationRule}, as expected.</li>
+     * </ul>
+     *
+     * @param rules The rules for the output.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule alt(final @NotNull List<Rule> rules) {
+        return AlternationRule.create(rules);
+    }
+
+    /**
+     * Takes a String and returns a rule which matches any char in it. If the input is empty, returns a rule which matches the empty string.
+     *
+     * @param chars A string of matchable chars.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule oneOf(final @NotNull String chars) {
+        if (chars.isEmpty())
+            return eps();
+        var split = new ArrayList<Rule>();
+        for (int i = 0; i < chars.length(); i++) {
+            split.add(string(String.valueOf(chars.charAt(i))));
+        }
+        return alt(split);
+    }
+
+    /**
+     * Like {@link #alt(List)} except the input list is assumed to be distinct
+     * (each rule in the list occurs exactly once) and not empty.
+     * Use this method only if you are sure that the rules are distinct.
+     *
+     * @param rules The rules.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull AlternationRule altUnsafe(
+            final @NotNull List<Rule> rules) {
+        return AlternationRule.altUnsafe(rules);
+    }
+
+    /**
+     * Represents a special sequence. The typical EBNF-notation is {@code ?...?}
+     * where {@code ...} stands for some free-form text.
+     * For example, {@code S = ?any whitespace except newline?} means what it says.
+     * This allows some interaction with the program around the parser.
+     * However, special sequences have to be heavily abstracted here.
+     *
+     * @param description The description of the special sequence.
+     * @param function    The function which does what the description says.
+     * @return A {@link SpecialSequenceRule}.
+     * @since 0.9.7
+     */
+    protected @NotNull Rule specialSequence(
+            final @NotNull String description,
+            final @NotNull Function< String, Optional<String>> function) {
+        return SpecialSequenceRule.create(description, function);
+    }
+
+    /**
+     * Creates a {@link VariableRepetitionRule} or an {@link EpsilonTerm} if the input is epsilon.
+     * <ul>
+     * <li>If minimum and maximum amount of repetitions is set to 0, return an {@link EpsilonTerm}.</li>
+     * <li>If minimum and maximum amount of repetitions is set to 1, may return the input rule.</li>
+     * <li>If minimum and maximum amount of repetitions are equal, a {@link ConcatRule} might be returned instead.</li>
+     * <li>Otherwise, does as normally expected.</li>
+     * </ul>
+     *
+     * @param min  The minimum amount of repetitions.
+     * @param max  The maximum amount of repetitions.
+     * @param rule The rule.
+     * @return A rule, as described.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule rep(
+            final @NotNull Rule rule, final int min, final int max) {
+        return VariableRepetitionRule.create((rule), min, max);
+    }
+
+    /**
+     * Equivalent to {@link #zeroOrMore(Rule)}.
+     *
+     * @param rule The rule to repeat.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule rep(
+            final @NotNull Rule rule) {
+        return zeroOrMore(rule);
+    }
+
+    /**
+     * Equivalent to {@code rep(rule, exact, exact)}.
+     *
+     * @param rule  The rule.
+     * @param exact Minimum and maximum number of repetitions.
+     * @return A repetition rule.
+     * @see #rep(Rule, int, int)
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule rep(
+            final @NotNull Rule rule, final int exact) {
+        return rep(rule, exact, exact);
+    }
+
+    /**
+     * Creates a {@link ExclusionRule}.
+     *
+     * @param ruleExpected The rule that must be matched.
+     * @param ruleExcluded The rule that must not be matched.
+     * @return A {@link ExclusionRule}.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule exclude(
+            final @NotNull Rule ruleExpected, final @NotNull Rule ruleExcluded) {
+        final @NotNull var r1 = ruleExpected;
+        final @NotNull var r2 = ruleExcluded;
+        return ExclusionRule.create(r1, r2);
+    }
+
+    /**
+     * Equivalent to {@code rep(rule, min, Integer.MAX_VALUE)}.
+     *
+     * @param rule The rule.
+     * @param min  Minimum number of repetitions.
+     * @return A repetition rule.
+     * @see #rep(Rule, int, int)
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule repMin(
+            final @NotNull Rule rule, final int min) {
+        return rep(rule, min, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Equivalent to {@code rep(rule, 0, max)}.
+     *
+     * @param rule The rule.
+     * @param max  Maximum number of repetitions.
+     * @return A repetition rule.
+     * @see #rep(Rule, int, int)
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule repMax(
+            final @NotNull Rule rule, final int max) {
+        return rep(rule, 0, max);
+    }
+
+    /**
+     * Creates a {@link ZeroOrMoreRule} or an {@link EpsilonTerm} if the input is epsilon.
+     *
+     * @param rule The rule to match repeatedly.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule zeroOrMore(final @NotNull Rule rule) {
+        return ZeroOrMoreRule.create(rule);
+    }
+
+    /**
+     * Creates a {@link OnceOrMoreRule} or an {@link EpsilonTerm} if the input is epsilon.
+     *
+     * @param rule The rule to match repeatedly.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule onceOrMore(final @NotNull Rule rule) {
+        return OnceOrMoreRule.create(rule);
+    }
+
+    /**
+     * Creates a {@link OptionalRule} or an {@link EpsilonTerm} if the input is epsilon.
+     *
+     * @param rule The rule to maybe match.
+     * @return A rule.
+     * @since 0.9.7
+     */
+    protected final @NotNull Rule opt(final @NotNull Rule rule) {
+        return OptionalRule.create(rule);
+    }
+
+    private @NotNull Rule autoWhitespaceHelper(
+            final @NotNull Rule originalRule,
+            final @NotNull Rule whitespaceRule) {
+        if (originalRule instanceof NonTerminal) {
+            return originalRule;
+        }
+        if (originalRule instanceof EpsilonTerm) {
+            return originalRule;
+        }
+        if (originalRule instanceof RuleWithChild) {
+            //noinspection PatternVariableCanBeUsed
+            var rule = (RuleWithChild) originalRule;
+            return rule.withRule(
+                    autoWhitespaceHelper(rule.getRule(), whitespaceRule));
+        }
+        if (originalRule instanceof RuleWithManyChildren) {
+            //noinspection PatternVariableCanBeUsed
+            var combWithParsers = (RuleWithManyChildren) originalRule;
+            final @NotNull List< Rule> rules = combWithParsers
+                    .getRules()
+                    .stream()
+                    .map(p -> autoWhitespaceHelper(p, whitespaceRule))
+                    .toList();
+            return combWithParsers.withRules(rules);
+        }
+        if (originalRule instanceof Terminal) {
+            final @NotNull List<Rule> rules = new ArrayList<>();
+            rules.add(whitespaceRule);
+            final @NotNull Rule result;
+            if (!originalRule.getReduction().isHiddenOrRaw()) {
+                // Hide the terminal in the output.
+                // It still appears in the tree, but is flattened into the concatenation.
+                rules.add(originalRule.withReduction(
+                        ReductionType.merging()));
+                result = cat(rules).withReduction(originalRule.getReduction());
+            } else {
+                rules.add(originalRule);
+                result = cat(rules);
+            }
+            return result;
+        }
+        if (originalRule instanceof SpecialSequenceRule) {
+            return originalRule;
+        }
+        throw new IllegalArgumentException(originalRule.getClass().getName());
+    }
+
+    private void autoWhitespace(final @NotNull LinkedHashMap< Sym,  Rule> productions,
+                                final @NotNull Sym start,
+                                final @NotNull Grammar grammarWS,
+                                final @NotNull Sym startWS) {
+        final @NotNull Rule wsRule =
+                opt(nt(startWS)).hideInResult();
+
+        final @NotNull LinkedHashMap< Sym,  Rule> finalGrammar =
+                productions;
+        for (final @NotNull var symRuleEntry : finalGrammar.entrySet()) {
+            symRuleEntry.setValue(autoWhitespaceHelper(
+                    symRuleEntry.getValue(), wsRule));
+        }
+
+        final @NotNull Rule startWithoutReduction = (
+                finalGrammar.get(start)
+                        .withReduction(ReductionType.initial()));
+        final @NotNull Rule newStartComb =
+                cat(List.of(startWithoutReduction, wsRule))
+                        .withReduction(finalGrammar.get(start).getReduction());
+
+        finalGrammar.put(start, newStartComb);
+        finalGrammar.putAll(grammarWS);
+        finalGrammar.put(startWS,
+                Objects.requireNonNull(grammarWS.getProduction(startWS)).mergeToTop());
+    }
+
+    /**
+     * Buffers a rule for the lifetime of this builder.
+     *
+     * @param rule The rule.
+     * @param <T>  The type of the rule.
+     * @return The same rule or a previously buffered equivalent.
+     * @since 0.9.7
+     */
+    protected <T extends Rule> T buffer(T rule) {
+        if (rule instanceof StringTerm) {
+            //noinspection unchecked
+            return (T) buffer.getOrAdd((StringTerm) rule);
+        } else if (rule instanceof RegexTerm) {
+            //noinspection unchecked
+            return (T) buffer.getOrAdd((RegexTerm) rule);
+        } else if (rule instanceof NonTerminal) {
+            //noinspection unchecked
+            return (T) buffer.getOrAdd((NonTerminal) rule);
+        }
+        return rule;
+    }
+}

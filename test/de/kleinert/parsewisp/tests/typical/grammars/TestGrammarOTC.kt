@@ -1,0 +1,35 @@
+package de.kleinert.parsewisp.tests.typical.grammars
+
+import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.parser.Parser
+import de.kleinert.parsewisp.parser_options.ParserCreationOptions
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Path
+
+/**
+ * Test(s) for the otc (Obfuscated Tiny C) grammar.
+ *
+ *
+ * Grammar and tests from [esolangs.org/wiki/Obfuscated_Tiny_C](https://esolangs.org/wiki/Obfuscated_Tiny_C).
+ */
+internal class TestGrammarOTC {
+    private fun parser(): Parser {
+        try {
+            return parser(
+                Files.readString(Path.of("testres/grammars/otc.grammar")),
+                ParserCreationOptions.newWithStandardWhitespace()
+            )
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
+    }
+
+    @Test
+    fun verifySimpleProgram() {
+        val text = "int i; int main (int argc, char** argv) { i = 11; while (--i) { printf(\"%d\", i); } }"
+        Assertions.assertTrue(parser().parse(text).isSuccess())
+    }
+}

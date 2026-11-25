@@ -1,0 +1,290 @@
+package de.kleinert.parsewisp.trampoline;
+
+import de.kleinert.parsewisp.functions.*;
+import de.kleinert.parsewisp.grammar.Grammar;
+import de.kleinert.parsewisp.parsing.StringTerm;
+import de.kleinert.parsewisp.result.*;
+import de.kleinert.parsewisp.result.success.ParseMessage;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
+
+/**
+ * This class carries the inner state during the parsing process. It should not be used directly.
+ *
+ * @since 0.9.7
+ */
+public final class Tramp {
+    private final @NotNull Grammar grammar;
+    private final @NotNull String text;
+    private final int failIndex;
+    private final @NotNull ArrayList< Procedure> stack;
+    private final @NotNull ArrayList< Procedure> nextStack;
+    private int generation;
+    private final @NotNull TreeMap< Integer,  ArrayList<NegativeListener>> negativeListeners;
+    //private final @NotNull IntMap<@NotNull NegativeListener> negativeListeners;
+    private final @NotNull LinkedHashMap< MsgCacheKey,  Integer> msgCache;
+    private final @NotNull LinkedHashMap< ListenerKey,  ListenerNode> nodes;
+    private @Nullable ParseMessage success;
+    private @Nullable ParseFailure failure;
+
+    /**
+     * Normal constructor.
+     *
+     * @param grammar The grammar.
+     * @param text    The text.
+     * @since 0.9.7
+     */
+    public Tramp(final @NotNull Grammar grammar, final @NotNull String text) {
+        this(grammar, text, -1);
+    }
+
+    /**
+     * Used to continue parsing after a failure.
+     *
+     * @param grammar   The grammar.
+     * @param text      The text.
+     * @param failIndex The index at which to continue.
+     * @since 0.9.7
+     */
+    public Tramp(final @NotNull Grammar grammar, final @NotNull String text, final int failIndex) {
+        this.grammar = grammar;
+        this.text = text;
+        this.failIndex = failIndex;
+        this.stack = new ArrayList<>();
+        this.nextStack = new ArrayList<>();
+        this.generation = 0;
+        //this.negativeListeners = new IntMap<>(1024);
+        this.negativeListeners = new TreeMap<>();
+        this.msgCache = new LinkedHashMap<>();
+        this.nodes = new LinkedHashMap<>();
+        this.success = null;
+        this.failure = null;
+    }
+
+    /**
+     * Get the grammar.
+     *
+     * @return The grammar.
+     * @since 0.9.7
+     */
+    public @NotNull Grammar getGrammar() {
+        return grammar;
+    }
+
+    /**
+     * Get the text.
+     *
+     * @return The text.
+     * @since 0.9.7
+     */
+    public @NotNull String getText() {
+        return text;
+    }
+
+    /**
+     * Get the index at which parsing started. This is only important if parsing had to be restarted after a failure.
+     *
+     * @return Get the index at which parsing started.
+     * @since 0.9.7
+     */
+    public int getFailIndex() {
+        return failIndex;
+    }
+
+    /**
+     * A stack of derivative parse procedures of the current generation.
+     *
+     * @return A stack of derivative parse procedures of the current generation.
+     * @since 0.9.7
+     */
+    public @NotNull ArrayList< Procedure> getStack() {
+        return stack;
+    }
+
+    /**
+     * The current generation of derivatives.
+     *
+     * @return The current generation of derivatives.
+     * @since 0.9.7
+     */
+    public int getGeneration() {
+        return generation;
+    }
+
+    /**
+     * Sequential map of negative lookaheads.
+     *
+     * @return Sequential map of negative lookaheads.
+     * @since 0.9.7
+     */
+    public @NotNull TreeMap< Integer,  ArrayList<NegativeListener>> getNegativeListeners() {
+        return negativeListeners;
+    }
+
+    /**
+     * Adds a new listener at the key's index.
+     *
+     * @param creator          The key.
+     * @param negativeListener The listener procedure.
+     * @since 0.9.7
+     */
+    public void pushNegativeListener(final @NotNull ListenerKey creator,
+                                     final @NotNull NegativeListener negativeListener) {
+        var present = negativeListeners.get(creator.index());
+        if (present == null) {
+            var listeners = new ArrayList<NegativeListener>();
+            listeners.add(negativeListener);
+            negativeListeners.put(creator.index(), listeners);
+        } else {
+            present.add(negativeListener);
+        }
+    }
+
+    /**
+     * Last registered success.
+     *
+     * @return Last registered success.
+     * @since 0.9.7
+     */
+    public @Nullable ParseMessage getSuccess() {
+        return success;
+    }
+
+    /**
+     * If parsing failed, a failure is set.
+     *
+     * @return If parsing failed, a failure is set.
+     * @since 0.9.7
+     */
+    public @Nullable ParseFailure getFailure() {
+        return failure;
+    }
+
+    /**
+     * Increments the generation.
+     *
+     * @since 0.9.7
+     */
+    public void nextGeneration() {
+        generation = generation + 1;
+        stack.clear();
+        stack.addAll(nextStack);
+        nextStack.clear();
+    }
+
+    /**
+     * Adds a procedure to the stack.
+     *
+     * @param frame The frame.
+     * @since 0.9.7
+     */
+    public void addToStack(final @NotNull Procedure frame) {
+        this.stack.add(frame);
+    }
+
+    /**
+     * Removes the top of the stack.
+     *
+     * @since 0.9.7
+     */
+    public void popStack() {
+        stack.remove(stack.size() - 1);
+    }
+
+    /**
+     * Adds an element to the stack for the next generation.
+     *
+     * @param frame The next frame.
+     * @since 0.9.7
+     */
+    public void addToNextStack(final @NotNull Procedure frame) {
+        nextStack.add(frame);
+    }
+
+    /**
+     * Returns the "generation" a listener will belong to.
+     *
+     * @param key        The key for the message.
+     * @param defaultVal The generation to use if the key was not registered.
+     * @return The generation.
+     * @since 0.9.7
+     */
+    public int getFromMsgCache(final @NotNull MsgCacheKey key, final int defaultVal) {
+        return msgCache.getOrDefault(key, defaultVal);
+    }
+
+    /**
+     * Adds a listener to the message cache.
+     *
+     * @param key        The key for the message.
+     * @param defaultVal The generation the listener is for.
+     * @since 0.9.7
+     */
+    public void addToMsgCache(final @NotNull MsgCacheKey key, final int defaultVal) {
+        msgCache.put(key, defaultVal);
+    }
+
+    /**
+     * This function is used when the parser detects a failure. Parsing will be terminated when a failure is set.
+     *
+     * @param failure The failure.
+     * @since 0.9.7
+     */
+    public void setFailure(final @NotNull ParseFailure failure) {
+        this.failure = failure;
+    }
+
+    /**
+     * Sets the last detected parsing success. This is usually a String for a parsed {@link StringTerm} or a finished {@link ParseTree}.
+     *
+     * @param success The new success or null.
+     * @since 0.9.7
+     */
+    public void setSuccess(final @Nullable ParseMessage success) {
+        this.success = success;
+    }
+
+    /**
+     * Gets a listener node (if registered) from the trampoline.
+     *
+     * @param nodeKey The key (position and production).
+     * @return The node or null.
+     * @since 0.9.7
+     */
+    public @Nullable ListenerNode getNode(final @NotNull ListenerKey nodeKey) {
+        return nodes.get(nodeKey);
+    }
+
+    /**
+     * Adds a new listener-node.
+     *
+     * @param key  The key (position and production)
+     * @param node The node.
+     * @since 0.9.7
+     */
+    public void addToNodes(final @NotNull ListenerKey key,
+                           final @NotNull ListenerNode node) {
+        nodes.put(key, node);
+    }
+
+    @Override
+    public @NotNull String toString() {
+        return "Tramp{" +
+                "grammar=" + grammar +
+                ", text='" + text + '\'' +
+                ", failIndex=" + failIndex +
+                ", stack=" + stack +
+                ", nextStack=" + nextStack +
+                ", generation=" + generation +
+                ", negativeListeners=" + negativeListeners +
+                ", msgCache=" + msgCache +
+                ", nodes=" + nodes +
+                ", success=" + success +
+                ", failure=" + failure +
+                '}';
+    }
+}

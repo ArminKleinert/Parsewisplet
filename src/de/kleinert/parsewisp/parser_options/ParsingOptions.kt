@@ -43,7 +43,6 @@ data class ParsingOptions(
     /**
      * When a parser is created, it carries its own start production. With this option, the start production can be forcefully changed for a parse. If the parser's start should be used, use `null` as the parameter.
      *
-     *
      * Example:
      * <pre>
      * `// The grammar has these two, unrelated productions. The first production is A. So that is the production the parser uses.     //    A := 'a'     //    B := 'b'     var p = Parsewisp.parser("A := 'a'\nB := 'b'");     println(p.parse("a")); // Success: [:A, a]     println(p.parse("b")); // Failure: 'b' could not be parsed from production A.     // With the start production explicitly changed, it works:     println(p.parse("b", Parsewisp.ParsingOptions.getDefault().withStart(Keyword.intern("B")))); // [:B, b] `
@@ -57,19 +56,7 @@ data class ParsingOptions(
      *
      * @see ParsingOptions.default
      */
-    fun withStart(start: Sym?): ParsingOptions {
-        if (this.start == start) return this
-        return ParsingOptions(
-            start,
-            usePartial,
-            unhide,
-            embedFailureInParseTree,
-            iterativeDeepening,
-            failureIfEmpty,
-            stopEarlyOnEmptyRepetition,
-            resultLimit
-        )
-    }
+    fun withStart(start: Sym?) = this.copy(start = start)
 
     /**
      * When generating a parse tree, the parser tries to parse the full string first. With this option, partial parses can be made available.
@@ -83,19 +70,7 @@ data class ParsingOptions(
      * @return A new instance.
      * @see .usePartial
      */
-    fun withPartial(usePartial: Boolean): ParsingOptions {
-        if (this.usePartial == usePartial) return this
-        return ParsingOptions(
-            start,
-            usePartial,
-            unhide,
-            embedFailureInParseTree,
-            iterativeDeepening,
-            failureIfEmpty,
-            stopEarlyOnEmptyRepetition,
-            resultLimit
-        )
-    }
+    fun withPartial(usePartial: Boolean) = this.copy(usePartial = usePartial)
 
     /**
      * Create a new instance with [.unhide] set to the parameter.
@@ -116,19 +91,7 @@ data class ParsingOptions(
      * @return A new instance.
      * @see .unhide
      */
-    fun withUnhide(unhide: UnhideOptions): ParsingOptions {
-        if (this.unhide == unhide) return this
-        return ParsingOptions(
-            start,
-            usePartial,
-            unhide,
-            embedFailureInParseTree,
-            iterativeDeepening,
-            failureIfEmpty,
-            stopEarlyOnEmptyRepetition,
-            resultLimit
-        )
-    }
+    fun withUnhide(unhide: UnhideOptions) = this.copy(unhide = unhide)
 
     /**
      * Creates a new instance with the [.embedFailureInParseTree] option set to the parameter.
@@ -141,19 +104,7 @@ data class ParsingOptions(
      * @return A new instance.
      * @see .embedFailureInParseTree
      */
-    fun withEmbedFailureInParseTree(embedFailureInParseTree: Boolean): ParsingOptions {
-        if (this.embedFailureInParseTree == embedFailureInParseTree) return this
-        return ParsingOptions(
-            start,
-            usePartial,
-            unhide,
-            embedFailureInParseTree,
-            iterativeDeepening,
-            failureIfEmpty,
-            stopEarlyOnEmptyRepetition,
-            resultLimit
-        )
-    }
+    fun withEmbedFailureInParseTree(embedFailureInParseTree: Boolean) = this.copy(embedFailureInParseTree = embedFailureInParseTree)
 
     /**
      * Creates a new instance with the [.iterativeDeepening] option set to the parameter.
@@ -162,19 +113,7 @@ data class ParsingOptions(
      * @return A new instance.
      * @see .iterativeDeepening
      */
-    fun withIterativeDeepening(iterativeDeepening: Boolean): ParsingOptions {
-        if (this.iterativeDeepening == iterativeDeepening) return this
-        return ParsingOptions(
-            start,
-            usePartial,
-            unhide,
-            embedFailureInParseTree,
-            iterativeDeepening,
-            failureIfEmpty,
-            stopEarlyOnEmptyRepetition,
-            resultLimit
-        )
-    }
+    fun withIterativeDeepening(iterativeDeepening: Boolean) = this.copy(iterativeDeepening = iterativeDeepening)
 
     /**
      * Creates a new instance with the [.failureIfEmpty] option set to the parameter.
@@ -183,19 +122,7 @@ data class ParsingOptions(
      * @return A new instance.
      * @see .failureIfEmpty
      */
-    fun withFailureIfEmpty(failureIfEmpty: Boolean): ParsingOptions {
-        if (this.failureIfEmpty == failureIfEmpty) return this
-        return ParsingOptions(
-            start,
-            usePartial,
-            unhide,
-            embedFailureInParseTree,
-            iterativeDeepening,
-            failureIfEmpty,
-            stopEarlyOnEmptyRepetition,
-            resultLimit
-        )
-    }
+    fun withFailureIfEmpty(failureIfEmpty: Boolean) = this.copy(failureIfEmpty = failureIfEmpty)
 
     /**
      * Creates a new instance with the [.stopEarlyOnEmptyRepetition] option set to the parameter.
@@ -204,40 +131,16 @@ data class ParsingOptions(
      * @return A new instance.
      * @see .stopEarlyOnEmptyRepetition
      */
-    fun withStopEarlyOnEmptyRepetition(stopEarlyOnEmptyRepetition: Boolean): ParsingOptions {
-        if (this.stopEarlyOnEmptyRepetition == stopEarlyOnEmptyRepetition) return this
-        return ParsingOptions(
-            start,
-            usePartial,
-            unhide,
-            embedFailureInParseTree,
-            iterativeDeepening,
-            failureIfEmpty,
-            stopEarlyOnEmptyRepetition,
-            resultLimit
-        )
-    }
+    fun withStopEarlyOnEmptyRepetition(stopEarlyOnEmptyRepetition: Boolean) = this.copy(stopEarlyOnEmptyRepetition = stopEarlyOnEmptyRepetition)
 
     /**
      * Creates a new instance with the [.resultLimit] option set to the parameter.
      *
-     * @param maxResults The new (or old) setting.
+     * @param resultLimit The new (or old) setting.
      * @return A new instance.
      * @see .resultLimit
      */
-    fun withResultLimit(maxResults: Int): ParsingOptions {
-        if (this.resultLimit == maxResults) return this
-        return ParsingOptions(
-            start,
-            usePartial,
-            unhide,
-            embedFailureInParseTree,
-            iterativeDeepening,
-            failureIfEmpty,
-            stopEarlyOnEmptyRepetition,
-            maxResults
-        )
-    }
+    fun withResultLimit(resultLimit: Int) = this.copy(resultLimit = resultLimit)
 
     companion object {
         /**

@@ -48,7 +48,7 @@ object Parsewisp {
 
         try {
             val g: Grammar
-            if (options.startProduction == null && !options.doCheckCorrectness() && options.whitespaceParser == null) {
+            if (options.startProduction == null && !options.checkCorrectness && options.whitespaceParser == null) {
                 g = grammar
             } else {
                 val builder: GrammarBuilder = object : GrammarBuilder() {
@@ -60,7 +60,7 @@ object Parsewisp {
                 g = builder.buildWithWhitespace(
                     options.startProduction,
                     options.whitespaceParser,
-                    options.doCheckCorrectness()
+                    options.checkCorrectness
                 )
             }
 

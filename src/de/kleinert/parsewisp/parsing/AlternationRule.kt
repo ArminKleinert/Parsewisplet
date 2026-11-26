@@ -65,22 +65,18 @@ class AlternationRule private constructor(
          */
         fun create(rules: List<Rule>): Rule {
             if (rules.isEmpty()) return EpsilonTerm.default
-            if (rules.size == 1) return rules.get(0)
+            if (rules.size == 1) return rules[0]
 
             val uniques = mutableSetOf<Rule>()
             val compressedRules = mutableListOf<Rule>()
 
             for (rule in rules) {
-                if (!uniques.add(rule)) {
-                    // continue;
-                } else if (rule is AlternationRule && !rule.isHiddenInResult1() && rule.red == defaultReductionType) {
-                    compressedRules.addAll(rule.rules)
-                } else {
+                if (uniques.add(rule)) {
                     compressedRules.add(rule)
                 }
             }
 
-            if (compressedRules.size == 1) return rules.get(0)
+            if (compressedRules.size == 1) return rules[0]
 
             return AlternationRule(
                 defaultHidden, defaultReductionType,

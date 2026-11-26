@@ -280,7 +280,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
     ): Grammar {
         return GrammarBuild(options, spec, grammarGrammar).buildWithWhitespace(
             null, null,
-            options.doCheckCorrectness()
+            options.checkCorrectness
         )
     }
 

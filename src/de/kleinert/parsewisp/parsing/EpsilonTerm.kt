@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.reduction.ReductionType
-import java.util.*
 
 /**
  * This class represents the empty parse epsilon. It can typically be written in the following ways: "Epsilon", "epsilon", "EPSILON", "eps", "ε" or as the empty string "".
@@ -31,14 +30,14 @@ private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
         return if (reduction === red) this else EpsilonTerm(hide, red)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is EpsilonTerm) return false
-        if (this === o) return true
-        return hide == o.hide && red == o.red
+    override fun equals(other: Any?): Boolean {
+        if (other !is EpsilonTerm) return false
+        if (this === other) return true
+        return hide == other.hide && red == other.red
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(hide, red)
+        return hash(hide, red)
     }
 
     companion object {

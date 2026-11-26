@@ -2,8 +2,6 @@ package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.trampoline.ListenerKey
-import java.util.*
-import java.util.function.Function
 
 /**
  * Represents a special sequence. The typical EBNF-notation is `?...?` where `...` stands for some free-form text.
@@ -30,30 +28,30 @@ class SpecialSequenceRule private constructor(
      * @return The wrapped function.
      * @since 0.9.7
      */
-    val function: Function<String, Optional<String>>
+    val function: (String) -> String?
 ) : SimpleRule(hide, red) {
     override fun parse(index: Int, runner: Gll) {
         val nodeKey: ListenerKey = makeKey(index, this)
-        val res = function.apply(runner.tramp().text.substring(index))
+        val res = function(runner.tramp().text.substring(index))
 
-        if (res.isEmpty) {
+        if (res == null) {
             runner.fail(nodeKey, index, this, false)
             return
         }
 
-        runner.pushSuccessMessage(nodeKey, res.get(), index + res.get().length)
+        runner.pushSuccessMessage(nodeKey, res, index + res.length)
     }
 
     override fun fullParse(index: Int, runner: Gll) {
         val nodeKey: ListenerKey = makeKey(index, this)
-        val res = function.apply(runner.tramp().text.substring(index))
+        val res = function(runner.tramp().text.substring(index))
 
-        if (res.isEmpty) {
+        if (res == null) {
             runner.fail(nodeKey, index, this, true)
             return
         }
 
-        runner.pushSuccessMessage(nodeKey, res.get(), index + res.get().length)
+        runner.pushSuccessMessage(nodeKey, res, index + res.length)
     }
 
     override fun withHideTag(hide: Boolean): SpecialSequenceRule {
@@ -72,7 +70,7 @@ class SpecialSequenceRule private constructor(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(hide, red, function)
+        return hash(hide, red, function)
     }
 
     override fun toString(): String {
@@ -90,7 +88,7 @@ class SpecialSequenceRule private constructor(
          */
         fun create(
             description: String,
-            function: Function<String, Optional<String>>
+            function: (String) -> String?
         ): Rule {
             return SpecialSequenceRule(
                 defaultHidden,

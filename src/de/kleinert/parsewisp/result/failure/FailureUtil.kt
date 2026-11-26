@@ -3,7 +3,6 @@ package de.kleinert.parsewisp.result.failure
 import de.kleinert.parsewisp.result.ParseFailure
 import java.util.function.Predicate
 import java.util.regex.Pattern
-import kotlin.streams.asStream
 
 /**
  * Utilities for printing and modifying failure objects. Calling these methods from outside the parsing algorithm is heavily discouraged and might result in immediate termination of the user.
@@ -43,8 +42,8 @@ object FailureUtil {
             }
         }
 
-        val lineText = text.lineSequence().asStream().skip((line - 1).toLong()).findFirst()
-        return ParseFailure(index, failure.reasonList, line, col, lineText.orElse(null))
+        val lineText = text.lineSequence().drop(line - 1).firstOrNull()
+        return ParseFailure(index, failure.reasonList, line, col, lineText)
     }
 
     /**
@@ -85,7 +84,7 @@ object FailureUtil {
             return ParseFailure(nextIndex, ArrayList(listOf(newReason)));
         if (nextIndex < currentIndex) return failure!!
 
-        val newReasonList = ArrayList(if (failure == null)  listOf() else failure.reasonList);
+        val newReasonList = ArrayList(if (failure == null) listOf() else failure.reasonList);
         newReasonList.add(newReason);
         return ParseFailure(nextIndex, newReasonList);
     }
@@ -113,14 +112,13 @@ object FailureUtil {
         }
 
         val fullReasons: List<String> = reason
-            .filter { obj: ParseFailureReason -> obj!!.untilEndOfInput }
-            .map { obj: ParseFailureReason -> obj!!.failureReasonString() }
-            .distinct().toList()
-        val partialReasons =
-            reason.stream()
-                .filter(Predicate.not<ParseFailureReason?>(Predicate { obj: ParseFailureReason? -> obj!!.untilEndOfInput() }))
-                .map<String?> { obj: ParseFailureReason? -> obj!!.failureReasonString() }
-                .distinct().toList()
+            .filter { obj: ParseFailureReason -> obj.untilEndOfInput }
+            .map { obj: ParseFailureReason -> obj.failureReasonString() }
+            .distinct()
+        val partialReasons = reason
+            .filterNot({ obj: ParseFailureReason -> obj.untilEndOfInput() })
+            .map { obj: ParseFailureReason? -> obj!!.failureReasonString() }
+            .distinct()
 
         val total = fullReasons.size + partialReasons.size
 

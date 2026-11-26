@@ -5,8 +5,6 @@ import de.kleinert.parsewisp.collections.FlatResultSeq.Companion.make
 import de.kleinert.parsewisp.functions.Listener
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.result.success.ParseMessage
-import java.util.function.BiFunction
-import java.util.stream.Stream
 
 /**
  * This class provides limited utility for interacting with the host environment and can modify the parse tree.
@@ -17,7 +15,7 @@ class TransformRule private constructor(
     hide: Boolean,
     red: ReductionType,
     rule: Rule,
-    private val transformer: BiFunction<List<Any?>, Int, List<Any?>>
+    private val transformer: (List<Any?>, Int)-> List<Any?>
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
         runner.pushListener(makeKey(index, rule), commonListener(runner, index))
@@ -31,16 +29,16 @@ class TransformRule private constructor(
         return Listener { result: ParseMessage? ->
             var wrapped = result!!.result
             wrapped = if (wrapped is FlatResultSeq)
-                wrapped.stream()
+                wrapped.toList()
             else
-                Stream.ofNullable(wrapped)
+                listOf(wrapped)
             runner.pushSuccessMessage(
                 makeKey(index, this),
                 frs(
-                    transformer.apply(
-                        (wrapped as Stream<*>).toList() as List<Any?>,
+                    transformer(
+                        wrapped,
                         result.index()
-                    )!!
+                    )
                 ),
                 result.index()
             )
@@ -59,12 +57,12 @@ class TransformRule private constructor(
         return if (getReduction1() === red) this else TransformRule(hide, red, rule, transformer)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o == null || javaClass != o.javaClass) return false
-        if (!super.equals(o)) return false
+    override fun equals(other: Any?): Boolean {
+        if (other == null || javaClass != other.javaClass) return false
+        if (!super.equals(other)) return false
 
-        val that = o as TransformRule
-        return transformer == that.transformer
+        val that = other as TransformRule
+        return transformer === that.transformer
     }
 
     override fun hashCode(): Int {
@@ -82,7 +80,7 @@ class TransformRule private constructor(
          * @return A rule.
          * @since 0.9.7
          */
-        fun create(rule: Rule, transformer: BiFunction<List<Any?>, Int, List<Any?>>): Rule {
+        fun create(rule: Rule, transformer: (List<Any?>, Int) -> List<Any?>): Rule {
             return TransformRule(defaultHidden, defaultReductionType, rule, transformer)
         }
 

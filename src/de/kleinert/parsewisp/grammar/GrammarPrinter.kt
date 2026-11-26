@@ -21,8 +21,6 @@ import de.kleinert.parsewisp.parsing.TransformRule
 import de.kleinert.parsewisp.parsing.ValueRangeTerm
 import de.kleinert.parsewisp.parsing.VariableRepetitionRule
 import de.kleinert.parsewisp.parsing.ZeroOrMoreRule
-import java.util.*
-import java.util.stream.Collectors
 
 /**
  * This class implements methods to provide pretty formatting for grammars. It can be overridden for other grammar formats.
@@ -80,11 +78,11 @@ interface GrammarPrinter {
     fun toString(grammar: Grammar): String {
         val sb = StringBuilder()
         val start = grammar.startSym
-        sb.append(productionToString(start, Objects.requireNonNull<Rule?>(grammar.getProduction(start))!!))
-        for (symRuleEntry in grammar.entries) {
-            if (symRuleEntry.key != start) {
+        sb.append(productionToString(start, grammar.getProduction(start)!!))
+        for ((key, value) in grammar) {
+            if (key != start) {
                 sb.append('\n')
-                sb.append(productionToString(symRuleEntry.key, symRuleEntry.value))
+                sb.append(productionToString(key, value))
             }
         }
         return sb.toString()
@@ -204,7 +202,7 @@ interface GrammarPrinter {
             is StringTerm -> strTermToString(rule)
             is ValueRangeTerm -> valRangeToString(rule)
             is TransformRule -> transformerToString(rule)
-            else -> throw IllegalArgumentException("Unsupported rule type: " + rule)
+            else -> throw IllegalArgumentException("Unsupported rule type: $rule")
         }
 
         sb.append(s)
@@ -225,9 +223,9 @@ interface GrammarPrinter {
      * @since 0.9.7
      */
     fun altToString(rule: AlternationRule): String {
-        return rule.rules.stream()
-            .map<String?> { it: Rule? -> parens(rule, it!!) }
-            .collect(Collectors.joining(" | "))
+        return rule.rules
+            .map { it: Rule -> parens(rule, it) }
+            .joinToString(" | ")
     }
 
     /**
@@ -241,9 +239,9 @@ interface GrammarPrinter {
      * @since 0.9.7
      */
     fun catToString(rule: ConcatRule): String {
-        return rule.rules.stream()
-            .map<String?> { it: Rule? -> parens(rule, it!!) }
-            .collect(Collectors.joining(" "))
+        return rule.rules
+            .map { parens(rule, it) }
+            .joinToString(" ")
     }
 
     /**
@@ -373,9 +371,9 @@ interface GrammarPrinter {
      * @since 0.9.7
      */
     fun ordToString(rule: OrderedChoiceRule): String {
-        return rule.rules.stream()
-            .map<String?> { it: Rule? -> parens(rule, it!!) }
-            .collect(Collectors.joining(" / "))
+        return rule.rules
+            .map { parens(rule, it) }
+            .joinToString(" / ")
     }
 
     /**
@@ -389,7 +387,7 @@ interface GrammarPrinter {
      * @since 0.9.7
      */
     fun regexpToString(rule: RegexTerm): String {
-        return "#\"" + escape(rule.regexp.pattern(), '"'.code) + "\""
+        return "#\"" + escape(rule.regexp.pattern, '"'.code) + "\""
     }
 
     /**
@@ -449,7 +447,7 @@ interface GrammarPrinter {
      * @since 0.9.7
      */
     fun transformerToString(rule: TransformRule): String {
-        return ruleToString(rule)
+        return ruleToString(rule.rule)
     }
 
     /**
@@ -493,7 +491,7 @@ interface GrammarPrinter {
                 }
 
                 override fun hashCode(): Int {
-                    return Objects.hashCode(javaClass)
+                    return javaClass.hashCode()
                 }
 
                 override fun toString(): String {

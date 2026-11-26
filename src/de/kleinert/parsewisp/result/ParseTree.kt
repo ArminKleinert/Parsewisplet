@@ -5,7 +5,6 @@ import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.collections.FlatResultSeq
 import de.kleinert.parsewisp.result.Node.NodeParseTree
 import de.kleinert.parsewisp.result.Node.NodeTreeTag
-import java.util.Optional
 
 /**
  * This class represents parse trees. Throughout the documentation, trees are typically notated as lists.
@@ -130,10 +129,10 @@ class ParseTree private constructor(
      * @throws IllegalArgumentException if this tree has no span specified.
      * @since 0.9.7
      */
-    fun containedString(s: String): Optional<String> {
-        if (spanEndExclusive == -1) return Optional.empty<String>()
+    fun containedString(s: String): String? {
+        if (spanEndExclusive == -1) return null
         require(s.length >= spanEndExclusive)
-        return Optional.of<String>(s.substring(spanStart, spanEndExclusive))
+        return s.substring(spanStart, spanEndExclusive)
     }
 
     override fun toString(): String {
@@ -263,7 +262,7 @@ class ParseTree private constructor(
         ): ParseTree {
             val afs = when (content) {
                 null -> listOf()
-                is FlatResultSeq -> content.stream().map { o: Any? -> Node.of(o) }.toList()
+                is FlatResultSeq -> content.toList().map { o: Any? -> Node.of(o) }
                 is String -> listOf(Node.of(content))
                 is TotalParsesFailureNode -> listOf(Node.of(content))
                 is ParseFailureNode -> listOf(Node.of(content))

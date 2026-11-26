@@ -4,9 +4,7 @@ import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.reduction.ReductionType
-import de.kleinert.parsewisp.result.success.ParseMessage
 import java.lang.ref.WeakReference
-import java.util.function.Predicate
 
 /**
  * Describes the "Syntactic exception" or "except" operator. That is the `(p1 - p2)` operator in EBNF (where p1 and p2 are instances of [Rule]).
@@ -50,8 +48,8 @@ class ExclusionRule private constructor(
 
         runner.pushListener(
             makeKey(index, expected),
-             { expectedSuccess: ParseMessage? ->
-                val substring = runner.tramp().text.substring(index, expectedSuccess!!.index())
+             { expectedSuccess ->
+                val substring = runner.tramp().text.substring(index, expectedSuccess.index())
                 if (reparsePart(substring, runner)) {
                     runner.fail(nodeKeyForThis, index, this, false)
                     return@pushListener
@@ -65,8 +63,8 @@ class ExclusionRule private constructor(
 
         runner.pushListener(
             makeKey(index, expected),
-             { expectedSuccess: ParseMessage? ->
-                val substring = runner.tramp().text.substring(index, expectedSuccess!!.index())
+             { expectedSuccess ->
+                val substring = runner.tramp().text.substring(index, expectedSuccess.index())
                 if (reparsePart(substring, runner)) {
                     runner.fail(nodeKeyForThis, index, this, true)
                     return@pushListener
@@ -81,7 +79,7 @@ class ExclusionRule private constructor(
 
     init {
         val stringOrRegexPredicate =
-            Predicate { it: Rule? ->
+            { it: Rule? ->
                 it is StringTerm
                         || it is RegexTerm
                         || it is EpsilonTerm
@@ -147,7 +145,7 @@ class ExclusionRule private constructor(
                 (r1.string == subs)
         }
         if (r1 is RegexTerm) {
-            return r1.regexp.matcher(subs).matches()
+            return r1.regexp.matches(subs)
         }
         if (r1 is EpsilonTerm) {
             return subs.isEmpty()

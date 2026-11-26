@@ -28,9 +28,9 @@ internal class LookaheadRuleTest {
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf<Rule>(
-                        LookaheadRule.create(RegexTerm.create(Pattern.compile("[a-zA-Z]"))),  // Look for any letter
-                        LookaheadRule.create(RegexTerm.create(Pattern.compile("[a-fA-F0-9]"))),  // Look for any hex digit
-                        RegexTerm.create(Pattern.compile("[\\x00-\\xFF]+")) // Any 8-bit ascii
+                        LookaheadRule.create(RegexTerm.create(Regex("[a-zA-Z]"))),  // Look for any letter
+                        LookaheadRule.create(RegexTerm.create(Regex("[a-fA-F0-9]"))),  // Look for any hex digit
+                        RegexTerm.create(Regex("[\\x00-\\xFF]+")) // Any 8-bit ascii
                     )
                 )
             )
@@ -54,7 +54,7 @@ internal class LookaheadRuleTest {
                     listOf(
                         LookaheadRule.create(StringTerm.create("a", false)),
                         LookaheadRule.create(StringTerm.create("a", false)),
-                        RegexTerm.create(Pattern.compile("[a-z]"))
+                        RegexTerm.create(Regex("[a-z]"))
                     )
                 )
             )
@@ -70,7 +70,7 @@ internal class LookaheadRuleTest {
                 "S", ConcatRule.create(
                     listOf(
                         LookaheadRule.create(StringTerm.create("a", false)),
-                        RegexTerm.create(Pattern.compile("[a-z]"))
+                        RegexTerm.create(Regex("[a-z]"))
                     )
                 )
             )
@@ -87,7 +87,7 @@ internal class LookaheadRuleTest {
                     listOf(
                         LookaheadRule.create(StringTerm.create("a", false)),
                         LookaheadRule.create(StringTerm.create("b", false)),
-                        RegexTerm.create(Pattern.compile("[a-z]"))
+                        RegexTerm.create(Regex("[a-z]"))
                     )
                 )
             )
@@ -224,7 +224,7 @@ internal class LookaheadRuleTest {
                 "S", ConcatRule.create(
                     listOf<Rule>(
                         r,
-                        RegexTerm.create(Pattern.compile("[a-z]"))
+                        RegexTerm.create(Regex("[a-z]"))
                     )
                 )
             )
@@ -237,7 +237,7 @@ internal class LookaheadRuleTest {
                 "S", ConcatRule.create(
                     listOf<Rule>(
                         r.withHideTag(false),
-                        RegexTerm.create(Pattern.compile("[a-z]"))
+                        RegexTerm.create(Regex("[a-z]"))
                     )
                 )
             )
@@ -250,7 +250,7 @@ internal class LookaheadRuleTest {
                 "S", ConcatRule.create(
                     listOf<Rule>(
                         r.withHideTag(true),
-                        RegexTerm.create(Pattern.compile("[a-z]"))
+                        RegexTerm.create(Regex("[a-z]"))
                     )
                 )
             )
@@ -276,7 +276,7 @@ internal class LookaheadRuleTest {
                 "A", ConcatRule.create(
                     listOf<Rule>(
                         r,
-                        RegexTerm.create(Pattern.compile("[a-z]"))
+                        RegexTerm.create(Regex("[a-z]"))
                     )
                 )
             )
@@ -335,7 +335,7 @@ internal class LookaheadRuleTest {
                 "A", ConcatRule.create(
                     listOf<Rule>(
                         r.withReduction(ReductionType.taggedTree(sym("B"))),
-                        RegexTerm.create(Pattern.compile("[a-z]"))
+                        RegexTerm.create(Regex("[a-z]"))
                     )
                 )
             )

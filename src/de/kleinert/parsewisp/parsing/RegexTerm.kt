@@ -3,9 +3,6 @@ package de.kleinert.parsewisp.parsing
 import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.trampoline.ListenerKey
-import java.util.*
-import java.util.function.IntPredicate
-import java.util.regex.Pattern
 
 /**
  * Represents terminal expressions from regular expressions.
@@ -28,12 +25,10 @@ class RegexTerm private constructor(
      * @return The regex.
      * @since 0.9.7
      */
-    val regexp: Pattern
+    val regexp: Regex
 ) : Terminal(hide, red) {
     private fun reMatchAtFront(text: CharSequence): String? {
-        val matcher = regexp.matcher(text)
-        if (matcher.lookingAt()) return matcher.group()
-        return null
+        return regexp.matchAt(text, 0)?.value
     }
 
     /**
@@ -100,11 +95,11 @@ class RegexTerm private constructor(
         if (other !is RegexTerm) return false
         if (this === other) return true
         return hide == other.hide && red == other.red
-                && regexp.pattern() == other.regexp.pattern()
+                && regexp.pattern == other.regexp.pattern
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(hide, red, regexp.pattern())
+        return hash(hide, red, regexp.pattern)
     }
 
     companion object {
@@ -115,9 +110,9 @@ class RegexTerm private constructor(
          * @return A rule.
          * @since 0.9.7
          */
-        fun create(regexp: Pattern): Rule {
-            val s = regexp.pattern()
-            if (regexp.flags() == 0 && s.chars()
+        fun create(regexp: Regex): Rule {
+            val s = regexp.pattern
+            if (regexp.options.contains(RegexOption.LITERAL) && s.chars()
                     .allMatch({ codePoint: Int -> Character.isLetterOrDigit(codePoint) })
             ) return StringTerm.createDirect(s, false)
             return RegexTerm(defaultHidden, defaultReductionType, regexp)

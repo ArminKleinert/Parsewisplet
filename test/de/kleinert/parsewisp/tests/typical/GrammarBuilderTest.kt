@@ -146,7 +146,7 @@ internal class GrammarBuilderTest {
                     zeroOrMore(
                         transform(
                             cat(regex("[0-9]+"), opt(string(" ")).hideInResult()),
-                            { r, _ -> listOf((r.get(0) as String?)!!.toLong()) })
+                            { r, _ -> listOf((r[0] as String?)!!.toLong()) })
                     )
                 )
                 startProduction = sym("S")

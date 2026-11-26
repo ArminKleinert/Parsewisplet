@@ -1,6 +1,5 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.functions.NegativeListener
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.trampoline.ListenerKey
 

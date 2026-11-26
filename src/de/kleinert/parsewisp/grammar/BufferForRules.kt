@@ -78,7 +78,7 @@ internal class BufferForRules {
         }
     }
 
-    private val regexTermMap1: MutableMap<Pattern, Rule> = HashMap()
+    private val regexTermMap1: MutableMap<Regex, Rule> = HashMap()
 
     /**
      * Adds a [Rule] based on the string. If the object was already present in the buffer, returns the old one.
@@ -86,7 +86,7 @@ internal class BufferForRules {
      * @return A [RegexTerm] or whatever [RegexTerm.create] would return for the same inputs.
      * @see RegexTerm.create
      */
-    fun getOrAddRegex(pattern: Pattern): Rule {
-        return regexTermMap1.computeIfAbsent(pattern) { regexp: Pattern? -> RegexTerm.create(regexp!!) }
+    fun getOrAddRegex(pattern: Regex): Rule {
+        return regexTermMap1.computeIfAbsent(pattern) { regexp: Regex? -> RegexTerm.create(regexp!!) }
     }
 }

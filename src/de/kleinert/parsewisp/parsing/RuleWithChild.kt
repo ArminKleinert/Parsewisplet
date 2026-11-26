@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.reduction.ReductionType
-import java.util.*
 
 /**
  * Abstraction of [Rule] types which wrap one other [Rule]. Examples: repetitions, optionals, lookahead.
@@ -42,7 +41,6 @@ internal constructor(
 
     override fun equals(other: Any?): Boolean {
         if (javaClass != other?.javaClass) return false
-        if (hashCode() != other.hashCode()) return false
         val that = other as RuleWithChild
         if (isHiddenInResult != that.isHiddenInResult) return false
         if (reduction != that.reduction) return false
@@ -51,7 +49,7 @@ internal constructor(
 
     override fun hashCode(): Int {
         if (bufferedHashCode == Long.MIN_VALUE) bufferedHashCode =
-            Objects.hash(javaClass, reduction, isHiddenInResult, this.rule).toLong()
+            hash(javaClass, reduction, isHiddenInResult, this.rule).toLong()
         return bufferedHashCode.toInt()
     }
 }

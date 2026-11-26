@@ -6,12 +6,8 @@ import de.kleinert.parsewisp.functions.Listener
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.result.success.ParseMessage
 import de.kleinert.parsewisp.trampoline.ListenerKey
-import java.lang.Long
-import java.util.*
-import kotlin.Any
-import kotlin.Boolean
-import kotlin.Int
-import kotlin.require
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * A class representing the ABNF counted repetition operator.
@@ -151,17 +147,17 @@ class VariableRepetitionRule private constructor(
         return if (getReduction1() === red) this else VariableRepetitionRule(hide, red, rule, min, max)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is VariableRepetitionRule) return false
-        if (this === o) return true
-        return hide == o.hide && red == o.red
-                && rule == o.rule
-                && min == o.min
-                && max == o.max
+    override fun equals(other: Any?): Boolean {
+        if (other !is VariableRepetitionRule) return false
+        if (this === other) return true
+        return hide == other.hide && red == other.red
+                && rule == other.rule
+                && min == other.min
+                && max == other.max
     }
 
     override fun hashCode(): Int {
-        return min * 31 + max * 31 + Objects.hash(hide, red, rule)
+        return min * 31 + max * 31 + hash(hide, red, rule)
     }
 
     companion object {
@@ -179,11 +175,11 @@ class VariableRepetitionRule private constructor(
             if (min == 0 && max == 0) return EpsilonTerm.default
             if (rule is EpsilonTerm || (min == 1 && max == 1)) return rule
             if ((rule is VariableRepetitionRule) && rule.min <= 1 && min <= 1) {
-                val newMin = Long.min(
+                val newMin = min(
                     Int.MAX_VALUE.toLong(),
                     (rule.min.toLong()) * min
                 ).toInt()
-                val newMax = Long.min(
+                val newMax = max(
                     Int.MAX_VALUE.toLong(),
                     (rule.max.toLong()) * max
                 ).toInt()

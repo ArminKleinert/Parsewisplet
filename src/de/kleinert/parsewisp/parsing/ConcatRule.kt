@@ -6,7 +6,6 @@ import de.kleinert.parsewisp.functions.Listener
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.result.success.ParseMessage
 import de.kleinert.parsewisp.trampoline.ListenerKey
-import java.util.*
 
 /**
  * This class represents a concatenation of productions, written as `p1 p2 p3 ...` (where p1, p2, etc. are instances of [Rule]).

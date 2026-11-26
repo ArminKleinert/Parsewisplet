@@ -8,37 +8,33 @@ import de.kleinert.parsewisp.result.ParseResult
 import de.kleinert.parsewisp.util.Transform
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.function.Function
-import java.util.function.IntFunction
 
 internal class ParserAsFunctionTest {
     @Test
     fun asMapper() {
         val p = parser("S = #'[A-Z]'")
         val strings =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj(IntFunction { it: Int -> it.toChar().toString() })
-                .toList()
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray().map { it.toString() }
         Assertions.assertEquals(
-            strings.stream().map<ParseResult?> { it: String -> p.parse(it, ParsingOptions.default) }.toList(),
-            strings.stream().map<ParseResult?> { text: String -> p.parse(text) }.toList()
+            strings.map { it: String -> p.parse(it, ParsingOptions.default) },
+            strings.map { text: String -> p.parse(text) }
         )
     }
 
     @Test
     fun asMapper2() {
-        val transformMap = mapOf<Sym, Function<List<Any?>, Any?>>(
-            sym("S") to Function { o ->
+        val transformMap = mapOf<Sym, (List<Any?>)-> Any?>(
+            sym("S") to { o ->
                 o.map { it as String? }
-                    .map { it!!.get(0) }
+                    .map { it!![0] }
                     .map { i -> i.code }
                     .first()
             }
         )
         val p = parser("S = #'[A-Z]'")
         val strings =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars().mapToObj(IntFunction { it: Int -> it.toChar().toString() })
-                .toList()
-        val ints = strings.stream().map<Int?> { s: String -> s.get(0).code }.toList()
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray().map { it.toString() }
+        val ints = strings.stream().map<Int?> { s: String -> s[0].code }.toList()
 
         Assertions.assertEquals(
             ints,

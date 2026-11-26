@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.reduction.ReductionType
-import java.util.*
 
 /**
  * Abstraction of [Rule] types which wrap multiple other [Rule] instances. Examples: choices, concatenations.
@@ -30,7 +29,7 @@ abstract class RuleWithManyChildren
     override fun includeInResult(): RuleWithManyChildren {
         return (withHideTag(false) as RuleWithManyChildren).withRules(
             this.rules
-                .map { obj: Rule -> obj!!.includeInResult() })
+                .map { obj: Rule -> obj.includeInResult() })
     }
 
     /**
@@ -42,10 +41,10 @@ abstract class RuleWithManyChildren
      */
     abstract fun withRules(rules: List<Rule>): RuleWithManyChildren
 
-    override fun equals(o: Any?): Boolean {
-        if (javaClass != o?.javaClass) return false
-        if (hashCode() != o.hashCode()) return false
-        val that = o as RuleWithManyChildren
+    override fun equals(other: Any?): Boolean {
+        if (javaClass != other?.javaClass) return false
+        if (hashCode() != other.hashCode()) return false
+        val that = other as RuleWithManyChildren
         if (isHiddenInResult1() != that.isHiddenInResult1()) return false
         if (getReduction1() != that.getReduction1()) return false
         return this.rules == that.rules
@@ -53,7 +52,7 @@ abstract class RuleWithManyChildren
 
     override fun hashCode(): Int {
         if (bufferedHashCode == Long.MIN_VALUE) bufferedHashCode =
-            Objects.hash(javaClass, getReduction1(), isHiddenInResult1(), this.rules).toLong()
+            hash(javaClass, getReduction1(), isHiddenInResult1(), this.rules).toLong()
         return bufferedHashCode.toInt()
     }
 }

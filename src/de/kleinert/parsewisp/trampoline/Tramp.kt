@@ -5,7 +5,6 @@ import de.kleinert.parsewisp.functions.Procedure
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.result.ParseFailure
 import de.kleinert.parsewisp.result.success.ParseMessage
-import java.util.*
 
 /**
  * This class carries the inner state during the parsing process. It should not be used directly.
@@ -41,8 +40,8 @@ class Tramp(
      * @return A stack of derivative parse procedures of the current generation.
      * @since 0.9.7
      */
-    val stack: ArrayList<Procedure> = ArrayList<Procedure>()
-    private val nextStack: ArrayList<Procedure> = ArrayList<Procedure>()
+    val stack = ArrayList<Procedure>()
+    private val nextStack = ArrayList<Procedure>()
 
     /**
      * The current generation of derivatives.
@@ -59,10 +58,10 @@ class Tramp(
      * @return Sequential map of negative lookaheads.
      * @since 0.9.7
      */
-    val negativeListeners: TreeMap<Int, ArrayList<NegativeListener>> = TreeMap()
+    val negativeListeners = sortedMapOf<Int, ArrayList<NegativeListener>>()
 
-    private val msgCache: LinkedHashMap<MsgCacheKey, Int> = LinkedHashMap()
-    private val nodes: LinkedHashMap<ListenerKey, ListenerNode> = LinkedHashMap()
+    private val msgCache = LinkedHashMap<MsgCacheKey, Int>()
+    private val nodes = LinkedHashMap<ListenerKey, ListenerNode>()
 
     /**
      * Last registered success.

@@ -2,8 +2,7 @@ package de.kleinert.parsewisp.result
 
 import de.kleinert.parsewisp.collections.LazySupplierList
 import de.kleinert.parsewisp.collections.PretenderList
-import java.util.*
-import java.util.function.IntFunction
+import java.util.Objects
 
 /**
  * A class for the results of multiple parses. This typically covers [LazyResultList] and [ParsesFailureResult].
@@ -63,7 +62,7 @@ interface ParsesResult : List<ParseTree> {
      * @param maxResults Maximum number of results.
      * @since 0.9.7
      */
-        (nextFn: IntFunction<ParseTree?>, maxResults: Int) : LazySupplierList<ParseTree>(nextFn, maxResults),
+        (nextFn: (Int)->ParseTree?, maxResults: Int) : LazySupplierList<ParseTree>(nextFn, maxResults),
         ParsesResult
 
     /**
@@ -84,7 +83,6 @@ interface ParsesResult : List<ParseTree> {
         }
 
         override fun get(index: Int): ParseTree {
-            Objects.checkIndex(index, 0)
             throw IllegalStateException()
         }
 

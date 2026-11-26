@@ -2,7 +2,6 @@ package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.reduction.ReductionType
-import java.util.*
 
 /**
  * A class representing a choice or alternation. That is the `(p1 | p2)` operator in EBNF (where p1 and p2 are instances of [Rule]).

@@ -8,10 +8,6 @@ import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parser_options.RedefinitionOption
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
-import java.util.*
-import java.util.function.BiFunction
-import java.util.function.Function
-import java.util.regex.Pattern
 
 /**
  * This class provides an easy way to construct grammars. To use it, it needs to be inherited and the [.make] method overridden.
@@ -29,7 +25,7 @@ import java.util.regex.Pattern
  * @since 0.9.7
  */
 abstract class GrammarBuilder protected constructor(redefinitionOption: RedefinitionOption = RedefinitionOption.defaultOption) {
-    private val productions: LinkedHashMap<Sym, Rule> = LinkedHashMap<Sym, Rule>()
+    private val productions: LinkedHashMap<Sym, Rule> = LinkedHashMap()
     private val buffer: BufferForRules = BufferForRules()
     private val redefinitionOpt: RedefinitionOption = redefinitionOption
     private var wasMakeCalled = false
@@ -177,7 +173,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @return A [RegexTerm] or something that returns equivalent outputs when parsing.
      * @since 0.9.7
      */
-    protected fun regex(p: Pattern): Rule {
+    protected fun regex(p: Regex): Rule {
         return buffer.getOrAddRegex(p)
     }
 
@@ -189,7 +185,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun regex(s: String): Rule {
-        return buffer.getOrAddRegex(Pattern.compile(s))
+        return buffer.getOrAddRegex(Regex(s))
     }
 
     /**
@@ -324,7 +320,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @return The new rule.
      * @since 0.9.7
      */
-    protected fun transform(rule: Rule, transform: BiFunction<List<Any?>, Int, List<Any?>>): Rule {
+    protected fun transform(rule: Rule, transform: (List<Any?>, Int) -> List<Any?>): Rule {
         return TransformRule.create(rule, transform)
     }
 
@@ -493,7 +489,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      */
     protected fun specialSequence(
         description: String,
-        function: Function<String, Optional<String>>
+        function: (String) -> String?
     ): Rule {
         return SpecialSequenceRule.create(description, function)
     }

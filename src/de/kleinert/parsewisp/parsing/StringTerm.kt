@@ -2,7 +2,6 @@ package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.trampoline.ListenerKey
-import java.util.*
 
 /**
  * Represents string terminals (both case-sensitive or case-insensitive).<br></br>
@@ -74,7 +73,7 @@ class StringTerm private constructor(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(hide, red, string, this.isCaseInsensitive)
+        return hash(hide, red, string, this.isCaseInsensitive)
     }
 
     companion object {

@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.reduction.ReductionType
-import java.util.*
 
 /**
  * This class should almost never be used, but can have its uses occasionally.
@@ -38,7 +37,7 @@ class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(hide, red)
+        return hash(hide, red)
     }
 
     companion object {

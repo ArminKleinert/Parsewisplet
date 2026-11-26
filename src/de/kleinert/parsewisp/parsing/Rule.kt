@@ -136,6 +136,8 @@ protected constructor(
          * @since 0.9.7
          */
         protected const val defaultHidden: Boolean = false
+
+        fun hash(vararg any: Any): Int = any.contentHashCode()
     }
 }
 

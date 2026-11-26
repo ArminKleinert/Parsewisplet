@@ -126,20 +126,20 @@ class FlatResultSeq {
      * @return A stream for this sequence.
      * @since 0.9.7
      */
-    fun stream(): Stream<Any?> {
+    fun toList(): List<Any?> {
         if (cached == null) {
             cached = arrayOfNulls(size)
             flatten(cached!!, size - 1)
         }
-        return Arrays.stream(cached)
+        return cached!!.toList()
     }
 
     /**
      * Adds an element or multiple elements to this sequence.
      *
      *  * If the input is `null`, do nothing.
-     *  * If the input is a [FlatResultSeq], add all elements flattened, as if by [Collection.addAll]
-     *  * Otherwise, add the input as a single element, as if by [Collection.add].
+     *  * If the input is a [FlatResultSeq], add all elements flattened, as if by [MutableCollection.addAll]
+     *  * Otherwise, add the input as a single element, as if by [MutableCollection.add].
      *
      *
      * @param obj The input.

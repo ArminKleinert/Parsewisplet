@@ -72,9 +72,9 @@ class ReductionType private constructor(
         TAGGED_PARSE_TREE
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as ReductionType
+    override fun equals(other: Any?): Boolean {
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as ReductionType
         return key == that.key
     }
 

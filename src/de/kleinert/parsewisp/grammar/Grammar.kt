@@ -2,9 +2,6 @@ package de.kleinert.parsewisp.grammar
 
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import java.util.*
-import java.util.function.Predicate
-import java.util.stream.Collectors
 
 /**
  * A type representing a Grammar.
@@ -25,15 +22,8 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
      */
     val startSym: Sym
 
-    /**
-     * Create a new instance.
-     *
-     * @param startSym Starting production key.
-     * @param m        Map of productions.
-     * @since 0.9.7
-     */
     init {
-        require(!m.isEmpty()) { "Empty grammar." }
+        require(m.isNotEmpty()) { "Empty grammar." }
 
         super.put(startSym, m.get(startSym)!!)
         super.putAll(m)
@@ -45,7 +35,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
         if ((o !is Grammar) || o.size != size || (this.startSym != o.startSym)) return false
 
         for (symRuleEntry in entries) {
-            if (o.getProduction(symRuleEntry.key!!) != symRuleEntry.value) {
+            if (o.getProduction(symRuleEntry.key) != symRuleEntry.value) {
                 return false
             }
         }
@@ -107,10 +97,10 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
          * @return A collection of all non-terminals which appear on the right-hand side of any production.
          * @since 0.9.7
          */
-        fun usedNTs(): MutableSet<Sym?> {
-            return collect(Predicate { it: Rule? -> it is NonTerminal }).stream()
-                .map<Sym?> { it: Rule? -> (it as NonTerminal).keyword }
-                .collect(Collectors.toSet())
+        fun usedNTs(): Set<Sym> {
+            return collect({ it: Rule -> it is NonTerminal })
+                .map { it: Rule -> (it as NonTerminal).keyword }
+                .toSet()
         }
 
         /**
@@ -124,9 +114,9 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
          * @return A collection of rules that match the predicate.
          * @since 0.9.7
          */
-        fun collect(collector: Predicate<Rule?>): MutableSet<Rule?> {
-            val result: MutableSet<Rule?> = HashSet<Rule?>()
-            val analyzedRules = Collections.newSetFromMap<Rule?>(IdentityHashMap<Rule?, Boolean?>())
+        fun collect(collector: (Rule) -> Boolean): Set<Rule> {
+            val result: MutableSet<Rule> = HashSet()
+            val analyzedRules = mutableSetOf<Rule>()
             val ruleStack = ArrayList<Rule>(grammar.values)
             var rule: Rule
 
@@ -143,7 +133,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
                     ruleStack.add(rule.rule)
                 }
 
-                if (collector.test(rule)) {
+                if (collector(rule)) {
                     result.add(rule)
                 }
             }
@@ -151,7 +141,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
             return result
         }
 
-        val unusedNTs: MutableCollection<Sym?>
+        val unusedNTs: Collection<Sym>
             /**
              * Returns all NTs that are defined but unused. Effectively, this is a list of unused productions.
              *
@@ -172,13 +162,13 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
              */
             get() {
                 val usedNTs = usedNTs()
-                return definedNTs().stream()
-                    .filter { it: Sym? -> !usedNTs.contains(it) }
-                    .filter { it: Sym? -> it != grammar.startSym}
-                    .collect(Collectors.toSet())
+                return definedNTs()
+                    .filter { !usedNTs.contains(it) }
+                    .filter { it != grammar.startSym }
+                    .toSet()
             }
 
-        val undefinedUsedNTs: MutableCollection<Sym?>
+        val undefinedUsedNTs: Collection<Sym>
             /**
              * Returns a Collection of keys that are used, but not defined. For any valid grammar, the returned collection is empty.
              *
@@ -193,7 +183,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
              */
             get() {
                 val definedNTs = definedNTs()
-                return usedNTs().stream().filter { it: Sym? -> !definedNTs.contains(it) }.collect(Collectors.toSet())
+                return usedNTs().filter { it: Sym? -> !definedNTs.contains(it) }.toSet()
             }
 
         val isValid: Boolean
@@ -201,11 +191,11 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
              * Checks whether the Grammar is valid.
              *
              * @return true or false
-             * @see GrammarInfo.getUndefinedUsedNTs
+             * @see GrammarInfo.undefinedUsedNTs
              * @since 0.9.7
              */
             get() = this.undefinedUsedNTs.isEmpty()
-                    && !definedTerminals().isEmpty()
+                    && definedTerminals().isNotEmpty()
 
         /**
          * Collects all terminals and equivalent rules. If a rule occurs multiple times in the grammar, it still appears only once in the resulting collection.
@@ -213,8 +203,8 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
          * @return A collection of all terminals and special sequences (functions).
          * @since 0.9.7
          */
-        fun definedTerminals(): MutableSet<Rule?> {
-            return collect(Predicate { it: Rule? -> it is Terminal || it is SpecialSequenceRule })
+        fun definedTerminals(): Set<Rule> {
+            return collect({ it: Rule -> it is Terminal || it is SpecialSequenceRule })
         }
 
         /**
@@ -229,8 +219,8 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
 
             requireNotNull(startRule) { "Symbol not in grammar: " + start }
 
-            val visited = HashSet<Rule?>()
-            val stack = ArrayList<Rule?>()
+            val visited = HashSet<Rule>()
+            val stack = ArrayList<Rule>()
             stack.add(startRule)
 
             val reachable = LinkedHashSet<Sym>()
@@ -249,8 +239,8 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
                 } else if (rule is NonTerminal) {
                     val key = rule.keyword
                     val prod = grammar.getProduction(key)
-                    requireNotNull(prod) { "Symbol not in grammar: " + start }
-                    stack.add(Objects.requireNonNull<Rule?>(prod))
+                    requireNotNull(prod) { "Symbol not in grammar: $start" }
+                    stack.add(prod)
                     reachable.add(key)
                 }
             }

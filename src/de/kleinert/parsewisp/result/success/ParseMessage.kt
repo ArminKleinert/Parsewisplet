@@ -3,7 +3,6 @@ package de.kleinert.parsewisp.result.success
 import de.kleinert.parsewisp.collections.FlatResultSeq
 import de.kleinert.parsewisp.result.ParseFailureNode
 import de.kleinert.parsewisp.result.ParseTree
-import java.util.*
 
 /**
  * A parsed "result" consists of an index and an object carrying more information.
@@ -32,13 +31,13 @@ class ParseMessage
      */
     val result: Any?
 ) {
-    override fun equals(o: Any?): Boolean {
-        if (o !is ParseMessage) return false
-        return index == o.index && this.result == o.result
+    override fun equals(other: Any?): Boolean {
+        if (other !is ParseMessage) return false
+        return index == other.index && this.result == other.result
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(index, this.result)
+        return index * 32 + this.result.hashCode()
     }
 
     /**
@@ -62,10 +61,9 @@ class ParseMessage
     }
 
     override fun toString(): String {
-        return StringJoiner(", ", ParseMessage::class.java.getSimpleName() + "[", "]")
-            .add("index=" + index)
-            .add("result=" + result)
-            .toString()
+        return listOf(ParseMessage::class.java.getSimpleName(), "index=" + index, "result=" + result).joinToString(
+            separator = ", ", prefix = "[", postfix = "]"
+        )
     }
 
     companion object {

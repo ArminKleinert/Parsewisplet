@@ -1,9 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.functions.Listener
-import de.kleinert.parsewisp.functions.NegativeListener
 import de.kleinert.parsewisp.reduction.ReductionType
-import de.kleinert.parsewisp.result.success.ParseMessage
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -39,13 +36,13 @@ class NegativeLookaheadRule private constructor(
             return
         }
 
-        runner.pushListener(nodeKey, Listener { ignored: ParseMessage? ->
+        runner.pushListener(nodeKey, {
             runner.fail(
                 thisNodeKey, index, this, false
             )
         })
 
-        runner.pushNegativeListener(nodeKey, NegativeListener {
+        runner.pushNegativeListener(nodeKey, {
             if (!resultExists_Q(runner, nodeKey)) {
                 runner.pushSuccessMessageWithoutValue(thisNodeKey, index)
             }

@@ -8,11 +8,10 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.regex.Pattern
 
 internal class ExclusionRuleTest {
     private fun word(): Rule {
-        return RegexTerm.create(Pattern.compile("[a-zA-Z][a-zA-Z0-1_]*"))
+        return RegexTerm.create(Regex("[a-zA-Z][a-zA-Z0-1_]*"))
     }
 
     private fun keywords(): Rule {
@@ -152,7 +151,7 @@ internal class ExclusionRuleTest {
                 r.withRules(
                     listOf(
                         word(), keywords(),
-                        RegexTerm.create(Pattern.compile("[a-zA-Z]"))
+                        RegexTerm.create(Regex("[a-zA-Z]"))
                     )
                 )
             })
@@ -162,8 +161,8 @@ internal class ExclusionRuleTest {
                 r.withRules(
                     listOf(
                         word(), keywords(),
-                        RegexTerm.create(Pattern.compile("[a-zA-Z]")),
-                        RegexTerm.create(Pattern.compile("[0-9]"))
+                        RegexTerm.create(Regex("[a-zA-Z]")),
+                        RegexTerm.create(Regex("[0-9]"))
                     )
                 )
             })

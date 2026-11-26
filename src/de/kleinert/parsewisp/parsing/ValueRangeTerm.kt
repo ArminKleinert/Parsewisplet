@@ -2,7 +2,6 @@ package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.trampoline.ListenerKey
-import java.util.*
 
 /**
  * Represents an ABNF value range.
@@ -70,15 +69,15 @@ class ValueRangeTerm private constructor(
         return if (getReduction1() === red) this else ValueRangeTerm(hide, red, lo, hi)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is ValueRangeTerm) return false
-        if (this === o) return true
-        return hide == o.hide && red == o.red
-                && lo == o.lo && hi == o.hi
+    override fun equals(other: Any?): Boolean {
+        if (other !is ValueRangeTerm) return false
+        if (this === other) return true
+        return hide == other.hide && red == other.red
+                && lo == other.lo && hi == other.hi
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(hide, red, lo, hi)
+        return hash(hide, red, lo, hi)
     }
 
     companion object {

@@ -2,20 +2,21 @@ package de.kleinert.parsewisp.tests.typical.parsing
 
 import de.kleinert.parsewisp.Parsewisp.parser
 import de.kleinert.parsewisp.Sym.Companion.sym
-import de.kleinert.parsewisp.parsing.*
+import de.kleinert.parsewisp.parsing.ConcatRule
+import de.kleinert.parsewisp.parsing.NonTerminal
+import de.kleinert.parsewisp.parsing.SpecialSequenceRule
+import de.kleinert.parsewisp.parsing.StringTerm
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.Optional
-import java.util.function.Function
 
 internal class SpecialSequenceRuleTest {
     private fun simpleRuleForTests(): SpecialSequenceRule {
         return SpecialSequenceRule.create(
             "match \"a\"",
-            { s: String? -> if (s!!.startsWith("a")) Optional.of<String?>("a") else Optional.empty<String?>() }) as SpecialSequenceRule
+            { s: String? -> if (s!!.startsWith("a")) "a" else null }) as SpecialSequenceRule
     }
 
     private fun simple_a(): SpecialSequenceRule {
@@ -25,7 +26,7 @@ internal class SpecialSequenceRuleTest {
     private fun simple_b(): SpecialSequenceRule {
         return SpecialSequenceRule.create(
             "match \"b\"",
-            { s: String? -> if (s!!.startsWith("b")) Optional.of<String?>("b") else Optional.empty<String?>() }) as SpecialSequenceRule
+            { s: String? -> if (s!!.startsWith("b")) "b" else null }) as SpecialSequenceRule
     }
 
     @Test
@@ -34,8 +35,7 @@ internal class SpecialSequenceRuleTest {
 
     @Test
     fun getFunction() {
-        val f: Function<String, Optional<String>> =
-            Function { s: String? -> if (s!!.startsWith("a")) Optional.of<String>("a") else Optional.empty<String>() }
+        val f = { s: String -> if (s.startsWith("a")) "a" else null }
         Assertions.assertEquals(
             f,
             (SpecialSequenceRule.create("match \"a\"", f) as SpecialSequenceRule).function
@@ -44,16 +44,14 @@ internal class SpecialSequenceRuleTest {
 
     @Test
     fun create() {
-        val f: Function<String, Optional<String>> =
-            Function { s: String -> if (s.startsWith("a")) Optional.of<String>("a") else Optional.empty<String>() }
+        val f = { s: String -> if (s.startsWith("a")) "a" else null }
 
         Assertions.assertEquals(
             SpecialSequenceRule.create("match \"a\"", f),
             SpecialSequenceRule.create("match \"a\"", f)
         )
 
-        val f2: Function<String, Optional<String>> =
-            Function { s: String -> if (!s.startsWith("a")) Optional.empty<String>() else Optional.of<String>("a") }
+        val f2 = { s: String -> if (!s.startsWith("a")) null else "a" }
 
         Assertions.assertNotEquals(
             SpecialSequenceRule.create("match \"a\"", f),

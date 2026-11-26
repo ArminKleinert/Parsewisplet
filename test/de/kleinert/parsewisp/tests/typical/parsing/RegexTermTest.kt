@@ -11,7 +11,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.regex.Pattern
 
 internal class RegexTermTest {
     @Test
@@ -23,26 +22,26 @@ internal class RegexTermTest {
     }
 
     private fun digit(): RegexTerm {
-        return RegexTerm.create(Pattern.compile("[0-9]")) as RegexTerm
+        return RegexTerm.create(Regex("[0-9]")) as RegexTerm
     }
 
     private fun number(): RegexTerm {
-        return RegexTerm.create(Pattern.compile("[+\\-]?[0-9]+")) as RegexTerm
+        return RegexTerm.create(Regex("[+\\-]?[0-9]+")) as RegexTerm
     }
 
     @Test
     fun create() {
         Assertions.assertEquals(
-            RegexTerm.create(Pattern.compile("abc")),
-            RegexTerm.create(Pattern.compile("abc"))
+            RegexTerm.create(Regex("abc")),
+            RegexTerm.create(Regex("abc"))
         )
         Assertions.assertEquals(
-            RegexTerm.create(Pattern.compile("[0-9]+")),
-            RegexTerm.create(Pattern.compile("[0-9]+"))
+            RegexTerm.create(Regex("[0-9]+")),
+            RegexTerm.create(Regex("[0-9]+"))
         )
         Assertions.assertEquals(
-            RegexTerm.create(Pattern.compile("[0-9]1")),
-            RegexTerm.create(Pattern.compile("[0-9]1"))
+            RegexTerm.create(Regex("[0-9]1")),
+            RegexTerm.create(Regex("[0-9]1"))
         )
     }
 
@@ -115,14 +114,14 @@ internal class RegexTermTest {
 
     @Test
     fun getRegexp() {
-        val pattern = Pattern.compile("[0-9]")
+        val pattern = Regex("[0-9]")
         Assertions.assertEquals(
             pattern,
             (RegexTerm.create(pattern) as RegexTerm).regexp
         )
         Assertions.assertEquals(
-            pattern.pattern(),
-            (RegexTerm.create(pattern) as RegexTerm).regexp.pattern()
+            pattern.pattern,
+            (RegexTerm.create(pattern) as RegexTerm).regexp.pattern
         )
     }
 

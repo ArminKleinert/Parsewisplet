@@ -2,7 +2,6 @@ package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.reduction.ReductionType
-import java.util.*
 
 /**
  * This type represents non-terminals.
@@ -53,7 +52,7 @@ class NonTerminal private constructor(
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(hide, red, keyword)
+        return hash(hide, red, keyword)
     }
 
     companion object {

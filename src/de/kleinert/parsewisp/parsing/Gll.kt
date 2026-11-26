@@ -19,7 +19,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
 import de.kleinert.parsewisp.trampoline.ListenerNode
 import de.kleinert.parsewisp.trampoline.MsgCacheKey
 import de.kleinert.parsewisp.trampoline.Tramp
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * This class provides the general parsing algorithms.
@@ -102,12 +101,12 @@ class Gll private constructor(
     private fun run(
         maxResults: Int
     ): LazyResultList {
-        val foundResult = AtomicBoolean(false)
+        val foundResult = BooleanArray(1){false}
         return LazyResultList({ run(foundResult) }, maxResults)
     }
 
     private fun run(
-        foundResult: AtomicBoolean
+        foundResult: BooleanArray
     ): ParseTree? {
         while (true) {
             if (tramp.success != null) {
@@ -115,7 +114,7 @@ class Gll private constructor(
                 val resultTree = successResult.result
                 check(resultTree is ParseTree) { successResult.toString() + " in instance " + this.instanceIdForDebug }
                 tramp.success = null
-                foundResult.set(true)
+                foundResult[0] = true
                 return resultTree
             }
             val stack = tramp.stack
@@ -139,9 +138,9 @@ class Gll private constructor(
                 continue  // Take it to the top.
             }
 
-            if (foundResult.get()) {
+            if (foundResult[0]) {
                 tramp.nextGeneration()
-                foundResult.set(false)
+                foundResult[0]=false
                 continue  // Take it to the top.
             }
             return null // Fail

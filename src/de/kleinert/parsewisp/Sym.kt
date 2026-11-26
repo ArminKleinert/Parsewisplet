@@ -58,10 +58,9 @@ class Sym private constructor(private val name: String) {
                         o = rq.poll()
                     }
 
-                    for (e in table.entries) {
-                        val `val` = e.value
-                        if (`val`.get() == null) {
-                            table.remove(e.key, `val`)
+                    for ((key, v) in table) {
+                        if (v.get() == null) {
+                            table.remove(key, v)
                         }
                     }
                 }

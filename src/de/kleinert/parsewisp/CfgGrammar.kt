@@ -4,8 +4,6 @@ import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.grammar.GrammarBuilder
 import de.kleinert.parsewisp.parser_options.RedefinitionOption
 import de.kleinert.parsewisp.parsing.EOFTerm
-import java.util.Optional
-import java.util.regex.Pattern
 
 /**
  * A builder for grammars with Parsewisp's default format.
@@ -120,7 +118,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
                                 altUnsafe(
                                     listOf(
                                         string("?"), string("*"), string("+"),
-                                        regex(Pattern.compile("\\{\\d*(,\\d*)?}(?x) # Numbered repetition"))
+                                        regex(Regex("\\{\\d*(,\\d*)?}(?x) # Numbered repetition"))
                                     )
                                 )
                             )
@@ -144,8 +142,8 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
         addProduction(
             "string", altUnsafe(
                 listOf(
-                    regex(Pattern.compile("(%[is])?\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"(?x) # Double quoted string")),
-                    regex(Pattern.compile("(%[is])?'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'(?x) # Single quoted string"))
+                    regex(Regex("(%[is])?\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"(?x) # Double quoted string")),
+                    regex(Regex("(%[is])?'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'(?x) # Single quoted string"))
                 )
             )
         )
@@ -153,8 +151,8 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
         addProduction(
             "regexp", altUnsafe(
                 listOf(
-                    regex(Pattern.compile("#'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'(?x) # Single quoted string")),
-                    regex(Pattern.compile("#\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"(?x) # Double quoted regex"))
+                    regex(Regex("#'[^'\\\\]*(?:\\\\.[^'\\\\]*)*'(?x) # Single quoted string")),
+                    regex(Regex("#\"[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*\"(?x) # Double quoted regex"))
                 )
             )
         )
@@ -193,13 +191,13 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
 
         addProduction(
             "abnf-range", regex(
-                Pattern.compile(
+                Regex(
                     "%b[01]+(-[01]+)?|%d[0-9]+(-[0-9]+)?|%x[0-9a-fA-F]+(-[0-9a-fA-F]+)?(?x) # ABNF range"
                 )
             )
         )
 
-        val ntRegex = Pattern.compile(
+        val ntRegex = Regex(
             "[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%\\-0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%]*"
         )
         addProduction("ntOrEpsOrEof", regex(ntRegex))
@@ -207,18 +205,16 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
         val epsTerms = setOf<String?>("Epsilon", "epsilon", "EPSILON", "eps", "ε")
         addProduction(
             "nt", specialSequence(
-                "Valid nonterminal name, excluding any variant of epsilon or EOF"
-            ) { text: String ->
-                val matcher = ntRegex.matcher(text)
-                if (!matcher.lookingAt()) {
-                    return@specialSequence Optional.empty<String?>()
-                }
-                val matched = matcher.group()
-                if (epsTerms.contains(matched) || EOFTerm.text() == matched) {
-                    return@specialSequence Optional.empty<String?>()
-                }
-                Optional.of<String?>(matched)
-            }
+                "Valid nonterminal name, excluding any variant of epsilon or EOF",
+                { text: String ->
+                    val matcher = ntRegex.matchAt(text, 0)
+                        ?: return@specialSequence null
+                    val matched = matcher.value
+                    if (epsTerms.contains(matched) || EOFTerm.text() == matched) {
+                        return@specialSequence null
+                    }
+                    matched
+                })
         )
 
         addProduction(
@@ -239,7 +235,7 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
                     altUnsafe(
                         listOf(
                             nt("comment"),
-                            regex(Pattern.compile("[,\\s]*"))
+                            regex(Regex("[,\\s]*"))
                         )
                     )
                 )

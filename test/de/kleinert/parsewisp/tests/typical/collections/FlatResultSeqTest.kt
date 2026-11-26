@@ -35,24 +35,24 @@ internal class FlatResultSeqTest {
 
     @Test
     fun stream() {
-        Assertions.assertEquals(ArrayList<Any?>(), FlatResultSeq.make().stream().toList())
+        Assertions.assertEquals(ArrayList<Any?>(), FlatResultSeq.make().toList())
 
         val frs12 = FlatResultSeq.make().appendOrConcat(1).appendOrConcat(2)
         val frs121231212 = frs12.appendOrConcat(frs12).appendOrConcat(3).appendOrConcat(frs12).appendOrConcat(frs12)
 
         Assertions.assertEquals(
             mutableListOf<Int?>(2, 2, 2, 2),
-            frs121231212.stream().filter { it: Any? -> (it as Int?)!! % 2 == 0 }.toList()
+            frs121231212.toList().filter { it: Any? -> (it as Int?)!! % 2 == 0 }
         )
 
         Assertions.assertEquals(
             mutableListOf<Int?>(1, 2, 1, 2, 3, 1, 2, 1, 2),
-            frs121231212.stream().toList()
+            frs121231212.toList()
         )
 
         Assertions.assertEquals(
-            frs121231212.stream().toList(),
-            frs121231212.stream().toList()
+            frs121231212.toList(),
+            frs121231212.toList()
         )
     }
 
@@ -65,6 +65,6 @@ internal class FlatResultSeqTest {
             frs = frs.appendOrConcat(i)
             lst.add(i)
         }
-        Assertions.assertEquals(lst, frs.stream().toList())
+        Assertions.assertEquals(lst, frs.toList())
     }
 }

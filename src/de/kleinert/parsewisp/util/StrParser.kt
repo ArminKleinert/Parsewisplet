@@ -1,7 +1,5 @@
 package de.kleinert.parsewisp.util
 
-import java.util.regex.Pattern
-
 /**
  * Helper functions for creating parsers from strings.
  *
@@ -105,5 +103,5 @@ class StrParser {
      * @since 0.9.7
      */
     fun processRegexp(s: String, offset: Int, backOffset: Int) =
-        Pattern.compile(unescapeRegex(offset, backOffset, s.get(offset - 1), s))
+        Regex(unescapeRegex(offset, backOffset, s.get(offset - 1), s))
 }

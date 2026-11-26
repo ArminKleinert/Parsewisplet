@@ -7,8 +7,6 @@ import de.kleinert.parsewisp.reduction.ReductionType
  * <br></br>
  * When parsing, the process depends on whether a full parse is being done (matching to the end of the input):
  * If yes, success if the end of input has been reached, fail otherwise. If no, always success.
- *
- * @since 0.9.7
  */
 class EpsilonTerm  //private static final @NotNull EpsilonTerm epsilon = new EpsilonTerm(defaultHidden, defaultReductionType);
 private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
@@ -46,7 +44,6 @@ private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
              * A default instance of Epsilon. May be buffered, but does not have to.
              *
              * @return A default instance of Epsilon.
-             * @since 0.9.7
              */
             get() = EpsilonTerm(defaultHidden, defaultReductionType)
     }

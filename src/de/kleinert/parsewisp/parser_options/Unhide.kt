@@ -19,7 +19,6 @@ import de.kleinert.parsewisp.reduction.ReductionType
 </pre> *
  *
  * @see ParsingOptions.unhide
- * @since 0.9.7
  */
 object Unhide {
     /**
@@ -28,7 +27,6 @@ object Unhide {
      * @param grammar The grammar.
      * @return The new grammar.
      * @see ParsingOptions.unhide
-     * @since 0.9.7
      */
     fun unhideContent(grammar: Grammar): Grammar {
         val res = linkedMapOf<Sym, Rule>()
@@ -43,7 +41,6 @@ object Unhide {
      *
      * @param grammar The grammar.
      * @return The new grammar.
-     * @since 0.9.7
      */
     fun unhideTags(grammar: Grammar): Grammar {
         val res = linkedMapOf<Sym, Rule>()
@@ -62,7 +59,6 @@ object Unhide {
      *
      * @param grammar The grammar.
      * @return The new grammar.
-     * @since 0.9.7
      */
     fun unhideAll(grammar: Grammar): Grammar {
         val res = linkedMapOf<Sym, Rule>()

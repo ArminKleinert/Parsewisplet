@@ -10,7 +10,6 @@ import de.kleinert.parsewisp.result.success.ParseMessage
  * @param fullListeners Listeners that expect to be parsed to the end of the input text.
  * @param results       Successes (or failures) for listeners.
  * @param fullResults   Successes (or failures) for full listeners.
- * @since 0.9.7
  */
 data class ListenerNode(
     val listeners: MutableList<Listener>,

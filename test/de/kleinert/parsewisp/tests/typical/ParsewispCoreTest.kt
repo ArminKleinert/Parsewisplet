@@ -2,7 +2,7 @@ package de.kleinert.parsewisp.tests.typical
 
 import de.kleinert.parsewisp.Parsewisp.getPredefinedWhitespaceParser
 import de.kleinert.parsewisp.Parsewisp
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.parser_options.UnhideOptions
@@ -88,11 +88,11 @@ internal class ParsewispCoreTest {
             PT.create("AB", PT.create("A", "a", "a", "a", "a", "a"), PT.create("B", "b", "b", "b")),
             PT.create("AB", PT.create("A", "a", "a", "a", "a"), PT.create("B", "b", "b"))
         )
-        val abTag = sym("AB")
-        val aTag = sym("A")
-        val bTag = sym("B")
+        val abTag = Sym.sym("AB")
+        val aTag = Sym.sym("A")
+        val bTag = Sym.sym("B")
         val treeHiccup = listOf(
-            sym("S"),
+            Sym.sym("S"),
             listOf(abTag, listOf(aTag, "a", "a", "a", "a", "a"), listOf(bTag, "b", "b", "b")),
             listOf(abTag, listOf(aTag, "a", "a", "a", "a"), listOf(bTag, "b", "b"))
         )
@@ -146,7 +146,7 @@ internal class ParsewispCoreTest {
             "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b"
         )
         val resList = listOf<Any?>(
-            sym("S"),
+            Sym.sym("S"),
             "a", "a", "a", "a", "a", "b", "b", "b", "a", "a", "a", "a", "b", "b"
         )
 
@@ -443,7 +443,7 @@ internal class ParsewispCoreTest {
                         """.trimIndent()
         )
         val text = "defn my cond"
-        val trees = setOf<ParseTree>(
+        val trees = setOf(
             PT.create(
                 "sentence",
                 PT.create("identifier", "defn"),
@@ -657,7 +657,7 @@ internal class ParsewispCoreTest {
                         B = 'b' '='
                         
                         """.trimIndent(),
-            ParserCreationOptions.default.withStartProduction(sym("S"))
+            ParserCreationOptions.default.withStartProduction(Sym.sym("S"))
         )
         val text1 = "==="
         val text2 = "b="
@@ -965,7 +965,7 @@ internal class ParsewispCoreTest {
         val tree = PT.create(
             "Aeater",
             "a", "a", "a", "a", "a", "a", "a", "a",
-            ParseFailureNode("bbbbbb", sym("failure"), 8, 14)
+            ParseFailureNode("bbbbbb", Sym.sym("failure"), 8, 14)
         )
 
         val text = "aaaaaaaabbbbbb"
@@ -984,7 +984,7 @@ internal class ParsewispCoreTest {
                         Input = ConstExpr <ws> ConstExpr;
                         
                         """.trimIndent(),
-            ParserCreationOptions.default.withStartProduction(sym("Input"))
+            ParserCreationOptions.default.withStartProduction(Sym.sym("Input"))
         )
         val tree = PT.create(
             "Input",
@@ -1039,7 +1039,7 @@ internal class ParsewispCoreTest {
                 "S",
                 ParseFailureNode(
                     "AaaAaa",
-                    sym("failure"),
+                    Sym.sym("failure"),
                     0, 6
                 )
             ),
@@ -1067,7 +1067,7 @@ internal class ParsewispCoreTest {
                 "S",
                 ParseFailureNode(
                     "AaaAaa",
-                    sym("failure"),
+                    Sym.sym("failure"),
                     0, 6
                 )
             ),
@@ -1079,7 +1079,7 @@ internal class ParsewispCoreTest {
                 "S",
                 ParseFailureNode(
                     "",
-                    sym("failure"),
+                    Sym.sym("failure"),
                     0, 0
                 )
             ),

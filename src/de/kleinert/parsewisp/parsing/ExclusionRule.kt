@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.reduction.ReductionType
 import java.lang.ref.WeakReference
@@ -18,8 +17,6 @@ import java.lang.ref.WeakReference
  * `var p = Parsewisp.parser("S := #'[0-9]+' - '11'"); // Any positive number except 11.     println(p.parse("12"));  // [:S, 12]     println(p.parse("11"));  // Failure `
 </pre> *
  * See also: [ISO/IEC 14977:1996](https://www.iso.org/standard/26153.html) and [an explanation on StackOverflow](https://stackoverflow.com/a/35138946).
- *
- * @since 0.9.7
  */
 class ExclusionRule private constructor(
     hide: Boolean, red: ReductionType,
@@ -170,15 +167,15 @@ class ExclusionRule private constructor(
         } else {
             // Find a new start production name which is not in the grammar yet.
             var tempSym: Sym
-            if (!oldGrammar.containsKey(sym("RerunForExclusion0"))) {
-                tempSym = sym("RerunForExclusion0")
+            if (!oldGrammar.containsKey(Sym.sym("RerunForExclusion0"))) {
+                tempSym = Sym.sym("RerunForExclusion0")
             } else {
                 var n = 0
                 val nameBuilder = StringBuilder("RerunForExclusion")
                 do {
                     nameBuilder.setLength(17)
                     n++
-                    tempSym = sym(nameBuilder.append(n).toString())
+                    tempSym = Sym.sym(nameBuilder.append(n).toString())
                 } while (oldGrammar.containsKey(tempSym))
             }
             startSymbol = tempSym
@@ -214,7 +211,7 @@ class ExclusionRule private constructor(
 
     override fun withRules(rules: List<Rule>): ExclusionRule {
         require(rules.size == 2) { "Must pass exactly 2 arguments." }
-        return ExclusionRule(isHiddenInResult, reduction, rules.get(0), rules.get(rules.size - 1))
+        return ExclusionRule(isHiddenInResult, reduction, rules[0], rules[rules.size - 1])
     }
 
     companion object {
@@ -225,7 +222,6 @@ class ExclusionRule private constructor(
          * @param ruleExpected The rule that must be matched.
          * @param ruleExcluded The rule that must not be matched.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(
             ruleExpected: Rule,

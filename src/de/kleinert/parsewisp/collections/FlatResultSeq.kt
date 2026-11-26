@@ -9,8 +9,6 @@ package de.kleinert.parsewisp.collections
  *
  *
  * It is advised that users of this library do not use this type directly.
- *
- * @since 0.9.7
  */
 class FlatResultSeq {
     //private static FlatResultSeq EMPTY = null;
@@ -39,7 +37,6 @@ class FlatResultSeq {
          * Checks whether this sequence is empty.
          *
          * @return true if size==0
-         * @since 0.9.7
          */
         get() = size == 0
 
@@ -47,7 +44,6 @@ class FlatResultSeq {
      * Returns the size of this sequence.
      *
      * @return The size.
-     * @since 0.9.7
      */
     fun size(): Int {
         return size
@@ -95,7 +91,6 @@ class FlatResultSeq {
      * @param list           Destination array.
      * @param backwardsIndex Current index.
      * @return The next index.
-     * @since 0.9.7
      */
     private fun flatten(list: Array<Any?>, backwardsIndex: Int): Int {
         var backwardsIndex = backwardsIndex
@@ -120,7 +115,6 @@ class FlatResultSeq {
      * Returns a List for this sequence. The result may be cached.
      *
      * @return A list for this sequence.
-     * @since 0.9.7
      */
     fun toList(): List<Any?> {
         if (cached == null) {
@@ -140,7 +134,6 @@ class FlatResultSeq {
      *
      * @param obj The input.
      * @return A new instance or `this`, if nothing is added.
-     * @since 0.9.7
      */
     fun appendOrConcat(obj: Any?): FlatResultSeq {
         if (obj == null) return this
@@ -152,7 +145,6 @@ class FlatResultSeq {
          * Instances of this type always start empty. This method simply returns an empty sequence.
          *
          * @return The empty instance.
-         * @since 0.9.7
          */
         fun make(): FlatResultSeq {
 //        if (EMPTY == null) EMPTY = new FlatResultSeq();

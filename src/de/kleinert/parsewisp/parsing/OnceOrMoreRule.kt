@@ -9,8 +9,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
  * Represents a "once or more" parse. That is the `p+` operator (where p is an instance of [Rule]).
- *
- * @since 0.9.7
  */
 class OnceOrMoreRule private constructor(
     hide: Boolean,
@@ -49,7 +47,6 @@ class OnceOrMoreRule private constructor(
          *
          * @param rule The [Rule] to match repeatedly.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule

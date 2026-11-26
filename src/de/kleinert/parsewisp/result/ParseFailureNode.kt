@@ -9,7 +9,6 @@ import de.kleinert.parsewisp.Sym
  * @param key   The production name which failed.
  * @param start Start index of the failure.
  * @param end   End index of the failure.
- * @since 0.9.7
  */
 data class ParseFailureNode(
     val text: String,

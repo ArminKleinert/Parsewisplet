@@ -2,7 +2,6 @@ package de.kleinert.parsewisp.tests.typical
 
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.util.Transform
 import org.junit.jupiter.api.Assertions
@@ -23,7 +22,7 @@ internal class ParserAsFunctionTest {
     @Test
     fun asMapper2() {
         val transformMap = mapOf<Sym, (List<Any?>)-> Any?>(
-            sym("S") to { o ->
+            Sym.sym("S") to { o ->
                 o.map { it as String? }
                     .map { it!![0] }
                     .map { i -> i.code }

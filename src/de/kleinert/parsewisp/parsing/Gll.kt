@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.collections.FlatResultSeq
 import de.kleinert.parsewisp.functions.Listener
 import de.kleinert.parsewisp.functions.NegativeListener
@@ -22,8 +21,6 @@ import de.kleinert.parsewisp.trampoline.Tramp
 
 /**
  * This class provides the general parsing algorithms.
- *
- * @since 0.9.7
  */
 class Gll private constructor(
     private val tramp: Tramp,
@@ -298,7 +295,7 @@ class Gll private constructor(
             val textLen = tramp.text.length
             pushErrorMessage(
                 nodeKey,
-                buildFailureNode(sym("failure"), subSeq, index, tramp.text.length),
+                buildFailureNode(Sym.sym("failure"), subSeq, index, tramp.text.length),
                 textLen
             )
         }
@@ -356,7 +353,6 @@ class Gll private constructor(
          * @return The parse forest.
          * @see de.kleinert.parsewisp.parser.Parser.parses
          * @see de.kleinert.parsewisp.parser.Parser.parses
-         * @since 0.9.7
          */
         fun parses(
             grammar: Grammar,
@@ -394,7 +390,6 @@ class Gll private constructor(
          * @return The parse tree or failure.
          * @see de.kleinert.parsewisp.parser.Parser.parse
          * @see de.kleinert.parsewisp.parser.Parser.parse
-         * @since 0.9.7
          */
         fun parse(
             grammar: Grammar,
@@ -433,7 +428,6 @@ class Gll private constructor(
          * @return The parse forest.
          * @see de.kleinert.parsewisp.parser.Parser.parses
          * @see ParsingOptions.embedFailureInParseTree
-         * @since 0.9.7
          */
         fun parsesEmbedFailure(
             grammar: Grammar,
@@ -487,7 +481,6 @@ class Gll private constructor(
          * @return The parse tree or failure.
          * @see de.kleinert.parsewisp.parser.Parser.parse
          * @see ParsingOptions.embedFailureInParseTree
-         * @since 0.9.7
          */
         fun parseEmbedFailure(
             grammar: Grammar,

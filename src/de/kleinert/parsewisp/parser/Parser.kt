@@ -20,7 +20,6 @@ import de.kleinert.parsewisp.result.ParsesResult.LazyResultList
  * @param grammar         The grammar.
  * @param startProduction The first production to try.
  * @param printer         The printer for the grammar. Used in [.show].
- * @since 0.9.7
  */
 data class Parser(val grammar: Grammar, val startProduction: Sym, val printer: GrammarPrinter) {
     private fun getStartProductionFromParserOrOptionsAndCheck(
@@ -44,18 +43,15 @@ data class Parser(val grammar: Grammar, val startProduction: Sym, val printer: G
     /**
      * Runs a parser on a text. If the parse is successful, returns a [ParseTree]. If the parse fails, returns a [ParseFailure]
      *
-     *
      * The options apply as follows:
      *
      *  * [ParsingOptions.embedFailureInParseTree]: Return a [ParseTree] on failure, with the information included in the tree.
      *  * [ParsingOptions.unhide]: Unhide some parts of the parser in the output.
      *  * [ParsingOptions.start]: Explicitly changes the start production.
      *
-     *
      * @param text    The text.
      * @param options Options.
      * @return [ParseTree] if successful, [ParseFailure] if not.
-     * @since 0.9.7
      */
     fun parse(
         text: String,
@@ -94,7 +90,6 @@ data class Parser(val grammar: Grammar, val startProduction: Sym, val printer: G
      * @param options The options for the parse operation.
      * @return A (potentially empty) parse forest. ([LazyResultList])
      * @see parses
-     * @since 0.9.7
      */
     fun parses(
         text: String,
@@ -127,7 +122,6 @@ data class Parser(val grammar: Grammar, val startProduction: Sym, val printer: G
      * @param grammar the new grammar.
      * @return A new Parser.
      * @throws IllegalArgumentException if the new grammar does not include a production for the current start production.
-     * @since 0.9.7
      */
     fun withGrammar(grammar: Grammar): Parser {
         if (this.grammar == grammar) return this
@@ -138,7 +132,6 @@ data class Parser(val grammar: Grammar, val startProduction: Sym, val printer: G
      * Creates a string representing this parser.
      *
      * @return The string.
-     * @since 0.9.7
      */
     fun show(): String {
         return printer.toString(this.grammar)

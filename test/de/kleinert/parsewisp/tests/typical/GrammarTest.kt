@@ -2,7 +2,6 @@ package de.kleinert.parsewisp.tests.typical
 
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parsing.Rule
 import de.kleinert.parsewisp.parsing.StringTerm
@@ -17,8 +16,8 @@ internal class GrammarTest {
 
         Assertions.assertTrue(ga.isValid)
 
-        Assertions.assertEquals(setOf(sym("S")), HashSet<Sym?>(ga.usedNTs()))
-        Assertions.assertEquals(setOf(sym("S")), HashSet<Sym?>(ga.definedNTs()))
+        Assertions.assertEquals(setOf(Sym.sym("S")), HashSet<Sym?>(ga.usedNTs()))
+        Assertions.assertEquals(setOf(Sym.sym("S")), HashSet<Sym?>(ga.definedNTs()))
 
         Assertions.assertEquals(
             setOf(StringTerm.create("1", false), StringTerm.create("2", false)),
@@ -34,13 +33,12 @@ internal class GrammarTest {
                 A = A epsilon | epsilon
                 B = "b"
                 C = "c"
-                
                 """.trimIndent()
         ).grammar.analyze()
-        Assertions.assertFalse(ga.unusedNTs.contains(sym("S")))
+        Assertions.assertFalse(ga.unusedNTs.contains(Sym.sym("S")))
 
         val ga2 = Parsewisp.parser("S = 'a'").grammar.analyze()
-        Assertions.assertFalse(ga2.unusedNTs.contains(sym("S")))
+        Assertions.assertFalse(ga2.unusedNTs.contains(Sym.sym("S")))
     }
 
     @Test
@@ -55,18 +53,18 @@ internal class GrammarTest {
                 """.trimIndent()
         ).grammar.analyze()
         Assertions.assertEquals(
-            setOf(sym("S"), sym("A"), sym("B"), sym("C")),
+            setOf(Sym.sym("S"), Sym.sym("A"), Sym.sym("B"), Sym.sym("C")),
             ga.definedNTs()
         )
         Assertions.assertEquals(
-            setOf(sym("A")),
+            setOf(Sym.sym("A")),
             ga.usedNTs()
         )
         Assertions.assertEquals(
-            setOf(sym("B"), sym("C")),
+            setOf(Sym.sym("B"), Sym.sym("C")),
             ga.unusedNTs
         )
-        Assertions.assertFalse(ga.unusedNTs.contains(sym("S")))
+        Assertions.assertFalse(ga.unusedNTs.contains(Sym.sym("S")))
         Assertions.assertTrue(ga.isValid)
     }
 
@@ -82,7 +80,7 @@ internal class GrammarTest {
         ).grammar.analyze()
         Assertions.assertEquals(
             ga.grammar,
-            ga.subGrammar(sym("S"))
+            ga.subGrammar(Sym.sym("S"))
         )
     }
 
@@ -98,12 +96,12 @@ internal class GrammarTest {
                 """.trimIndent()
         ).grammar.analyze()
         Assertions.assertEquals(
-            setOf(sym("S"), sym("A"), sym("C")),
-            ga.subGrammar(sym("S")).keys
+            setOf(Sym.sym("S"), Sym.sym("A"), Sym.sym("C")),
+            ga.subGrammar(Sym.sym("S")).keys
         )
         Assertions.assertEquals(
-            setOf(sym("A"), sym("C")),
-            ga.subGrammar(sym("A")).keys
+            setOf(Sym.sym("A"), Sym.sym("C")),
+            ga.subGrammar(Sym.sym("A")).keys
         )
     }
 
@@ -128,29 +126,29 @@ internal class GrammarTest {
         )
         Assertions.assertEquals(
             p1.grammar,
-            p2.grammar.analyze().subGrammar(sym("S"))
+            p2.grammar.analyze().subGrammar(Sym.sym("S"))
         )
     }
 
     @Test
     fun grammarIsProductiveTest() {
         val noCheckOpts = ParserCreationOptions.default.withCorrectnessCheck(false)
-        Assertions.assertFalse(Parsewisp.parser("S = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
-        Assertions.assertTrue(Parsewisp.parser("S = S | epsilon", noCheckOpts).grammar.analyze().isProductive(sym("S")))
+        Assertions.assertFalse(Parsewisp.parser("S = S", noCheckOpts).grammar.analyze().isProductive(Sym.sym("S")))
+        Assertions.assertTrue(Parsewisp.parser("S = S | epsilon", noCheckOpts).grammar.analyze().isProductive(Sym.sym("S")))
 
-        Assertions.assertTrue(Parsewisp.parser("S = A | epsilon; A = A", noCheckOpts).grammar.analyze().isProductive(sym("S")))
-        Assertions.assertFalse(Parsewisp.parser("S = A | epsilon; A = A", noCheckOpts).grammar.analyze().isProductive(sym("A")))
-        Assertions.assertTrue(Parsewisp.parser("S = A | epsilon; A = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
+        Assertions.assertTrue(Parsewisp.parser("S = A | epsilon; A = A", noCheckOpts).grammar.analyze().isProductive(Sym.sym("S")))
+        Assertions.assertFalse(Parsewisp.parser("S = A | epsilon; A = A", noCheckOpts).grammar.analyze().isProductive(Sym.sym("A")))
+        Assertions.assertTrue(Parsewisp.parser("S = A | epsilon; A = S", noCheckOpts).grammar.analyze().isProductive(Sym.sym("S")))
 
         Assertions.assertTrue(
-            Parsewisp.parser("S = A B | epsilon; A = 'a'; B = 'b'", noCheckOpts).grammar.analyze().isProductive(sym("S"))
+            Parsewisp.parser("S = A B | epsilon; A = 'a'; B = 'b'", noCheckOpts).grammar.analyze().isProductive(Sym.sym("S"))
         )
         Assertions.assertTrue(
-            Parsewisp.parser("S = A B | epsilon; A = 'a'; B = S", noCheckOpts).grammar.analyze().isProductive(sym("S"))
+            Parsewisp.parser("S = A B | epsilon; A = 'a'; B = S", noCheckOpts).grammar.analyze().isProductive(Sym.sym("S"))
         )
-        Assertions.assertFalse(Parsewisp.parser("S = A B; A = 'a'; B = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
+        Assertions.assertFalse(Parsewisp.parser("S = A B; A = 'a'; B = S", noCheckOpts).grammar.analyze().isProductive(Sym.sym("S")))
         Assertions.assertFalse(
-            Parsewisp.parser("S = A B; A = 'a'; B = C; C = B", noCheckOpts).grammar.analyze().isProductive(sym("S"))
+            Parsewisp.parser("S = A B; A = 'a'; B = C; C = B", noCheckOpts).grammar.analyze().isProductive(Sym.sym("S"))
         )
     }
 }

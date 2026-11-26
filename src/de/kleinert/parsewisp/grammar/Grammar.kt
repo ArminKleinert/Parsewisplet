@@ -6,19 +6,16 @@ import de.kleinert.parsewisp.parsing.*
 /**
  * A type representing a Grammar.
  *
- * @since 0.9.7
  */
 class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMap<Sym, Rule>(m.size, 1.0f) {
     /**
      * Return the starting production. This might be null.
      *
      * @return The starting production key.
-     * @since 0.9.7
      */
     /**
      * Staring symbol of this grammar. Can be overridden when the Grammar is used in a parser.
      *
-     * @since 0.9.7
      */
     val startSym: Sym
 
@@ -48,7 +45,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
      *
      * @param key The right-hand side of the production.
      * @return The production or null if not found.
-     * @since 0.9.7
      */
     fun getProduction(key: Sym): Rule? {
         return getOrDefault(key, null)
@@ -68,7 +64,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
      * @return An instance of [GrammarInfo].
      * @see GrammarInfo
      *
-     * @since 0.9.7
      */
     fun analyze(): GrammarInfo {
         return GrammarInfo(this)
@@ -78,14 +73,12 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
      * Holds some information about a grammar.
      *
      * @param grammar The grammar.
-     * @since 0.9.7
      */
     data class GrammarInfo(val grammar: Grammar) {
         /**
          * All non-terminals of the Grammar.
          *
          * @return A collection of all non-terminals of the Grammar.
-         * @since 0.9.7
          */
         fun definedNTs(): Collection<Sym> {
             return grammar.keys
@@ -95,7 +88,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
          * All non-terminals which appear on the right-hand side of any production.
          *
          * @return A collection of all non-terminals which appear on the right-hand side of any production.
-         * @since 0.9.7
          */
         fun usedNTs(): Set<Sym> {
             return collect({ it: Rule -> it is NonTerminal })
@@ -112,7 +104,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
          *
          * @param collector The predicate.
          * @return A collection of rules that match the predicate.
-         * @since 0.9.7
          */
         fun collect(collector: (Rule) -> Boolean): Set<Rule> {
             val result: MutableSet<Rule> = HashSet()
@@ -158,7 +149,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
              *
              *
              * @return A collection of unused non-terminals.
-             * @since 0.9.7
              */
             get() {
                 val usedNTs = usedNTs()
@@ -179,7 +169,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
              *
              *
              * @return A collection which is hopefully empty.
-             * @since 0.9.7
              */
             get() {
                 val definedNTs = definedNTs()
@@ -192,7 +181,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
              *
              * @return true or false
              * @see GrammarInfo.undefinedUsedNTs
-             * @since 0.9.7
              */
             get() = this.undefinedUsedNTs.isEmpty()
                     && definedTerminals().isNotEmpty()
@@ -201,7 +189,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
          * Collects all terminals and equivalent rules. If a rule occurs multiple times in the grammar, it still appears only once in the resulting collection.
          *
          * @return A collection of all terminals and special sequences (functions).
-         * @since 0.9.7
          */
         fun definedTerminals(): Set<Rule> {
             return collect({ it: Rule -> it is Terminal || it is SpecialSequenceRule })
@@ -212,7 +199,6 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
          *
          * @param start The production from which to analyze.
          * @return A Set of reachable rules.
-         * @since 0.9.7
          */
         fun subGrammar(start: Sym): Grammar {
             val startRule = grammar.getProduction(start)
@@ -256,19 +242,18 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
         /**
          * Return true if the grammar can terminate for the given starting symbol.
          *
-         *
          * Sometimes, a grammar can be non-productive, meaning that it would technically not produce an output for any input. For example, the following:
          * <pre>
          * `S = A S     A = epsilon `
-        </pre> *
+         * </pre>
+         *
          * With a naive algorithm, the parser could never terminate. You can check for this case by using the following:
          * <pre>
          * `var parser1 = Parsewisp.parser("S = A S ; A = epsilon ;");     var analysis1 = parser1.grammar().analyze();     System.out.println(analysis1.isProductive(Sym.sym("S"))); // false `
-        </pre> *
+         * </pre>
          *
          * @param start The starting symbol.
          * @return true or false
-         * @since 0.9.7
          */
         fun isProductive(start: Sym): Boolean {
             return isProductive(start, mutableMapOf())

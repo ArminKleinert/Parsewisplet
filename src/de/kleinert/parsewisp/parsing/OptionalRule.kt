@@ -6,8 +6,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
 /**
  * This class represents the `[p]` or `p?` operator (where p is an instance of [Rule]).
  * When parsing, the rule contained herein is optional (run zero times or once).
- *
- * @since 0.9.7
  */
 class OptionalRule private constructor(
     hide: Boolean,
@@ -51,7 +49,6 @@ class OptionalRule private constructor(
          *
          * @param rule The rule.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule

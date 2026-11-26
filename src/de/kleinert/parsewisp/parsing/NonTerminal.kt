@@ -5,8 +5,6 @@ import de.kleinert.parsewisp.reduction.ReductionType
 
 /**
  * This type represents non-terminals.
- *
- * @since 0.9.7
  */
 class NonTerminal private constructor(
     hide: Boolean,
@@ -15,7 +13,6 @@ class NonTerminal private constructor(
      * Returns the name of the rule.
      *
      * @return The name of the rule.
-     * @since 0.9.7
      */
     val keyword: Sym
 ) : SimpleRule(hide, red) {
@@ -61,7 +58,6 @@ class NonTerminal private constructor(
          *
          * @param keyword The wrapped symbol.
          * @return A non-terminal.
-         * @since 0.9.7
          */
         fun create(keyword: Sym): NonTerminal {
             return NonTerminal(defaultHidden, defaultReductionType, keyword)

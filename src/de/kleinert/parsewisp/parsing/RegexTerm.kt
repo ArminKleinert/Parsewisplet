@@ -13,8 +13,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  * instead of returning different results "a", "aa", "aaa" and "aaaa".
  * <br></br>
  * Syntax: A string literal prefixed with a hash-symbol: `#"..."` and `#'...'` are equivalent.
- *
- * @since 0.9.7
  */
 class RegexTerm private constructor(
     hide: Boolean,
@@ -23,7 +21,6 @@ class RegexTerm private constructor(
      * The regex/pattern.
      *
      * @return The regex.
-     * @since 0.9.7
      */
     val regexp: Regex
 ) : Terminal(hide, red) {
@@ -44,7 +41,6 @@ class RegexTerm private constructor(
      *
      * @param index  The start index.
      * @param runner Helper structure.
-     * @since 0.9.7
      */
     override fun parse(index: Int, runner: Gll) {
         val subString = runner.tramp().text.substring(index)
@@ -108,7 +104,6 @@ class RegexTerm private constructor(
          *
          * @param regexp The pattern.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(regexp: Regex): Rule {
             val s = regexp.pattern

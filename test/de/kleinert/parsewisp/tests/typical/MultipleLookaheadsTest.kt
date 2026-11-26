@@ -2,7 +2,6 @@ package de.kleinert.parsewisp.tests.typical
 
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parsing.*
@@ -22,7 +21,7 @@ internal class MultipleLookaheadsTest {
     @Test
     fun lookaheads1() {
         val grammarAsMap = linkedMapOf<Sym, Rule>()
-        grammarAsMap[sym("S")] = ConcatRule.create(
+        grammarAsMap[Sym.sym("S")] = ConcatRule.create(
             listOf(
                 LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),
                 RegexTerm.create(Regex("[abc]"))
@@ -30,10 +29,10 @@ internal class MultipleLookaheadsTest {
         )
         val p = Parsewisp.parser(
             Grammar(
-                sym("S"),
+                Sym.sym("S"),
                 grammarAsMap
             ),
-            ParserCreationOptions.default.withStartProduction(sym("S"))
+            ParserCreationOptions.default.withStartProduction(Sym.sym("S"))
         )
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
         Assertions.assertTrue(p.parse("b").isFailure)

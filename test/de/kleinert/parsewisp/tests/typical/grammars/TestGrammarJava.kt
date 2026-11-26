@@ -11,7 +11,6 @@ import java.nio.file.Path
 /**
  * Test(s) for the Java grammar.
  *
- *
  * Grammar from [the Java 21 language specification, section 19](https://docs.oracle.com/javase/specs/jls/se21/html/jls-19.html).
  */
 internal class TestGrammarJava {
@@ -57,7 +56,6 @@ internal class TestGrammarJava {
                      *
                      * @param hide The hide option.
                      * @param red  The reduction type for this rule.
-                     * @since 0.9.7
                      */
                     protected Terminal create(final boolean hide, final @NotNull ReductionType red) {
                     }
@@ -83,8 +81,6 @@ internal class TestGrammarJava {
                  * "Zero or more" repetition. Represents a production which repeatedly ties to match an input. E.g. {@code P*} matches zero or more.
                  * <p>
                  * Notation: {@code {rule}} or {@code rule*}
-                 *
-                 * @since 0.9.7
                  */
                 public final class ZeroOrMoreRule extends RuleWithChild {
                     private ZeroOrMoreRule(final boolean hide,
@@ -98,7 +94,6 @@ internal class TestGrammarJava {
                      *
                      * @param rule The {@link Rule} to match repeatedly.
                      * @return A rule.
-                     * @since 0.9.7
                      */
                     public static @NotNull Rule create(final @NotNull Rule rule) {
                         if (rule instanceof EpsilonTerm)

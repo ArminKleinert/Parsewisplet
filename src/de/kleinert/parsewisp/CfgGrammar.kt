@@ -7,8 +7,6 @@ import de.kleinert.parsewisp.parsing.EOFTerm
 
 /**
  * A builder for grammars with Parsewisp's default format.
- *
- * @since 0.9.7
  */
 class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERROR) {
     override fun make() {
@@ -265,7 +263,6 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
          * Returns the base grammar for Parsewisp.
          *
          * @return The base grammar for Parsewisp.
-         * @since 0.9.7
          */
         fun makeCfg(): Grammar {
             return CfgGrammar().build()

@@ -13,8 +13,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  *
  * As of now, it does not work right,
  * so it can be considered a worse alternative to the [AlternationRule].
- *
- * @since 0.9.7
  */
 class OrderedChoiceRule private constructor(
     hide: Boolean, red: ReductionType,
@@ -79,7 +77,6 @@ class OrderedChoiceRule private constructor(
          *
          * @param rules The wrapped symbol.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rules: List<Rule>): Rule {
             if (rules.isEmpty()) return EpsilonTerm.default

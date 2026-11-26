@@ -2,7 +2,6 @@ package de.kleinert.parsewisp.tests.typical
 
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.grammar.GrammarBuilder
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
@@ -31,15 +30,15 @@ internal class GrammarBuilderTest {
                             .map { string: String -> this.stringCS(string) }
                     )
                 )
-                addProduction("S", cat(nt("NUMBER"), rep(nt(sym("NUMBER")))))
-                startProduction = sym("S")
+                addProduction("S", cat(nt("NUMBER"), rep(nt(Sym.sym("NUMBER")))))
+                startProduction = Sym.sym("S")
             }
         }.build()
 
         Assertions.assertEquals(gFromString, gFromGB)
 
-        val pFromString = Parsewisp.parser(gFromString, ParserCreationOptions.default.withStartProduction(sym("S")))
-        val pFromGB = Parsewisp.parser(gFromGB, ParserCreationOptions.default.withStartProduction(sym("S")))
+        val pFromString = Parsewisp.parser(gFromString, ParserCreationOptions.default.withStartProduction(Sym.sym("S")))
+        val pFromGB = Parsewisp.parser(gFromGB, ParserCreationOptions.default.withStartProduction(Sym.sym("S")))
         val text = "0123456789"
         Assertions.assertEquals(pFromString.parse(text), pFromGB.parse(text))
     }
@@ -47,25 +46,25 @@ internal class GrammarBuilderTest {
     @Test
     fun equivalentToMoreExplicitGrammar() {
         val pGrammarList = linkedMapOf<Sym, Rule>()
-        pGrammarList[sym("S")] = ConcatRule.create(
+        pGrammarList[Sym.sym("S")] = ConcatRule.create(
             listOf(
-                NonTerminal.create(sym("NUMBER")),
-                ZeroOrMoreRule.create(NonTerminal.create(sym("NUMBER")))
+                NonTerminal.create(Sym.sym("NUMBER")),
+                ZeroOrMoreRule.create(NonTerminal.create(Sym.sym("NUMBER")))
             )
         )
-        pGrammarList[sym("NUMBER")] = AlternationRule.create(
+        pGrammarList[Sym.sym("NUMBER")] = AlternationRule.create(
             listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
                 .map { it: String? -> StringTerm.create(it!!, true) }
         )
         val pFromGrammar = Parsewisp.parser(
-            Grammar(sym("S"), pGrammarList),
-            ParserCreationOptions.default.withStartProduction(sym("S"))
+            Grammar(Sym.sym("S"), pGrammarList),
+            ParserCreationOptions.default.withStartProduction(Sym.sym("S"))
         )
             .grammar
 
         val pFromGB = object : GrammarBuilder() {
             override fun make() {
-                addProduction("S", cat(nt("NUMBER"), zeroOrMore(nt(sym("NUMBER")))))
+                addProduction("S", cat(nt("NUMBER"), zeroOrMore(nt(Sym.sym("NUMBER")))))
                 addProduction(
                     "NUMBER",
                     altUnsafe(
@@ -155,11 +154,11 @@ internal class GrammarBuilderTest {
                             { r, _ -> listOf((r[0] as String?)!!.toLong()) })
                     )
                 )
-                startProduction = sym("S")
+                startProduction = Sym.sym("S")
             }
         }.build()
 
-        val p = Parsewisp.parser(gFromGB, ParserCreationOptions.default.withStartProduction(sym("S")))
+        val p = Parsewisp.parser(gFromGB, ParserCreationOptions.default.withStartProduction(Sym.sym("S")))
         val text = "123 456 789"
         Assertions.assertEquals(
             PT.create("S", 123L, 456L, 789L),

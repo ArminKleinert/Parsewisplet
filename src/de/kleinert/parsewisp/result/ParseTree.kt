@@ -1,15 +1,12 @@
 package de.kleinert.parsewisp.result
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.collections.FlatResultSeq
 import de.kleinert.parsewisp.result.Node.NodeParseTree
 import de.kleinert.parsewisp.result.Node.NodeTreeTag
 
 /**
  * This class represents parse trees. Throughout the documentation, trees are typically notated as lists.
- *
- * @since 0.9.7
  */
 class ParseTree private constructor(
     /**
@@ -23,7 +20,6 @@ class ParseTree private constructor(
     </pre> *
      *
      * @return The tag of the tree.
-     * @since 0.9.7
      */
     val tag: NodeTreeTag,
     /**
@@ -34,21 +30,18 @@ class ParseTree private constructor(
     </pre> *
      *
      * @return The content of the tree.
-     * @since 0.9.7
      */
     val content: List<Node>,
     /**
      * The starting index in the input string of the parse (inclusive).
      *
      * @return The starting index in the input string of the parse (inclusive).
-     * @since 0.9.7
      */
     val spanStart1: Int,
     /**
      * The end index in the input string of the parse (exclusive).
      *
      * @return The end index in the input string of the parse (exclusive).
-     * @since 0.9.7
      */
     val spanEndExclusive1: Int
 ) : List<Node>, ParseResult {
@@ -69,7 +62,6 @@ class ParseTree private constructor(
      *
      * @param index The index in content.
      * @return A node.
-     * @since 0.9.7
      */
     fun getNode(index: Int): Node {
         return this.content[index]
@@ -80,7 +72,6 @@ class ParseTree private constructor(
      * This method is not recursive, ie does not apply to subtrees.
      *
      * @return The tree as a list of nodes.
-     * @since 0.9.7
      */
     fun toList(): List<Node> {
         val alist = mutableListOf<Node>()
@@ -93,7 +84,6 @@ class ParseTree private constructor(
      * Converts the tree into a nested list. Unlike [.toList], this method is recursive.
      *
      * @return A nested list of Objects.
-     * @since 0.9.7
      */
     fun toRawList(): List<Any?> {
         var i = 0
@@ -127,7 +117,6 @@ class ParseTree private constructor(
      * @param s Input string.
      * @return An [Optional] containing the string if present or an empty [Optional] if the string is not covered by this tree.
      * @throws IllegalArgumentException if this tree has no span specified.
-     * @since 0.9.7
      */
     fun containedString(s: String): String? {
         if (spanEndExclusive == -1) return null
@@ -236,10 +225,8 @@ class ParseTree private constructor(
     companion object {
         /**
          * A technically invalid tag. It is used to mark trees "without" a tag. Such trees should always be subtrees of other parse trees and are "flattened" when used. See [.create]
-         *
-         * @since 0.9.7
          */
-        var NULL_TAG: NodeTreeTag = NodeTreeTag(sym("\u0000\u0000\u0000\u0000"))
+        var NULL_TAG: NodeTreeTag = NodeTreeTag(Sym.sym("\u0000\u0000\u0000\u0000"))
 
         /**
          * Creates a parse tree from a tag and content.
@@ -252,7 +239,6 @@ class ParseTree private constructor(
          * @param spanStart Starting index in the input (inclusive).
          * @param spanEnd   End index in the input (exclusive).
          * @return A new parse tree.
-         * @since 0.9.7
          */
         fun create(
             tag: Sym,
@@ -288,7 +274,6 @@ class ParseTree private constructor(
          * @param spanStart Starting index in the input (inclusive).
          * @param spanEnd   End index in the input (exclusive).
          * @return A new parse tree.
-         * @since 0.9.7
          */
         fun create(
             tag: NodeTreeTag,

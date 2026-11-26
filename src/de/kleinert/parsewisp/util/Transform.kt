@@ -8,8 +8,6 @@ import de.kleinert.parsewisp.result.ParseTree
 
 /**
  * This class provides methods for transforming parse trees via tag-to-function tables.
- *
- * @since 0.9.7
  */
 object Transform {
     private fun transform(
@@ -45,7 +43,6 @@ object Transform {
      * @param <T>          The output type.
      * @return Transformed content.
      * @throws IllegalArgumentException If the parseResult is not a parse tree.
-     * @since 0.9.7
      */
     fun <T> transform(
         parseResult: ParseResult,
@@ -62,7 +59,6 @@ object Transform {
      * @param transformMap Map of tags (symbols) to functions.
      * @return Transformed content.
      * @throws IllegalArgumentException If the parseResult is not a parse tree.
-     * @since 0.9.7
      */
     fun transform(
         parseResult: ParseResult,

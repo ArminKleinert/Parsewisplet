@@ -29,7 +29,6 @@ import de.kleinert.parsewisp.result.ParseTree
  * @see DEFAULT_FAILURE_IF_EMPTY
  * @see DEFAULT_STOP_EARLY_ON_EMPTY_REPETITION
  * @see DEFAULT_RESULT_LIMIT
- * @since 0.9.7
  */
 data class ParsingOptions(
     val start: Sym?,
@@ -57,7 +56,6 @@ data class ParsingOptions(
      * @see DEFAULT_START
      *
      * @see ParsingOptions.default
-     * @since 0.9.7
      */
     fun withStart(start: Sym?): ParsingOptions {
         if (this.start == start) return this
@@ -84,7 +82,6 @@ data class ParsingOptions(
      * @param usePartial The argument as a boolean.
      * @return A new instance.
      * @see .usePartial
-     * @since 0.9.7
      */
     fun withPartial(usePartial: Boolean): ParsingOptions {
         if (this.usePartial == usePartial) return this
@@ -118,7 +115,6 @@ data class ParsingOptions(
      * @param unhide The new option.
      * @return A new instance.
      * @see .unhide
-     * @since 0.9.7
      */
     fun withUnhide(unhide: UnhideOptions): ParsingOptions {
         if (this.unhide == unhide) return this
@@ -144,7 +140,6 @@ data class ParsingOptions(
      * @param embedFailureInParseTree The new (or old) setting.
      * @return A new instance.
      * @see .embedFailureInParseTree
-     * @since 0.9.7
      */
     fun withEmbedFailureInParseTree(embedFailureInParseTree: Boolean): ParsingOptions {
         if (this.embedFailureInParseTree == embedFailureInParseTree) return this
@@ -166,7 +161,6 @@ data class ParsingOptions(
      * @param iterativeDeepening The new (or old) setting.
      * @return A new instance.
      * @see .iterativeDeepening
-     * @since 0.9.7
      */
     fun withIterativeDeepening(iterativeDeepening: Boolean): ParsingOptions {
         if (this.iterativeDeepening == iterativeDeepening) return this
@@ -188,7 +182,6 @@ data class ParsingOptions(
      * @param failureIfEmpty The new (or old) setting.
      * @return A new instance.
      * @see .failureIfEmpty
-     * @since 0.9.7
      */
     fun withFailureIfEmpty(failureIfEmpty: Boolean): ParsingOptions {
         if (this.failureIfEmpty == failureIfEmpty) return this
@@ -210,7 +203,6 @@ data class ParsingOptions(
      * @param stopEarlyOnEmptyRepetition The new (or old) setting.
      * @return A new instance.
      * @see .stopEarlyOnEmptyRepetition
-     * @since 0.9.7
      */
     fun withStopEarlyOnEmptyRepetition(stopEarlyOnEmptyRepetition: Boolean): ParsingOptions {
         if (this.stopEarlyOnEmptyRepetition == stopEarlyOnEmptyRepetition) return this
@@ -232,7 +224,6 @@ data class ParsingOptions(
      * @param maxResults The new (or old) setting.
      * @return A new instance.
      * @see .resultLimit
-     * @since 0.9.7
      */
     fun withResultLimit(maxResults: Int): ParsingOptions {
         if (this.resultLimit == maxResults) return this
@@ -251,58 +242,42 @@ data class ParsingOptions(
     companion object {
         /**
          * Default for the start production name of a parse operation. (`null`)
-         *
-         * @since 0.9.7
          */
         val DEFAULT_START: Sym? = null
 
         /**
          * Default for the start production name of a parse operation. (`false`)
-         *
-         * @since 0.9.7
          */
         const val DEFAULT_PARTIAL: Boolean = false
 
         /**
          * By default, leave the parse trees as intended (hidden parts stay hidden). The value is [UnhideOptions.NONE].
-         *
-         * @since 0.9.7
          */
         val DEFAULT_UNHIDE: UnhideOptions = UnhideOptions.NONE
 
         /**
          * By default, do not include failure nodes in parse trees. (`false`)
-         *
-         * @since 0.9.7
          */
         const val DEFAULT_EMBED_FAILURES: Boolean = false
 
         /**
          * By default, do not iteratively deepen search when parsing with a regex. (`false`)<br></br>
          * The reason is that it is much slower to do.
-         *
-         * @since 0.9.7
          */
         const val DEFAULT_ITERATIVE_DEEPENING: Boolean = false
 
         /**
          * `false` by default.
-         *
-         * @since 0.9.7
          */
         const val DEFAULT_FAILURE_IF_EMPTY: Boolean = false
 
         /**
          * `true` by default.
-         *
-         * @since 0.9.7
          */
         const val DEFAULT_STOP_EARLY_ON_EMPTY_REPETITION: Boolean = true
 
         /**
          * [Integer.MAX_VALUE] by default. Lists in the JVM can typically not hold that many elements.
-         *
-         * @since 0.9.7
          */
         const val DEFAULT_RESULT_LIMIT: Int = Int.MAX_VALUE
 
@@ -317,7 +292,6 @@ data class ParsingOptions(
              * @see DEFAULT_EMBED_FAILURES
              * @see DEFAULT_ITERATIVE_DEEPENING
              * @see DEFAULT_FAILURE_IF_EMPTY
-             * @since 0.9.7
              */
             get() = ParsingOptions(
                 DEFAULT_START, DEFAULT_PARTIAL, DEFAULT_UNHIDE,

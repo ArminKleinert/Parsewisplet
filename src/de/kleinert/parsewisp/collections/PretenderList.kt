@@ -4,8 +4,7 @@ package de.kleinert.parsewisp.collections
  * An interface which pretends to be a list. Every method of [List] is defined to throw an [UnsupportedOperationException].
  *
  * @param <T> The generic type.
- * @since 0.9.7
-</T> */
+ */
 interface PretenderList<T> : List<T> {
     override val size: Int
         get() = throw UnsupportedOperationException()

@@ -6,21 +6,15 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
  * A class representing the right-hand sides of productions.
- *
- * @since 0.9.7
  */
 abstract class Rule
 protected constructor(
     /**
      * Whether to hide the rule in the output.
-     *
-     * @since 0.9.7
      */
     val isHiddenInResult: Boolean,
     /**
      * See [ReductionType].
-     *
-     * @since 0.9.7
      */
     val reduction: ReductionType
 ) {
@@ -41,7 +35,6 @@ protected constructor(
      *
      * @param index  The start index.
      * @param runner Helper structure.
-     * @since 0.9.7
      */
     abstract fun parse(index: Int, runner: Gll)
 
@@ -53,7 +46,6 @@ protected constructor(
      *
      * @param index  The start index.
      * @param runner Helper structure.
-     * @since 0.9.7
      */
     abstract fun fullParse(index: Int, runner: Gll)
 
@@ -62,7 +54,6 @@ protected constructor(
      *
      * @param hide Whether to hide the content.
      * @return An instance of the same class with the hide tag set to the parameter.
-     * @since 0.9.7
      */
     abstract fun withHideTag(hide: Boolean): Rule
 
@@ -71,7 +62,6 @@ protected constructor(
      *
      * @param red The reduction type.
      * @return An instance of the same class with the reduction type set to the parameter.
-     * @since 0.9.7
      */
     abstract fun withReduction(red: ReductionType): Rule
 
@@ -80,7 +70,6 @@ protected constructor(
      *
      * @return An instance of the same class with the hide tag set to true.
      * @see .withHideTag
-     * @since 0.9.7
      */
     fun hideInResult(): Rule {
         return withHideTag(true)
@@ -91,7 +80,6 @@ protected constructor(
      *
      * @return An instance of the same class with the hide tag set to false.
      * @see .withHideTag
-     * @since 0.9.7
      */
     open fun includeInResult(): Rule {
         return withHideTag(false)
@@ -102,7 +90,6 @@ protected constructor(
      * Wrap this rule around the entire right-hand side.
      *
      * @return A new instance of the same class.
-     * @since 0.9.7
      */
     fun mergeToTop(): Rule {
         return withReduction(ReductionType.merging())
@@ -132,8 +119,6 @@ protected constructor(
     companion object {
         /**
          * Default value for [isHiddenInResult1].
-         *
-         * @since 0.9.7
          */
         protected const val defaultHidden: Boolean = false
 
@@ -143,7 +128,5 @@ protected constructor(
 
 /**
  * Default value for [Rule.getReduction1].
- *
- * @since 0.9.7
  */
 internal val defaultReductionType: ReductionType = ReductionType.initial()

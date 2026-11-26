@@ -9,7 +9,6 @@ import de.kleinert.parsewisp.parsing.*
  * @param rule            The rule was parsed when the failure appeared.
  * @param reasonString    A string describing the failure. Please prefer [failureReasonString].
  * @param untilEndOfInput Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
- * @since 0.9.7
  */
 data class ParseFailureReason(
     val rule: Rule,
@@ -20,7 +19,6 @@ data class ParseFailureReason(
      * Representation of the failure reasonList as a string.
      *
      * @return A representation of the expected production as a string.
-     * @since 0.9.7
      */
     fun failureReasonString(): String {
         if (reasonString != null) return reasonString
@@ -31,7 +29,6 @@ data class ParseFailureReason(
      * Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
      *
      * @return Whether the production that failed covered the entire input from beginning to end. When showing the object as a string, this adds the note "(followed by end of string)" or something similar.
-     * @since 0.9.7
      */
     fun untilEndOfInput(): Boolean {
         return untilEndOfInput
@@ -45,7 +42,6 @@ data class ParseFailureReason(
          * @param untilEnd Whether the rule is followed by end-of-string.
          * @param printer  The printer used to create a string-representation of the failure.
          * @return A failure-reason based on the parameters.
-         * @since 0.9.7
          */
         fun creatureFailReason(rule: Rule, untilEnd: Boolean, printer: GrammarPrinter): ParseFailureReason {
             val str: String?

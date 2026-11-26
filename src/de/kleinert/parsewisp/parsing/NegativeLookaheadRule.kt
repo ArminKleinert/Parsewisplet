@@ -8,8 +8,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  *
  *
  * Example: The production `S := !'a' ('a'|'b')+` matches any string of 'a' and 'b' which does NOT start with 'a'.
- *
- * @since 0.9.7
  */
 class NegativeLookaheadRule private constructor(
     hide: Boolean,
@@ -71,7 +69,6 @@ class NegativeLookaheadRule private constructor(
          *
          * @param rule The thing to avoid.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rule: Rule): Rule {
             return NegativeLookaheadRule(defaultHidden, defaultReductionType, rule)

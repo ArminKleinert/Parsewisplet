@@ -5,10 +5,7 @@ import de.kleinert.parsewisp.reduction.ReductionType
 /**
  * This class should almost never be used, but can have its uses occasionally.
  *
- *
  * Format: `"EOF"`
- *
- * @since 0.9.7
  */
 class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
     override fun parse(index: Int, runner: Gll) {
@@ -45,7 +42,6 @@ class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(
          * Default text for EOF.
          *
          * @return The text that identifies an EOF rule in a grammar.
-         * @since 0.9.7
          */
         fun text(): String {
             return "EOF"
@@ -56,7 +52,6 @@ class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(
              * Default EOF rule. Can be buffered.
              *
              * @return Default EOF rule. Can be buffered.
-             * @since 0.9.7
              */
             get() = EOFTerm(defaultHidden, defaultReductionType)
     }

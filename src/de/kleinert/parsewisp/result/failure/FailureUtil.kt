@@ -6,8 +6,6 @@ import java.util.regex.Pattern
 
 /**
  * Utilities for printing and modifying failure objects. Calling these methods from outside the parsing algorithm is heavily discouraged and might result in immediate termination of the user.
- *
- * @since 0.9.7
  */
 object FailureUtil {
     /**
@@ -18,7 +16,6 @@ object FailureUtil {
      * @param failure The failure.
      * @param text    The text.
      * @return A new string.
-     * @since 0.9.7
      */
     fun augmentFailure(
         failure: ParseFailure,
@@ -54,7 +51,6 @@ object FailureUtil {
      * @param text The text.
      * @param n    The index.
      * @return Indentation and marker.
-     * @since 0.9.7
      */
     fun marker(text: String?, n: Int): String {
         if (text == null) return "<No text>"
@@ -72,7 +68,6 @@ object FailureUtil {
      * @param newReason The new reasonList.
      * @param nextIndex The next index for the reasonList.
      * @return A modified failure object.
-     * @since 0.9.7
      */
     fun modifyFailureByIndex(
         failure: ParseFailure?,
@@ -94,7 +89,6 @@ object FailureUtil {
      *
      * @param failure The failure.
      * @return The string.
-     * @since 0.9.7
      */
     fun pprintFailure(failure: ParseFailure): String {
         val line = (failure.line as Number).toInt()

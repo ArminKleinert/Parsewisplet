@@ -6,8 +6,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
 /**
  * Represents string terminals (both case-sensitive or case-insensitive).<br></br>
  * Syntax: can be written with double quotes or single quotes, so `"..."` and `'...'` are equivalent.
- *
- * @since 0.9.7
  */
 class StringTerm private constructor(
     hide: Boolean,
@@ -16,14 +14,12 @@ class StringTerm private constructor(
      * Returns the string.
      *
      * @return The string.
-     * @since 0.9.7
      */
     val string: String,
     /**
      * True if the casing doesn't matter, false if it does matter.
      *
      * @return True if the casing doesn't matter, false if it does matter.
-     * @since 0.9.7
      */
     val isCaseInsensitive: Boolean
 ) : Terminal(hide, red) {
@@ -84,7 +80,6 @@ class StringTerm private constructor(
          * @param string          The string to match.
          * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(string: String, caseInsensitive: Boolean): Rule {
             if (string.isEmpty()) {
@@ -105,7 +100,6 @@ class StringTerm private constructor(
          * @param string          The string to match.
          * @param caseInsensitive True if the casing doesn't matter, false if it does matter.
          * @return A rule.
-         * @since 0.9.7
          */
         fun createDirect(string: String, caseInsensitive: Boolean): StringTerm {
             return StringTerm(

@@ -17,9 +17,6 @@ import kotlin.math.min
  *  * Repeat a minimum of `n` times: `p{n,}`
  *  * Repeat a maximum of `m` times: `p{,m}`
  *  * Repeat exactly of `n` times: `p{n}`
- *
- *
- * @since 0.9.7
  */
 class VariableRepetitionRule private constructor(
     hide: Boolean,
@@ -172,7 +169,6 @@ class VariableRepetitionRule private constructor(
          * @param min  Minimum repetitions.
          * @param max  Maximum repetitions.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rule: Rule, min: Int, max: Int): Rule {
             require(min in 0..max) { "Illegal repetition (min=$min, max=$max)" }

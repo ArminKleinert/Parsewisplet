@@ -7,18 +7,16 @@ package de.kleinert.parsewisp.collections
  * The function takes an `int` as input.
  *
  * @param <T> The result type for the function.
- * @since 0.9.7
 </T> */
-open class LazySupplierList<T>(nextFn: (Int)->T?, maxResults: Int) : List<T> {
+open class LazySupplierList<T>(nextFn: (Int) -> T?, maxResults: Int) : List<T> {
     private val evaluatedPart: MutableList<T> = mutableListOf()
     private val maxResults: Int
-    private var nextFn: ((Int)->T?)?
+    private var nextFn: ((Int) -> T?)?
 
     /**
      * True if the list is fully evaluated, false otherwise.
      *
      * @return true or false.
-     * @since 0.9.7
      */
     var isFullyEvaluated: Boolean = false
         private set
@@ -62,7 +60,6 @@ open class LazySupplierList<T>(nextFn: (Int)->T?, maxResults: Int) : List<T> {
     /**
      * Fully evaluates the list.
      *
-     * @since 0.9.7
      */
     fun evaluate() {
         var ep: T?
@@ -157,7 +154,6 @@ open class LazySupplierList<T>(nextFn: (Int)->T?, maxResults: Int) : List<T> {
      *
      * @param i The index.
      * @return The element at the provided index or null.
-     * @since 0.9.7
      */
     fun getOrNull(i: Int): T? {
         // If already calculated, return.

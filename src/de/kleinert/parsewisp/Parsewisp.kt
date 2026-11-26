@@ -9,8 +9,6 @@ import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 
 /**
  * The main interface for interacting with the library.
- *
- * @since 0.9.7
  */
 object Parsewisp {
     /**
@@ -19,7 +17,6 @@ object Parsewisp {
      * @param grammar The grammar as a string.
      * @param options The options.
      * @return The parser.
-     * @since 0.9.7
      */
     fun parser(
         grammar: String,
@@ -37,7 +34,6 @@ object Parsewisp {
      * @param options The options, most importantly the start production.
      * @return The parser.
      * @throws ParserCreationFailure If the start production is invalid.
-     * @since 0.9.7
      */
     fun parser(
         grammar: Grammar,
@@ -82,7 +78,6 @@ object Parsewisp {
      *
      * @param wsParserName The key.
      * @return A parser or null.
-     * @since 0.9.7
      */
     fun getPredefinedWhitespaceParser(
         wsParserName: String?
@@ -92,8 +87,8 @@ object Parsewisp {
         }
         if (predefinedWsParsers == null) {
             predefinedWsParsers = mapOf(
-                "standard" to Parsewisp.parser("whitespace = #'\\s+'", ParserCreationOptions.default),
-                "comma" to Parsewisp.parser("whitespace = #'[,\\s]+'", ParserCreationOptions.default)
+                "standard" to parser("whitespace = #'\\s+'", ParserCreationOptions.default),
+                "comma" to parser("whitespace = #'[,\\s]+'", ParserCreationOptions.default)
             )
         }
         return predefinedWsParsers!![wsParserName]

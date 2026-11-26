@@ -9,8 +9,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  *
  *
  * You should not use this class unless it is very important!
- *
- * @since 0.9.7
  */
 class SpecialSequenceRule private constructor(
     hide: Boolean,
@@ -19,14 +17,12 @@ class SpecialSequenceRule private constructor(
      * Returns the description of the rule.
      *
      * @return The description as a string.
-     * @since 0.9.7
      */
     val description: String,
     /**
      * The function wrapped in this rule. You should only use this kind of rule if you are absolutely sure that you know what you are doing. The same is true for this method.
      *
      * @return The wrapped function.
-     * @since 0.9.7
      */
     val function: (String) -> String?
 ) : SimpleRule(hide, red) {
@@ -84,7 +80,6 @@ class SpecialSequenceRule private constructor(
          * @param description The description of the special sequence.
          * @param function    The function which does what the description says.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(
             description: String,

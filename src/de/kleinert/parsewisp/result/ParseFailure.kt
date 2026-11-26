@@ -11,7 +11,6 @@ import de.kleinert.parsewisp.result.failure.ParseFailureReason
  * @param line       The line where parsing failed, 1-indexed. This can be inferred from the string and index.
  * @param column     The column where parsing failed, 1-indexed. This can be inferred from the string and index.
  * @param text       The text that could not be matched.
- * @since 0.9.7
  */
 data class ParseFailure(
     val index: Int,
@@ -25,7 +24,6 @@ data class ParseFailure(
      *
      * @param index      The index where parsing failed.
      * @param reasonList The list of expected things or other reasons why parsing failed.
-     * @since 0.9.7
      */
     constructor(index: Int, reasonList: List<ParseFailureReason>) : this(index, reasonList, -1, -1, null)
 
@@ -37,7 +35,6 @@ data class ParseFailure(
      * Formats the failure into a string with all information included clearly. This is useful for debugging.
      *
      * @return A string for easy viewing.
-     * @since 0.9.7
      */
     fun contentsToString(): String {
         return "[$index, $reasonList, $line, $column, $text]"

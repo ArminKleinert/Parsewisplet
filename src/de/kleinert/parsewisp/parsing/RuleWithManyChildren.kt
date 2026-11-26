@@ -4,8 +4,6 @@ import de.kleinert.parsewisp.reduction.ReductionType
 
 /**
  * Abstraction of [Rule] types which wrap multiple other [Rule] instances. Examples: choices, concatenations.
- *
- * @since 0.9.7
  */
 abstract class RuleWithManyChildren
  protected constructor(
@@ -13,14 +11,11 @@ abstract class RuleWithManyChildren
     red: ReductionType,
     /**
      * The rules wrapped by this rule.
-     *
-     * @since 0.9.7
      */
     /**
      * Set the inner [Rule] list used for parsing and returns an instance of the same class.
      *
      * @return The inner [Rule] list.
-     * @since 0.9.7
      */
     val rules: List<Rule>
 ) : Rule(hide, red) {
@@ -37,7 +32,6 @@ abstract class RuleWithManyChildren
      *
      * @param rules The new inner [Rule].
      * @return A new instance.
-     * @since 0.9.7
      */
     abstract fun withRules(rules: List<Rule>): RuleWithManyChildren
 

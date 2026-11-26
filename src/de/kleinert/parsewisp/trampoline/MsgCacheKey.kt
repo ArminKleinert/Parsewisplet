@@ -7,6 +7,5 @@ import de.kleinert.parsewisp.functions.Listener
  *
  * @param index    The index.
  * @param listener The listener.
- * @since 0.9.7
  */
 data class MsgCacheKey(val index: Int, val listener: Listener)

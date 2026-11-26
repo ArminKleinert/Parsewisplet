@@ -7,6 +7,5 @@ import de.kleinert.parsewisp.parsing.Rule
  *
  * @param index The index.
  * @param rule  The production.
- * @since 0.9.7
  */
 data class ListenerKey(val index: Int, val rule: Rule)

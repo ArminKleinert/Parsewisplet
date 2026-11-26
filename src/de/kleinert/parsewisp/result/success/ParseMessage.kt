@@ -8,15 +8,12 @@ import de.kleinert.parsewisp.result.ParseTree
  * A parsed "result" consists of an index and an object carrying more information.
  * Usually, the wrapped object is a [ParseTree] or a string. But this class is also used to transport other types of objects.
  * For specifics, see [ParseMessage.result].
- *
- * @since 0.9.7
  */
 class ParseMessage
 /**
  * Simple, abstract constructor taking only the index. The wrapped object is defined in the specific subclasses.
  *
  * @param index The index.
- * @since 0.9.7
  */ private constructor(
     private val index: Int,
     /**
@@ -27,7 +24,6 @@ class ParseMessage
      * If the object is a [FlatResultSeq], the contents are any of the classes mentioned above.
      *
      * @return The wrapped object.
-     * @since 0.9.7
      */
     val result: Any?
 ) {
@@ -44,7 +40,6 @@ class ParseMessage
      * The index of the message object.
      *
      * @return The index as an integer.
-     * @since 0.9.7
      */
     fun index(): Int {
         return index
@@ -54,7 +49,6 @@ class ParseMessage
      * Creates a new instance with the current index.
      *
      * @return A new instance with the current index.
-     * @since 0.9.7
      */
     fun reset(): ParseMessage {
         return create(index)
@@ -73,7 +67,6 @@ class ParseMessage
          * @param index  The last index of the previous parse, exclusive.
          * @param result The [ParseTree].
          * @return The [ParseTree] wrapped into an instance of this class.
-         * @since 0.9.7
          */
         fun create(index: Int, result: ParseTree): ParseMessage {
             return ParseMessage(index, result)
@@ -85,7 +78,6 @@ class ParseMessage
          * @param index  The last index of the previous parse, exclusive.
          * @param result The String.
          * @return The String wrapped into an instance of this class.
-         * @since 0.9.7
          */
         fun create(index: Int, result: String): ParseMessage {
             return ParseMessage(index, result)
@@ -96,7 +88,6 @@ class ParseMessage
          *
          * @param index The last index of the previous parse, exclusive.
          * @return An instance wrapping null.
-         * @since 0.9.7
          */
         fun create(index: Int): ParseMessage {
             return ParseMessage(index, null)
@@ -108,7 +99,6 @@ class ParseMessage
          * @param index  The last index of the previous parse, exclusive.
          * @param result The [FlatResultSeq].
          * @return The [FlatResultSeq] wrapped into an instance of this class.
-         * @since 0.9.7
          */
         fun create(index: Int, result: FlatResultSeq): ParseMessage {
             return ParseMessage(index, result)
@@ -120,7 +110,6 @@ class ParseMessage
          * @param index  The last index of the previous parse, exclusive.
          * @param result The object.
          * @return The object wrapped into an instance of this class.
-         * @since 0.9.7
          */
         fun create(index: Int, result: Any): ParseMessage {
             return ParseMessage(index, result)
@@ -132,7 +121,6 @@ class ParseMessage
          * @param index  The last index of the previous parse, exclusive.
          * @param result The [ParseFailureNode].
          * @return The [ParseFailureNode] wrapped into an instance of this class.
-         * @since 0.9.7
          */
         fun create(index: Int, result: ParseFailureNode): ParseMessage {
             return ParseMessage(index, result)

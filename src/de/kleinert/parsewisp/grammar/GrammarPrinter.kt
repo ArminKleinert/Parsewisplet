@@ -27,16 +27,15 @@ import de.kleinert.parsewisp.parsing.ZeroOrMoreRule
  * By default, the default printer can be used as follows to print a grammar:
  * <pre>
  * `var p = Parsewisp.parser(     """     S = P S | eps     P = "(" S* ")"     """); // A variant of the grammar of balanced parentheses System.out.println(p.show()); // Use default printer. `
-</pre> *
+ * </pre>
  * The code above prints
  * <pre>
  * `S = P S | ε ; P = "(" S* ")" ; `
-</pre> *
+ * </pre>
  * To use a different printer, it can be included in the options when creating a parser, or be invoked later.
  * <pre>
  * `var p = Parsewisp.parser(     "S = P S | eps ; P = \"(\" S* \")\" ;",     ParserCreationOptions.getDefault().withPrinter(new GrammarPrinter())); // << Or pass another printer System.out.println(new GrammarPrinter().toString(p.grammar())); // Use specific printer. `
-</pre> *
- *
+ * </pre>
  *
  * To implement your own printer, you need to override the methods as follows:
  * <table>
@@ -62,10 +61,8 @@ import de.kleinert.parsewisp.parsing.ZeroOrMoreRule
  * <tr><td>[ValueRangeTerm]</td><td>[.valRangeToString]</td><td>`%x...-...` (ABNF hexadecimal format)</td></tr>
  * <tr><td>[VariableRepetitionRule]</td><td>[.repToString]</td><td>`rule{n,m}` (minimum STAR maximum followed by the rule)</td></tr>
  * <tr><td>[ZeroOrMoreRule]</td><td>[.zeroOrMoreToString]</td><td>`rule*` (The rule followed by a "*")</td></tr>
-</tbody> *
-</table> *
- *
- * @since 0.9.7
+ * </tbody>
+ * </table>
  */
 interface GrammarPrinter {
     /**
@@ -73,7 +70,6 @@ interface GrammarPrinter {
      *
      * @param grammar The grammar.
      * @return A string.
-     * @since 0.9.7
      */
     fun toString(grammar: Grammar): String {
         val sb = StringBuilder()
@@ -99,7 +95,6 @@ interface GrammarPrinter {
      * @param s                   The string.
      * @param terminatorCodepoint The terminator.
      * @return A string.
-     * @since 0.9.7
      */
     fun escape(s: String, terminatorCodepoint: Int): String {
         val sb = StringBuilder()
@@ -141,7 +136,6 @@ interface GrammarPrinter {
      *
      * @param rule the rule of which the precedence is needed.
      * @return An int.
-     * @since 0.9.7
      */
     fun precedence(rule: Rule): Int {
         if (rule is AlternationRule || rule is OrderedChoiceRule || rule is TransformRule) return 100
@@ -160,7 +154,6 @@ interface GrammarPrinter {
      * @param sym The production's name.
      * @param rhs The rule on the right-hand-side of the separator.
      * @return A string.
-     * @since 0.9.7
      */
     fun productionToString(sym: Sym, rhs: Rule): String {
         return sym.name() + " = " + ruleToString(rhs) + " ;"
@@ -176,7 +169,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string.
-     * @since 0.9.7
      */
     fun ruleToString(rule: Rule): String {
         val sb = StringBuilder()
@@ -220,7 +212,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun altToString(rule: AlternationRule): String {
         return rule.rules
@@ -236,7 +227,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun catToString(rule: ConcatRule): String {
         return rule.rules
@@ -252,7 +242,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun eofToString(
         @Suppress("unused") rule: EOFTerm
@@ -268,7 +257,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule,
-     * @since 0.9.7
      */
     fun epsToString(
         @Suppress("unused") rule: EpsilonTerm
@@ -284,7 +272,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun exclusionToString(rule: ExclusionRule): String {
         return parens(rule, rule.expected) + " - " + parens(rule, rule.excluded)
@@ -298,7 +285,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun lookToString(rule: LookaheadRule): String {
         return "&" + parens(rule, rule.rule)
@@ -312,7 +298,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun negToString(rule: NegativeLookaheadRule): String {
         return "!" + parens(rule, rule.rule)
@@ -326,7 +311,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun ntToString(rule: NonTerminal): String {
         return rule.keyword.name()
@@ -340,7 +324,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun onceOrMoreToString(rule: OnceOrMoreRule): String {
         return parens(rule, rule.rule) + "+"
@@ -354,7 +337,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun optToString(rule: OptionalRule): String {
         return parens(rule, rule.rule) + "?"
@@ -368,7 +350,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun ordToString(rule: OrderedChoiceRule): String {
         return rule.rules
@@ -384,7 +365,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun regexpToString(rule: RegexTerm): String {
         return "#\"" + escape(rule.regexp.pattern, '"'.code) + "\""
@@ -398,7 +378,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun specialToString(rule: SpecialSequenceRule): String {
         return "?" + rule.description + "?"
@@ -412,7 +391,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun strTermToString(rule: StringTerm): String {
         val sb = StringBuilder()
@@ -429,7 +407,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun valRangeToString(rule: ValueRangeTerm): String {
         if (rule.lo == rule.hi) return String.format("%%x%X", rule.lo)
@@ -444,7 +421,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun transformerToString(rule: TransformRule): String {
         return ruleToString(rule.rule)
@@ -458,7 +434,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun repToString(rule: VariableRepetitionRule): String {
         return parens(rule, rule.rule) + "{" + rule.min + "," + rule.max + "}"
@@ -472,7 +447,6 @@ interface GrammarPrinter {
      *
      * @param rule The rule.
      * @return A string-representation of the rule.
-     * @since 0.9.7
      */
     fun zeroOrMoreToString(rule: ZeroOrMoreRule): String {
         return parens(rule, rule.rule) + "*"

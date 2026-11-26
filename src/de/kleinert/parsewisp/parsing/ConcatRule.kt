@@ -10,8 +10,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
 /**
  * This class represents a concatenation of productions, written as `p1 p2 p3 ...` (where p1, p2, etc. are instances of [Rule]).
  * When parsing, it tries to match p1, then p2, then p3 and so on.
- *
- * @since 0.9.7
  */
 class ConcatRule private constructor(
     hide: Boolean,
@@ -102,7 +100,6 @@ class ConcatRule private constructor(
          *
          * @param rules The wrapped rules.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rules: List<Rule>): Rule {
             if (rules.isEmpty()) return EpsilonTerm.default
@@ -130,7 +127,6 @@ class ConcatRule private constructor(
          *
          * @param rules The rules.
          * @return A concatenation rule.
-         * @since 0.9.7
          */
         fun createDirect(
             rules: List<Rule>

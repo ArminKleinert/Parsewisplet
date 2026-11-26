@@ -16,9 +16,6 @@ import de.kleinert.parsewisp.parsing.AlternationRule
  *  * [ERROR]: Fails.
  *  * [CHOICE]: `S = A | B | C`
  *  * [KEEP]: `S = A`
- *
- *
- * @since 0.9.7
  */
 enum class RedefinitionOption {
     /**
@@ -26,8 +23,6 @@ enum class RedefinitionOption {
      *
      *
      * Example: Adding Grammar productions "S = A" and "S = "B" results in "S = B" and discards the first.
-     *
-     * @since 0.9.7
      */
     OVERRIDE,
 
@@ -36,8 +31,6 @@ enum class RedefinitionOption {
      *
      *
      * Example: Adding Grammar productions "S = A" and "S = "B" results in an error.
-     *
-     * @since 0.9.7
      */
     ERROR,
 
@@ -46,8 +39,6 @@ enum class RedefinitionOption {
      *
      *
      * Example: Adding Grammar productions "S = A" and "S = "B" creates a new production "S = A | B".
-     *
-     * @since 0.9.7
      */
     CHOICE,
 
@@ -56,16 +47,12 @@ enum class RedefinitionOption {
      *
      *
      * Example: Adding Grammar productions "S = A" and "S = "B" keeps "S = A".
-     *
-     * @since 0.9.7
      */
     KEEP;
 
     companion object {
         /**
          * Default setting.
-         *
-         * @since 0.9.7
          */
         val defaultOption: RedefinitionOption = ERROR
     }

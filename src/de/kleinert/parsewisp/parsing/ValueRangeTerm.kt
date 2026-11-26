@@ -5,8 +5,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
  * Represents an ABNF value range.
- *
- * @since 0.9.7
  */
 class ValueRangeTerm private constructor(
     hide: Boolean,
@@ -88,7 +86,6 @@ class ValueRangeTerm private constructor(
          * @param hi The highest codepoint.
          * @return A rule.
          * @throws IllegalArgumentException if the minimum codepoint value is greater than the maximum.
-         * @since 0.9.7
          */
         fun create(lo: Int, hi: Int): Rule {
             return ValueRangeTerm(defaultHidden, defaultReductionType, lo, hi)

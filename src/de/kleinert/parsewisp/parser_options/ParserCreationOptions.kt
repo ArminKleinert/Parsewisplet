@@ -17,20 +17,17 @@ class ParserCreationOptions
  * @param redefinitionOption Sets what to do when a production appears twice in the definition.
  * @param checkCorrectness   Whether to check the correctness of the grammar when creating the parser.
  * @param printer            A helper for converting the rules to strings if ever required.
- * @since 0.9.7
  */(
     /**
      * A parser which is used to ignore whitespaces between words or characters. This parser is merged into the new parser when the creation options are used. If null, no such parser is used.
      *
      * @return A [Parser] or null.
-     * @since 0.9.7
      */
     val whitespaceParser: Parser?,
     /**
      * The starting production name of the parser. If null, the first defined production is used.
      *
      * @return A symbol which should be the left-hand side of a production in the grammar.
-     * @since 0.9.7
      */
     val startProduction: Sym?,
     /**
@@ -38,8 +35,6 @@ class ParserCreationOptions
      *
      * @return A [RedefinitionOption]
      * @see RedefinitionOption
-     *
-     * @since 0.9.7
      */
     val redefinitionOption: RedefinitionOption,
     private val checkCorrectness: Boolean,
@@ -47,7 +42,6 @@ class ParserCreationOptions
      * Returns the [GrammarPrinter] associated with the created parser.
      *
      * @return The printer.
-     * @since 0.9.7
      */
     val printer: GrammarPrinter
 ) {
@@ -55,7 +49,6 @@ class ParserCreationOptions
      * Whether to check the correctness of the grammar when creating the parser.
      *
      * @return true or false
-     * @since 0.9.7
      */
     fun doCheckCorrectness(): Boolean {
         return checkCorrectness
@@ -66,7 +59,6 @@ class ParserCreationOptions
      *
      * @param whitespaceParser The parser (or null).
      * @return A new instance.
-     * @since 0.9.7
      */
     fun withWhitespaceParser(
         whitespaceParser: Parser?
@@ -85,7 +77,6 @@ class ParserCreationOptions
      *
      * @param startProduction The start production's name.
      * @return A new instance.
-     * @since 0.9.7
      */
     fun withStartProduction(
         startProduction: Sym?
@@ -104,7 +95,6 @@ class ParserCreationOptions
      *
      * @param redefinitionOption Sets what to do when a production appears twice in the definition.
      * @return A new instance.
-     * @since 0.9.7
      */
     fun withRedefinitionOption(
         redefinitionOption: RedefinitionOption?
@@ -122,7 +112,6 @@ class ParserCreationOptions
      *
      * @param checkCorrectness The new setting for [doCheckCorrectness].
      * @return A new instance.
-     * @since 0.9.7
      */
     fun withCorrectnessCheck(
         checkCorrectness: Boolean
@@ -140,7 +129,6 @@ class ParserCreationOptions
      *
      * @param printer The new grammar-printer.
      * @return A new instance.
-     * @since 0.9.7
      */
     fun withPrinter(
         printer: GrammarPrinter?
@@ -165,7 +153,6 @@ class ParserCreationOptions
          * @param checkCorrectness   Whether to check the correctness of the grammar when creating the parser.
          * @param printer            A helper for converting the rules to strings if ever required.
          * @return A new instance.
-         * @since 0.9.7
          */
         fun create(
             whitespaceParser: Parser?,
@@ -190,7 +177,6 @@ class ParserCreationOptions
         </pre> *
          *
          * @return A new instance.
-         * @since 0.9.7
          */
         fun newWithStandardWhitespace(): ParserCreationOptions {
             return default
@@ -209,7 +195,6 @@ class ParserCreationOptions
              *
              *
              * @return default settings.
-             * @since 0.9.7
              */
             get() = create(
                 null, null, null, defaultCheckCorrectness, null

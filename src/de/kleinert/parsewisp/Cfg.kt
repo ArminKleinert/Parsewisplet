@@ -1,6 +1,5 @@
 package de.kleinert.parsewisp
 
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.error.ParserCreationFailure
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.grammar.GrammarBuilder
@@ -34,9 +33,9 @@ internal class Cfg private constructor(private val options: ParserCreationOption
             } else if (parts.size == 1) {
                 // Format at this point is "[0-9]+" or "[0-9]+," or ",[0-9]+" or "[0-9]+,[0-9]+"
                 val temp = arrayOf("", "")
-                if (partsUncut.get(0) == ',') { // Only maximum provided (e.g. `p{,m}`)
+                if (partsUncut[0] == ',') { // Only maximum provided (e.g. `p{,m}`)
                     temp[1] = parts[0]
-                } else if (partsUncut.get(partsUncut.length - 1) == ',') { // Only minimum provided (e.g. `p{n,}`
+                } else if (partsUncut[partsUncut.length - 1] == ',') { // Only minimum provided (e.g. `p{n,}`
                     temp[0] = parts[0]
                 } else { // Only an exact number is given: Both minimum and maximum. (e.g. `p{n}`).
                     temp[0] = parts[0]
@@ -54,19 +53,19 @@ internal class Cfg private constructor(private val options: ParserCreationOption
             tree: ParseTree
         ): Pair<Sym, Rule> {
             val allContents = tree.content
-            val nt = allContents.get(0).content() as ParseTree
-            val altOrOrd = allContents.get(1).content() as ParseTree
-            var content = nt.content.get(0)
+            val nt = allContents[0].content() as ParseTree
+            val altOrOrd = allContents[1].content() as ParseTree
+            var content = nt.content[0]
 
             val key: Sym
             val rule: Rule
 
-            if (sym("hide-nt") == nt.tag.content) {
-                content = (content.content() as ParseTree).content.get(0)
-                key = sym(content.content().toString())
+            if (Sym.sym("hide-nt") == nt.tag.content) {
+                content = (content.content() as ParseTree).content[0]
+                key = Sym.sym(content.content().toString())
                 rule = (buildRule(altOrOrd) as Rule).mergeToTop()
             } else {
-                key = sym(content.content() as String)
+                key = Sym.sym(content.content() as String)
                 rule = buildRule(altOrOrd) as Rule
             }
 
@@ -80,7 +79,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
             var tree = tree1
             while (true) {
                 if (tree.tag == ParseTree.NULL_TAG) {
-                    tree = tree.content.get(0).content() as ParseTree
+                    tree = tree.content[0].content() as ParseTree
                     continue
                 }
 
@@ -91,20 +90,20 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     }
 
                     "ntOrEpsOrEof" -> {
-                        val name = tree.content.get(0).content() as String
+                        val name = tree.content[0].content() as String
                         if (epsNames.contains(name)) return EpsilonTerm.default
                         if (name == EOFTerm.text()) return EOFTerm.default
-                        return nt(sym(name))
+                        return nt(Sym.sym(name))
                     }
 
                     "nt" -> {
-                        val name = tree.content.get(0).content() as String
-                        return nt(sym(name))
+                        val name = tree.content[0].content() as String
+                        return nt(Sym.sym(name))
                     }
 
                     "paren" -> {
                         // The parse tree is wrapped in hidden "(" ")".
-                        tree = tree.content.get(0).content() as ParseTree
+                        tree = tree.content[0].content() as ParseTree
                         continue  // Open up the grouping and take it to the top.
                     }
 
@@ -126,7 +125,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
 
                     "hide" -> {
                         return (buildRule(
-                            (tree.content.get(0) as NodeParseTree).content
+                            (tree.content[0] as NodeParseTree).content
                         ) as Rule).hideInResult()
                     }
 
@@ -139,9 +138,9 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     }
 
                     "string" -> {
-                        val s = tree.content.get(0).content() as String
+                        val s = tree.content[0].content() as String
                         if (s.startsWith("%")) {
-                            val caseInsensitive = when (s.get(1)) {
+                            val caseInsensitive = when (s[1]) {
                                 'i' -> true
                                 's' -> false
                                 else -> throw IllegalStateException()
@@ -157,7 +156,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "regexp" -> {
                         return regex(
                             strParser.processRegexp(
-                                tree.content.get(0).content() as String,
+                                tree.content[0].content() as String,
                                 2, 1
                             )
                         )
@@ -166,7 +165,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "neg" -> {
                         return neg(
                             buildRule(
-                                tree.content.get(0).content() as ParseTree
+                                tree.content[0].content() as ParseTree
                             ) as Rule
                         )
                     }
@@ -174,7 +173,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "opt" -> {
                         return opt(
                             buildRule(
-                                tree.content.get(0).content() as ParseTree
+                                tree.content[0].content() as ParseTree
                             ) as Rule
                         )
                     }
@@ -182,7 +181,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "opt_rep" -> {
                         return zeroOrMore(
                             buildRule(
-                                tree.content.get(0).content() as ParseTree
+                                tree.content[0].content() as ParseTree
                             ) as Rule
                         )
                     }
@@ -190,7 +189,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "look" -> {
                         return look(
                             buildRule(
-                                tree.content.get(0).content() as ParseTree
+                                tree.content[0].content() as ParseTree
                             ) as Rule
                         )
                     }
@@ -198,10 +197,10 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     "abnf-range" -> {
                         val content = tree.content
                         val parts =
-                            (content.get(0).content() as String).split("-".toRegex()).dropLastWhile { it.isEmpty() }
+                            (content[0].content() as String).split("-".toRegex()).dropLastWhile { it.isEmpty() }
                                 .toTypedArray()
                         val prefix = parts[0] // "%b..."/"%d..."/"%x..."
-                        val radix = when (prefix.get(1)) {
+                        val radix = when (prefix[1]) {
                             'b' -> 2
                             'd' -> 10
                             'x' -> 16
@@ -219,10 +218,10 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     }
 
                     "exclude" -> {
-                        val rule1 = buildRule(tree.content.get(0).content() as ParseTree) as Rule
+                        val rule1 = buildRule(tree.content[0].content() as ParseTree) as Rule
                         if (tree.content.size == 1) return rule1
 
-                        val rule2 = buildRule(tree.content.get(1).content() as ParseTree) as Rule
+                        val rule2 = buildRule(tree.content[1].content() as ParseTree) as Rule
                         return exclude(rule1, rule2)
                     }
 
@@ -258,7 +257,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
         override fun make() {
             val rules = Gll.parse(
                 grammarGrammar,
-                sym("rules"),
+                Sym.sym("rules"),
                 spec, partial = false, iterativeDeepening = false, printer = GrammarPrinter.default
             )
 

@@ -7,32 +7,24 @@ import java.util.*
 
 /**
  * A class for output formats. This entire class might be removed in the future and replaced by an alternative [ParseTree] variant specifically for intermediate operations.
- *
- *
- * Unlike the output formats of Instaparse (hiccup and enlive), this class has no relevance for the way parse trees can be handled.
- *
- * @since 0.9.7
  */
 class ReductionType private constructor(
     /**
      * The production key this output format is for.
      *
      * @return The production key this output format is for.
-     * @since 0.9.7
      */
     val key: Sym,
     /**
      * The [Type] type of this reduction.
      *
      * @return The [Type] type of this reduction.
-     * @since 0.9.7
      */
     val reductionType: Type,
     /**
      * If true, the intermediate result will be hidden in the final output tree.
      *
      * @return If true, the intermediate result will be hidden in the final output tree.
-     * @since 0.9.7
      */
     val isHiddenOrRaw: Boolean
 ) {
@@ -42,28 +34,20 @@ class ReductionType private constructor(
 
     /**
      * The available types. They mark whether the parse operation is an intermediate operation or for the final output.
-     *
-     * @since 0.9.7
      */
     enum class Type {
         /**
          * The default type. This should not be used directly.
-         *
-         * @since 0.9.7
          */
         INITIAL,
 
         /**
          * Has the same properties as [INITIAL], but will not be replaced with [TAGGED_PARSE_TREE] when finalizing the grammar.
-         *
-         * @since 0.9.7
          */
         MERGE,
 
         /**
          * Default type. Represent parse trees as lists.
-         *
-         * @since 0.9.7
          */
         TAGGED_PARSE_TREE
     }
@@ -97,11 +81,10 @@ class ReductionType private constructor(
          *  * [isHiddenOrRaw1] returns true.
          *
          * @return Default output format for intermediate operations.
-         * @since 0.9.7
          */
         fun merging(): ReductionType {
             if (mergeReduction == null) mergeReduction =
-                ReductionType(ParseTree.Companion.NULL_TAG.content, Type.MERGE, true)
+                ReductionType(ParseTree.NULL_TAG.content, Type.MERGE, true)
             return mergeReduction!!
         }
 
@@ -113,11 +96,10 @@ class ReductionType private constructor(
          *  * [isHiddenOrRaw1] returns true.
          *
          * @return Default output format for new instances of [Rule].
-         * @since 0.9.7
          */
         fun initial(): ReductionType {
             if (initialReduction == null) initialReduction =
-                ReductionType(ParseTree.Companion.NULL_TAG.content, Type.INITIAL, true)
+                ReductionType(ParseTree.NULL_TAG.content, Type.INITIAL, true)
             return initialReduction!!
         }
 
@@ -126,7 +108,6 @@ class ReductionType private constructor(
          *
          * @param key The production's name.
          * @return A new output descriptor.
-         * @since 0.9.7
          */
         fun taggedTree(key: Sym): ReductionType {
             return ReductionType(key, Type.TAGGED_PARSE_TREE, false)
@@ -136,7 +117,6 @@ class ReductionType private constructor(
          * Replaces all rules that have the reduction type [Type.INITIAL] (the default when created) with rules with the reduction type [Type.TAGGED_PARSE_TREE].
          *
          * @param productions The productions as a mapping of symbols to rules.
-         * @since 0.9.7
          */
         fun applyStandardReductionToProductions(
             productions: LinkedHashMap<Sym, Rule>

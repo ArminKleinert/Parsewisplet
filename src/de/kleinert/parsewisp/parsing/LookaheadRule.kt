@@ -5,8 +5,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
  * This class represents the ABNF "lookahead" operator `&p` (where p is an instance of [Rule]).
- *
- * @since 0.9.7
  */
 class LookaheadRule private constructor(
     hide: Boolean,
@@ -49,7 +47,6 @@ class LookaheadRule private constructor(
          *
          * @param rule The inner rule.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule

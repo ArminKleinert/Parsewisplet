@@ -2,8 +2,6 @@ package de.kleinert.parsewisp.util
 
 /**
  * Helper functions for creating parsers from strings.
- *
- * @since 0.9.7
  */
 class StrParser {
     val sb: StringBuilder = StringBuilder()
@@ -12,7 +10,7 @@ class StrParser {
         sb.setLength(0)
         var i = offset
         while (i < s.length - backOffset) {
-            val c = s.get(i)
+            val c = s[i]
 
             if (c == starter) {
                 break
@@ -22,7 +20,7 @@ class StrParser {
                 require(i + 1 < s.length) { "Encountered backslash character at end of string: $s" }
 
                 i++
-                val c2 = s.get(i)
+                val c2 = s[i]
 
                 if (c2 == starter) {
                     sb.append(c2)
@@ -55,7 +53,7 @@ class StrParser {
         sb.setLength(0)
         var i = offset
         while (i < s.length - backOffset) {
-            val c = s.get(i)
+            val c = s[i]
 
             if (c == starter) {
                 break
@@ -65,7 +63,7 @@ class StrParser {
                 require(i + 1 < s.length) { "Encountered backslash character at end of string: $s" }
 
                 i++
-                val c2 = s.get(i)
+                val c2 = s[i]
                 if (c2 == starter) {
                     sb.append(c2)
                 } else {
@@ -87,10 +85,9 @@ class StrParser {
      * @param offset     The offset from index 0. For example, a string of the form "..." would use offset 1, but a string of the form ''...'' would use offset 2.
      * @param backOffset The offset from the end. This separates the final character of the string. For example, a string of the form "..." would use backOffset 1, but a string of the form ''...'' would use backOffset 2.
      * @return A string.
-     * @since 0.9.7
      */
     fun processString(s: String, offset: Int = 1, backOffset: Int = 1): String {
-        return unescape(offset, backOffset, s.get(0), s)
+        return unescape(offset, backOffset, s[0], s)
     }
 
     /**
@@ -100,8 +97,7 @@ class StrParser {
      * @param offset     The offset from index 0. For example, a regex of the form #"..." would use offset 2, a regex of the form `...` would use offset 1.
      * @param backOffset The offset from the end. This separates the final character of the string. For example, a regex of the form #"..." would use backOffset 1, but a regex of the form #''...'' would use backOffset 2.
      * @return A regex.
-     * @since 0.9.7
      */
     fun processRegexp(s: String, offset: Int, backOffset: Int) =
-        Regex(unescapeRegex(offset, backOffset, s.get(offset - 1), s))
+        Regex(unescapeRegex(offset, backOffset, s[offset - 1], s))
 }

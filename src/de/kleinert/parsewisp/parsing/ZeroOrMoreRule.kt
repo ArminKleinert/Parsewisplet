@@ -9,8 +9,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  *
  *
  * Notation: `{rule}` or `rule*`
- *
- * @since 0.9.7
  */
 class ZeroOrMoreRule private constructor(
     hide: Boolean,
@@ -56,7 +54,6 @@ class ZeroOrMoreRule private constructor(
          *
          * @param rule The [Rule] to match repeatedly.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule

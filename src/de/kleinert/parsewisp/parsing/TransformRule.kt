@@ -8,8 +8,6 @@ import de.kleinert.parsewisp.result.success.ParseMessage
 
 /**
  * This class provides limited utility for interacting with the host environment and can modify the parse tree.
- *
- * @since 0.9.7
  */
 class TransformRule private constructor(
     hide: Boolean,
@@ -78,7 +76,6 @@ class TransformRule private constructor(
          * @param rule        The [Rule] to match repeatedly.
          * @param transformer The transformer function.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rule: Rule, transformer: (List<Any?>, Int) -> List<Any?>): Rule {
             return TransformRule(defaultHidden, defaultReductionType, rule, transformer)

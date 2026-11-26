@@ -2,12 +2,9 @@ package de.kleinert.parsewisp.result
 
 import de.kleinert.parsewisp.collections.LazySupplierList
 import de.kleinert.parsewisp.collections.PretenderList
-import java.util.Objects
 
 /**
  * A class for the results of multiple parses. This typically covers [LazyResultList] and [ParsesFailureResult].
- *
- * @since 0.9.7
  */
 interface ParsesResult : List<ParseTree> {
     val isSuccess: Boolean
@@ -15,7 +12,6 @@ interface ParsesResult : List<ParseTree> {
          * True if this is the result of a successful parse.
          *
          * @return True if this is the result of a successful parse.
-         * @since 0.9.7
          */
         get() = this is LazyResultList
 
@@ -23,7 +19,6 @@ interface ParsesResult : List<ParseTree> {
      * Casts the result to a list of [ParseTree].
      *
      * @return A list of [ParseTree].
-     * @since 0.9.7
      */
     fun castToParsesSuccess(): LazyResultList {
         if (this !is LazyResultList) throw ClassCastException("Cannot cast failure to success.")
@@ -34,7 +29,6 @@ interface ParsesResult : List<ParseTree> {
      * Casts the result to an instance of [ParsesFailureResult].
      *
      * @return An instance of [ParsesFailureResult].
-     * @since 0.9.7
      */
     fun castToParsesFailure(): ParsesFailureResult {
         return this as ParsesFailureResult
@@ -44,7 +38,6 @@ interface ParsesResult : List<ParseTree> {
      * Converts the parse forest input into a list, each parse tree is converted using [ParseTree.toRawList].
      *
      * @return The parse forest as a list of lists.
-     * @since 0.9.7
      */
     fun toRawList(): List<List<Any?>> {
         if (!this.isSuccess) throw ClassCastException("Cannot cast failure to success.")
@@ -60,15 +53,12 @@ interface ParsesResult : List<ParseTree> {
      *
      * @param nextFn     The function.
      * @param maxResults Maximum number of results.
-     * @since 0.9.7
      */
         (nextFn: (Int)->ParseTree?, maxResults: Int) : LazySupplierList<ParseTree>(nextFn, maxResults),
         ParsesResult
 
     /**
      * This class is used for [de.kleinert.parsewisp.parser.Parser.parses] to represent the failure.
-     *
-     * @since 0.9.7
      */
     class ParsesFailureResult internal constructor(val parseFailure: ParseFailure) : ParsesResult,
         PretenderList<ParseTree> {
@@ -76,7 +66,6 @@ interface ParsesResult : List<ParseTree> {
          * Extracts the wrapped failure object.
          *
          * @return The wrapped failure.
-         * @since 0.9.7
          */
         fun asFailure(): ParseFailure {
             return parseFailure
@@ -110,7 +99,6 @@ interface ParsesResult : List<ParseTree> {
          *
          * @param o The input.
          * @return Output as [ParsesResult].
-         * @since 0.9.7
          */
         fun make(o: Any): ParsesResult {
             if (o is TotalParsesFailureNode) return o

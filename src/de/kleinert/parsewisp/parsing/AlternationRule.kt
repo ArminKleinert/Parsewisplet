@@ -19,9 +19,7 @@ import de.kleinert.parsewisp.reduction.ReductionType
  * Alternatively, the [ParserCreationOptions] class allows an alternative notation for defining alternations:
  * <pre>
  * `var opts = Parsewisp.ParserCreationOptions             .getDefault()             .withRedefinitionOption(Grammar.RedefinitionOption.CHOICE);     var p = Parsewisp.parser("""             S : 'a'             S : 'b'             S : 'ab'             """, opts);     println(p.parse("a"));  // [:S, a]     println(p.parse("b"));  // [:S, b]     println(p.parse("ab")); // [:S, ab] `
-</pre> *
- *
- * @since 0.9.7
+</pre>
  */
 class AlternationRule private constructor(
     hide: Boolean,
@@ -64,7 +62,6 @@ class AlternationRule private constructor(
          *
          * @param rules The wrapped rules.
          * @return A rule.
-         * @since 0.9.7
          */
         fun create(rules: List<Rule>): Rule {
             if (rules.isEmpty()) return EpsilonTerm.default
@@ -98,7 +95,6 @@ class AlternationRule private constructor(
          *
          * @param rules The wrapped rules.
          * @return A rule.
-         * @since 0.9.7
          */
         fun altUnsafe(
             rules: List<Rule>

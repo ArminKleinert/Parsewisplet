@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.result.ParseFailureNode
 import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.PT
@@ -11,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class ConvTest {
     @Test
     fun listToTreeTest() {
-        val l = listOf(sym("S"), "A", listOf(sym("S"), "A"))
+        val l = listOf(Sym.sym("S"), "A", listOf(Sym.sym("S"), "A"))
         val pt: ParseTree = toParseTree(l)
         Assertions.assertEquals(
             PT.create("S", "A", PT.create("S", "A")),
@@ -22,8 +21,11 @@ internal class ConvTest {
     @Test
     fun mapToTreeTest() {
         val l = mapOf(
-            sym("tag")to sym("S"),
-            sym("content")to listOf("A", mapOf(sym("tag")to sym("S"), sym("content")to listOf<String?>("A")))
+            Sym.sym("tag") to Sym.sym("S"),
+            Sym.sym("content") to listOf(
+                "A",
+                mapOf(Sym.sym("tag") to Sym.sym("S"), Sym.sym("content") to listOf<String?>("A"))
+            )
         )
         val pt: ParseTree = toParseTree(l)
         Assertions.assertEquals(
@@ -36,8 +38,8 @@ internal class ConvTest {
     fun mixedToTreeTest() {
         val pt1: ParseTree = toParseTree(
             mapOf(
-                sym("tag")to sym("S"),
-                sym("content")to listOf("A", listOf(sym("S"), "A"))
+                Sym.sym("tag") to Sym.sym("S"),
+                Sym.sym("content") to listOf("A", listOf(Sym.sym("S"), "A"))
             )
         )
         Assertions.assertEquals(
@@ -47,11 +49,11 @@ internal class ConvTest {
 
         val pt2: ParseTree = toParseTree(
             listOf(
-                sym("S"),
+                Sym.sym("S"),
                 "A",
                 mapOf(
-                    sym("tag")to sym("S"),
-                    sym("content")to mutableListOf<String?>("A")
+                    Sym.sym("tag") to Sym.sym("S"),
+                    Sym.sym("content") to mutableListOf<String?>("A")
                 )
             )
         )
@@ -86,8 +88,8 @@ internal class ConvTest {
          */
         fun toParseTree(l: List<*>): ParseTree {
             if (l.isEmpty()) return ParseTree.create(ParseTree.NULL_TAG.content, mutableListOf<Any?>())
-            if (l.get(0) !is Sym) return ParseTree.create(ParseTree.NULL_TAG.content, toParseTreeHelper(l))
-            return ParseTree.create((l.get(0) as Sym?)!!, toParseTreeHelper(l.subList(1, l.size)))
+            if (l[0] !is Sym) return ParseTree.create(ParseTree.NULL_TAG.content, toParseTreeHelper(l))
+            return ParseTree.create((l[0] as Sym?)!!, toParseTreeHelper(l.subList(1, l.size)))
         }
 
         /**
@@ -97,8 +99,11 @@ internal class ConvTest {
          * @return A parse tree.
          */
         fun toParseTree(m: Map<*, *>): ParseTree {
-            require(!(m.size != 2 || (m.get(sym("tag")) !is Sym) || (m.get(sym("content")) !is MutableList<*>))) { "Cannot handle Map $m" }
-            return ParseTree.create(m.get(sym("tag")) as Sym, toParseTreeHelper(m.get(sym("content")) as MutableList<*>))
+            require(!(m.size != 2 || (m[Sym.sym("tag")] !is Sym) || (m[Sym.sym("content")] !is MutableList<*>))) { "Cannot handle Map $m" }
+            return ParseTree.create(
+                m[Sym.sym("tag")] as Sym,
+                toParseTreeHelper(m[Sym.sym("content")] as MutableList<*>)
+            )
         }
     }
 }

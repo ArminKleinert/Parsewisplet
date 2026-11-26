@@ -17,12 +17,9 @@ import de.kleinert.parsewisp.reduction.ReductionType
  * In the following example, two equivalent grammars and parsers are constructed from a string and from a builder. The assertions show that the grammars are equal and that the parsers give equivalent outputs.
  * <pre>
  * `var gFromString = Parsewisp.parser("""                     S = NUMBER NUMBER*                     NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'                     """)             .grammar();     var gFromGB = new GrammarBuilder(ParserCreationOptions.getDefault()) {         @Override         public void make() {             addProduction("S", cat(nt("NUMBER"), zeroOrMore(nt(Sym.sym("NUMBER")))));             addProduction("NUMBER", alt("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"));         }     }.build();     Assertions.assertEquals(gFromString, gFromGB);     var pFromString = Parsewisp.parser(gFromString, ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));     var pFromGB = Parsewisp.parser(gFromGB, ParserCreationOptions.getDefault().withStartProduction(Sym.sym("S")));     var text = "0123456789";     Assertions.assertEquals(pFromString.parse(text), pFromGB.parse(text)); `
-</pre> *
- *
+ * </pre>
  *
  * The [GrammarBuilder.addProduction] method can be used to add new productions.
- *
- * @since 0.9.7
  */
 abstract class GrammarBuilder protected constructor(redefinitionOption: RedefinitionOption = RedefinitionOption.defaultOption) {
     private val productions: LinkedHashMap<Sym, Rule> = LinkedHashMap()
@@ -38,7 +35,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     /**
      * Override this to create a grammar. Used in [.build].
      *
-     * @since 0.9.7
      */
     protected open fun make() {
     }
@@ -47,7 +43,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * Use this to construct the grammar.
      *
      * @return The grammar.
-     * @since 0.9.7
      */
     fun build(): Grammar {
         return buildWithWhitespace(null, null, true)
@@ -60,7 +55,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param wsParser         Whitespace parser to include.
      * @param checkCorrectness Whether to check the grammar for validity.
      * @return The grammar.
-     * @since 0.9.7
      */
     fun buildWithWhitespace(
         startProduction: Sym?,
@@ -117,7 +111,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param entries The entries.
      * @see .addProduction
-     * @since 0.9.7
      */
     protected fun addAllProductions(
         entries: Collection<Map.Entry<Sym, Rule>>
@@ -132,7 +125,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param lhs The production's key. (left-hand-side)
      * @param rhs The production's right-hand-side.
-     * @since 0.9.7
      */
     protected fun addProduction(
         lhs: Sym, rhs: Rule
@@ -157,7 +149,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param lhs The production's key. (left-hand-side)
      * @param rhs The production's right-hand-side.
      * @see .addProduction
-     * @since 0.9.7
      */
     protected fun addProduction(
         lhs: String, rhs: Rule
@@ -171,7 +162,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param p The input regex.
      * @return A [RegexTerm] or something that returns equivalent outputs when parsing.
-     * @since 0.9.7
      */
     protected fun regex(p: Regex): Rule {
         return buffer.getOrAddRegex(p)
@@ -182,7 +172,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param s The input regex.
      * @return A [RegexTerm] or something that returns equivalent outputs when parsing.
-     * @since 0.9.7
      */
     protected fun regex(s: String): Rule {
         return buffer.getOrAddRegex(Regex(s))
@@ -194,7 +183,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param input The rule to look for.
      * @return The new rule.
-     * @since 0.9.7
      */
     protected fun look(input: Rule): Rule {
         return LookaheadRule.create(input)
@@ -206,7 +194,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param input The rule to avoid.
      * @return The new rule.
-     * @since 0.9.7
      */
     protected fun neg(input: Rule): Rule {
         return NegativeLookaheadRule.create(input)
@@ -219,7 +206,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param lo The minimum codepoint.
      * @param hi The maximum codepoint.
      * @return The new rule.
-     * @since 0.9.7
      */
     protected fun numVal(lo: Int, hi: Int): Rule {
         return ValueRangeTerm.create(lo, hi)
@@ -231,7 +217,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param loHi The codepoint.
      * @return The new rule.
-     * @since 0.9.7
      */
     protected fun numVal(loHi: Int): Rule {
         return ValueRangeTerm.create(loHi, loHi)
@@ -247,7 +232,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param inputRules The parsers for the output.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun ordAlt(inputRules: List<Rule>): Rule {
         return OrderedChoiceRule.create(inputRules)
@@ -258,7 +242,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param name The name symbol of the output rule.
      * @return A [NonTerminal].
-     * @since 0.9.7
      */
     protected fun nt(name: Sym): NonTerminal {
         return buffer.getOrAddNt(name)
@@ -269,7 +252,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param name The name symbol of the output rule.
      * @return A [NonTerminal].
-     * @since 0.9.7
      */
     protected fun nt(name: String): NonTerminal {
         return buffer.getOrAddNt(Sym.sym(name))
@@ -282,7 +264,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param string          The string to match.
      * @param caseInsensitive Whether the Terminal will match case-insensitive.
      * @return The new rule.
-     * @since 0.9.7
      */
     protected fun string(string: String, caseInsensitive: Boolean = false): Rule {
         return buffer.getOrAddString(string, caseInsensitive)
@@ -294,7 +275,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param string The string to match.
      * @return The new rule.
-     * @since 0.9.7
      */
     protected fun stringCS(string: String): Rule {
         return string(string, false)
@@ -306,7 +286,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param string The string to match.
      * @return The new rule.
-     * @since 0.9.7
      */
     protected fun stringCI(string: String): Rule {
         return string(string, true)
@@ -318,7 +297,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param rule      The rule.
      * @param transform The transformer function for the result.
      * @return The new rule.
-     * @since 0.9.7
      */
     protected fun transform(rule: Rule, transform: (List<Any?>, Int) -> List<Any?>): Rule {
         return TransformRule.create(rule, transform)
@@ -329,7 +307,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param o The input.
      * @return A copy of the input for which [Rule.isHiddenInResult1] returns true.
-     * @since 0.9.7
      */
     protected fun hide(o: Rule): Rule {
         return o.hideInResult()
@@ -339,7 +316,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * Get an epsilon rule.
      *
      * @return An [EpsilonTerm].
-     * @since 0.9.7
      */
     protected fun eps(): Rule {
         return EpsilonTerm.default
@@ -349,7 +325,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * Create a rule which matches end of input.
      *
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun eof(): Rule {
         return EOFTerm.default
@@ -366,7 +341,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param rule  First rule for the output.
      * @param rules More rules for the output.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun cat(
         rule: Rule, vararg rules: Rule
@@ -386,7 +360,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param rules The rules for the output.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun cat(
         rules: List<Rule>
@@ -399,7 +372,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param rules The rules.
      * @return A [ConcatRule].
-     * @since 0.9.7
      */
     protected fun catUnsafe(
         rules: List<Rule>
@@ -418,7 +390,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param rule  The first element for the output.
      * @param rules More elements.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun alt(
         rule: Rule, vararg rules: Rule
@@ -438,7 +409,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param rules The rules for the output.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun alt(rules: List<Rule>): Rule {
         return AlternationRule.create(rules)
@@ -449,7 +419,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param chars A string of matchable chars.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun oneOf(chars: String): Rule {
         if (chars.isEmpty()) return eps()
@@ -467,7 +436,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param rules The rules.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun altUnsafe(
         rules: List<Rule>
@@ -485,7 +453,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param description The description of the special sequence.
      * @param function    The function which does what the description says.
      * @return A [SpecialSequenceRule].
-     * @since 0.9.7
      */
     protected fun specialSequence(
         description: String,
@@ -507,7 +474,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param max  The maximum amount of repetitions.
      * @param rule The rule.
      * @return A rule, as described.
-     * @since 0.9.7
      */
     protected fun rep(
         rule: Rule, min: Int, max: Int
@@ -520,7 +486,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param rule The rule to repeat.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun rep(
         rule: Rule
@@ -535,7 +500,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param exact Minimum and maximum number of repetitions.
      * @return A repetition rule.
      * @see .rep
-     * @since 0.9.7
      */
     protected fun rep(
         rule: Rule, exact: Int
@@ -549,7 +513,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param ruleExpected The rule that must be matched.
      * @param ruleExcluded The rule that must not be matched.
      * @return A [ExclusionRule].
-     * @since 0.9.7
      */
     protected fun exclude(
         ruleExpected: Rule, ruleExcluded: Rule
@@ -564,7 +527,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param min  Minimum number of repetitions.
      * @return A repetition rule.
      * @see .rep
-     * @since 0.9.7
      */
     protected fun repMin(
         rule: Rule, min: Int
@@ -579,7 +541,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param max  Maximum number of repetitions.
      * @return A repetition rule.
      * @see .rep
-     * @since 0.9.7
      */
     protected fun repMax(
         rule: Rule, max: Int
@@ -592,7 +553,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param rule The rule to match repeatedly.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun zeroOrMore(rule: Rule): Rule {
         return ZeroOrMoreRule.create(rule)
@@ -603,7 +563,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param rule The rule to match repeatedly.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun onceOrMore(rule: Rule): Rule {
         return OnceOrMoreRule.create(rule)
@@ -614,7 +573,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param rule The rule to maybe match.
      * @return A rule.
-     * @since 0.9.7
      */
     protected fun opt(rule: Rule): Rule {
         return OptionalRule.create(rule)
@@ -701,7 +659,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @param rule The rule.
      * @param <T>  The type of the rule.
      * @return The same rule or a previously buffered equivalent.
-     * @since 0.9.7
     </T> */
     protected fun <T : Rule?> buffer(rule: T): T {
         @Suppress("UNCHECKED_CAST")

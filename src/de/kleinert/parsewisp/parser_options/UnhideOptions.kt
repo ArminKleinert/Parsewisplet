@@ -2,15 +2,12 @@ package de.kleinert.parsewisp.parser_options
 
 /**
  * See [Unhide] for documentation and an example.
- *
- * @since 0.9.7
  */
 enum class UnhideOptions {
     /**
      * Do nothing.
      *
      * @see ParsingOptions.unhide
-     * @since 0.9.7
      */
     NONE,
 
@@ -19,7 +16,6 @@ enum class UnhideOptions {
      *
      * @see Unhide.unhideTags
      * @see ParsingOptions.unhide
-     * @since 0.9.7
      */
     TAGS,
 
@@ -28,7 +24,6 @@ enum class UnhideOptions {
      *
      * @see Unhide.unhideContent
      * @see ParsingOptions.unhide
-     * @since 0.9.7
      */
     CONTENT,
 
@@ -37,7 +32,6 @@ enum class UnhideOptions {
      *
      * @see Unhide.unhideAll
      * @see ParsingOptions.unhide
-     * @since 0.9.7
      */
     ALL
 }

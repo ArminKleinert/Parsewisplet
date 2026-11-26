@@ -4,8 +4,6 @@ import de.kleinert.parsewisp.reduction.ReductionType
 
 /**
  * Abstraction of [Rule] types which wrap one other [Rule]. Examples: repetitions, optionals, lookahead.
- *
- * @since 0.9.7
  */
 abstract class RuleWithChild
 internal constructor(
@@ -13,14 +11,11 @@ internal constructor(
     red: ReductionType,
     /**
      * The rule which is wrapped by this rule.
-     *
-     * @since 0.9.7
      */
     /**
      * Get the inner [Rule] used for parsing. For example, for a repetition `P+`, returns `P`.
      *
      * @return The inner [Rule].
-     * @since 0.9.7
      */
     val rule: Rule
 ) : Rule(hide, red) {
@@ -31,7 +26,6 @@ internal constructor(
      *
      * @param rule The new inner [Rule].
      * @return A new instance.
-     * @since 0.9.7
      */
     abstract fun withRule(rule: Rule): RuleWithChild
 

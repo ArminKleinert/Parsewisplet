@@ -14,8 +14,6 @@ import java.io.PrintStream
  * `var text = "...";     var p = Parsewisp.parser("...");     var rule = Parsewisp.parse(p, text).castToParseSuccess();     println(Viztool.dumpParseTree("vizoutput", rule)); `
 </pre> *
  * The tool **dot** must be installed.
- *
- * @since 0.9.7
  */
 object Viztool {
     private fun dumpParseTreeHelp(
@@ -74,7 +72,6 @@ object Viztool {
      * @return The return code. That is 0 on success or another number on failure.
      * @throws IOException          If the file can't be created or written to.
      * @throws InterruptedException If the operation is interrupted somehow.
-     * @since 0.9.7
      */
     fun dumpParseTree(
         dotFileNamePrefix: String,

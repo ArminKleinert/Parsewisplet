@@ -2,8 +2,6 @@ package de.kleinert.parsewisp
 
 /**
  * A class that simply wraps a String to differentiate instances from actual Strings. Unlike Parsewisp, instances are (currently) not interned.
- *
- * @since 0.9.7
  */
 class Sym private constructor(private val name: String) {
     override fun hashCode(): Int {
@@ -18,7 +16,6 @@ class Sym private constructor(private val name: String) {
      * Returns the backing string.
      *
      * @return The backing string.
-     * @since 0.9.7
      */
     fun name(): String {
         return name
@@ -34,7 +31,6 @@ class Sym private constructor(private val name: String) {
          *
          * @param sym The string for the symbol.
          * @return The new or already existing symbol.
-         * @since 0.9.7
          */
         fun sym(sym: String): Sym {
             return Sym(sym)

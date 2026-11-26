@@ -46,7 +46,7 @@ internal class GrammarBuilderTest {
 
     @Test
     fun equivalentToMoreExplicitGrammar() {
-        val pGrammarList = LinkedHashMap<Sym, Rule>()
+        val pGrammarList = linkedMapOf<Sym, Rule>()
         pGrammarList[sym("S")] = ConcatRule.create(
             listOf(
                 NonTerminal.create(sym("NUMBER")),

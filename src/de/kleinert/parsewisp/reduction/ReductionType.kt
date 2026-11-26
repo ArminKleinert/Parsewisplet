@@ -11,10 +11,6 @@ import java.util.*
  *
  * Unlike the output formats of Instaparse (hiccup and enlive), this class has no relevance for the way parse trees can be handled.
  *
- * <pre>
- * `var r = StringTerm.createDirect("a", false);     var g = new LinkedHashMap<Sym, Rule>(2);     g.put(Sym.sym("S"), NonTerminal.create(Sym.sym("A")));     /// Default: Don't merge up     /// This gives the normal output: `[:S, [:A, "a"]]`     g.put(Sym.sym("A"), r.withReduction(ReductionType.initial()));     var pDefault = Parsewisp.parser(new Grammar(Sym.sym("S"), g));     System.out.println(pDefault.parse("a")); //>> [:S, [:A, "a"]]     /// Merge upwards     /// This hides the `:A` tag in the tree: `[:S, "a"]`     g.put(Sym.sym("A"), r.withReduction(ReductionType.mergeReduction()));     var pMerge = Parsewisp.parser(new Grammar(Sym.sym("S"), g));     System.out.println(pMerge.parse("a")); //>> [:S, "a"]     /// Add to parse tree with potentially different name (Top-level)     /// This can be used to replace the tag with any symbol.     /// In this example, we replace the `:A` tag with `:B`: `[:S, [:B, "a"]]`     /// It could be used to emulate some playing around with precedence     ///  rules like some other parser libraries provide.     g.put(Sym.sym("A"), r.withReduction(ReductionType.taggedTreeReduction(Sym.sym("B"))));     var pRename = Parsewisp.parser(new Grammar(Sym.sym("S"), g));     System.out.println(pRename.parse("a")); //>> [:S, [:B, "a"]] `
-</pre> *
- *
  * @since 0.9.7
  */
 class ReductionType private constructor(
@@ -100,11 +96,6 @@ class ReductionType private constructor(
          *  * The type is [Type.MERGE].
          *  * [isHiddenOrRaw1] returns true.
          *
-         *
-         * <pre>
-         * `var g = new LinkedHashMap<Sym, Rule>(2);     g.put(Sym.sym("S"), NonTerminal.create(Sym.sym("A")));     g.put(Sym.sym("A"), StringTerm.createDirect("a", false).withReduction(ReductionType.merging()));     var pMerge = Parsewisp.parser(new Grammar(Sym.sym("S"), g));     System.out.println(pMerge.parse("a")); //>> [:S, "a"] `
-        </pre> *
-         *
          * @return Default output format for intermediate operations.
          * @since 0.9.7
          */
@@ -121,11 +112,6 @@ class ReductionType private constructor(
          *  * The type is [Type.INITIAL].
          *  * [isHiddenOrRaw1] returns true.
          *
-         *
-         * <pre>
-         * `var g = new LinkedHashMap<Sym, Rule>(2);     g.put(Sym.sym("S"), NonTerminal.create(Sym.sym("A")));     g.put(Sym.sym("A"), StringTerm.createDirect("a", false).withReduction(ReductionType.initial()));     var pDefault = Parsewisp.parser(new Grammar(Sym.sym("S"), g));     System.out.println(pDefault.parse("a")); //>> [:S, [:A, "a"]] `
-        </pre> *
-         *
          * @return Default output format for new instances of [Rule].
          * @since 0.9.7
          */
@@ -137,10 +123,6 @@ class ReductionType private constructor(
 
         /**
          * Default output format for final operations whose result is not hidden in the parse tree.
-         *
-         * <pre>
-         * `var g = new LinkedHashMap<Sym, Rule>(2);     g.put(Sym.sym("S"), NonTerminal.create(Sym.sym("A")));     g.put(Sym.sym("A"), StringTerm.createDirect("a", false)             .withReduction(ReductionType.taggedTree(Sym.sym("A"))));     var pTagged = Parsewisp.parser(new Grammar(Sym.sym("S"), g));     System.out.println(pTagged.parse("a")); //>> [:S, [:A, "a"]] `
-        </pre> *
          *
          * @param key The production's name.
          * @return A new output descriptor.

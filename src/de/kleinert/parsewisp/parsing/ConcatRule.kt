@@ -108,7 +108,7 @@ class ConcatRule private constructor(
             if (rules.isEmpty()) return EpsilonTerm.default
             if (rules.size == 1) return rules.get(0)
 
-            val compressedResult = ArrayList<Rule>()
+            val compressedResult = mutableListOf<Rule>()
 
             for (rule in rules) {
                 if (rule is ConcatRule && !rule.isHiddenInResult1() && rule.red == defaultReductionType) {

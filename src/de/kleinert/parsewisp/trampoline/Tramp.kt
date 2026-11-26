@@ -40,8 +40,8 @@ class Tramp(
      * @return A stack of derivative parse procedures of the current generation.
      * @since 0.9.7
      */
-    val stack = ArrayList<Procedure>()
-    private val nextStack = ArrayList<Procedure>()
+    val stack = mutableListOf<Procedure>()
+    private val nextStack = mutableListOf<Procedure>()
 
     /**
      * The current generation of derivatives.
@@ -58,10 +58,10 @@ class Tramp(
      * @return Sequential map of negative lookaheads.
      * @since 0.9.7
      */
-    val negativeListeners = sortedMapOf<Int, ArrayList<NegativeListener>>()
+    val negativeListeners = sortedMapOf<Int, MutableList<NegativeListener>>()
 
-    private val msgCache = LinkedHashMap<MsgCacheKey, Int>()
-    private val nodes = LinkedHashMap<ListenerKey, ListenerNode>()
+    private val msgCache = linkedMapOf<MsgCacheKey, Int>()
+    private val nodes = linkedMapOf<ListenerKey, ListenerNode>()
 
     /**
      * Last registered success.
@@ -90,7 +90,7 @@ class Tramp(
     ) {
         val present = negativeListeners[creator.index]
         if (present == null) {
-            val listeners = ArrayList<NegativeListener>()
+            val listeners = mutableListOf<NegativeListener>()
             listeners.add(negativeListener)
             negativeListeners[creator.index] = listeners
         } else {

@@ -60,7 +60,7 @@ internal class FlatResultSeqTest {
     fun bigTest() {
         val numElements = 30000
         var frs = FlatResultSeq.make()
-        val lst = ArrayList<Any?>()
+        val lst = mutableListOf<Any?>()
         for (i in 0..<numElements) {
             frs = frs.appendOrConcat(i)
             lst.add(i)

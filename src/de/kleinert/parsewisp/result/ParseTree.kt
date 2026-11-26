@@ -83,7 +83,7 @@ class ParseTree private constructor(
      * @since 0.9.7
      */
     fun toList(): List<Node> {
-        val alist: MutableList<Node> = ArrayList()
+        val alist = mutableListOf<Node>()
         if (tag != NULL_TAG) alist.add(tag)
         alist.addAll(content)
         return alist.toList()
@@ -312,7 +312,7 @@ class ParseTree private constructor(
             }
 
             // The rest of this method handles the case that there is an unflattened subtree.
-            val entries = ArrayList<Node>()
+            val entries = mutableListOf<Node>()
             for (e in content) {
                 if (e !is NodeParseTree) {
                     entries.add(e)

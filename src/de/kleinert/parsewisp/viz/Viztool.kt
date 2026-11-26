@@ -19,15 +19,15 @@ import java.io.PrintStream
  */
 object Viztool {
     private fun dumpParseTreeHelp(
-        printer: PrintStream,
+        printer: Appendable,
         parseRes: List<Node>,
         count: IntArray
     ): Int {
         val currentId = count[0]
-        count[0]+=1
+        count[0] += 1
         val label = getLabel(parseRes[0])
 
-        printer.print("$currentId[shape=box, label=\"$label\"];")
+        printer.append("$currentId[shape=box, label=\"$label\"];")
         parseRes.asSequence().drop(1)
             .map { child ->
                 dumpParseTreeHelp(
@@ -53,11 +53,11 @@ object Viztool {
         } else if (nodeContent is Sym) {
             nodeContent.name()
         } else if (nodeContent is ParseFailureNode) {
-            throw  IllegalStateException("Cannot create parse-tree visualization for $node (TODO).")
+            throw IllegalStateException("Cannot create parse-tree visualization for $node (TODO).")
         } else if (nodeContent is ParseTree) {
-            throw  IllegalStateException("This case should be handled in dumpParseTreeHelp.")
+            throw IllegalStateException("This case should be handled in dumpParseTreeHelp.")
         } else {
-            throw  IllegalStateException(node.javaClass.name)
+            throw IllegalStateException(node.javaClass.name)
         }
         return label.replace("\\", "\\\\").replace("\"", "\\\"")
     }

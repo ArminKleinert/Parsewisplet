@@ -81,10 +81,10 @@ object FailureUtil {
     ): ParseFailure {
         val currentIndex = if (failure == null) 0 else failure.index
         if (nextIndex > currentIndex)
-            return ParseFailure(nextIndex, ArrayList(listOf(newReason)));
+            return ParseFailure(nextIndex, listOf(newReason));
         if (nextIndex < currentIndex) return failure!!
 
-        val newReasonList = ArrayList(if (failure == null) listOf() else failure.reasonList);
+        val newReasonList = if (failure == null) mutableListOf() else failure.reasonList.toMutableList()
         newReasonList.add(newReason);
         return ParseFailure(nextIndex, newReasonList);
     }

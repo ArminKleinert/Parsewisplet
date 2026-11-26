@@ -10,7 +10,7 @@ package de.kleinert.parsewisp.collections
  * @since 0.9.7
 </T> */
 open class LazySupplierList<T>(nextFn: (Int)->T?, maxResults: Int) : List<T> {
-    private val evaluatedPart: ArrayList<T> = ArrayList()
+    private val evaluatedPart: MutableList<T> = mutableListOf()
     private val maxResults: Int
     private var nextFn: ((Int)->T?)?
 

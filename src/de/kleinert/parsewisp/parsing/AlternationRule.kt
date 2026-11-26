@@ -70,8 +70,8 @@ class AlternationRule private constructor(
             if (rules.isEmpty()) return EpsilonTerm.default
             if (rules.size == 1) return rules.get(0)
 
-            val uniques = HashSet<Rule>()
-            val compressedRules = ArrayList<Rule>()
+            val uniques = mutableSetOf<Rule>()
+            val compressedRules = mutableListOf<Rule>()
 
             for (rule in rules) {
                 if (!uniques.add(rule)) {

@@ -453,7 +453,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      */
     protected fun oneOf(chars: String): Rule {
         if (chars.isEmpty()) return eps()
-        val split = ArrayList<Rule>()
+        val split = mutableListOf<Rule>()
         for (i in chars.indices) {
             split.add(string(chars[i].toString()))
         }
@@ -643,7 +643,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
             return originalRule.withRules(rules)
         }
         if (originalRule is Terminal) {
-            val rules: MutableList<Rule> = ArrayList()
+            val rules = mutableListOf<Rule>()
             rules.add(whitespaceRule)
             val result: Rule
             if (!originalRule.reduction.isHiddenOrRaw1()) {

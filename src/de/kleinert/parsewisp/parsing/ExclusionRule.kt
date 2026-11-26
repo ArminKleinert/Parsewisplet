@@ -184,7 +184,10 @@ class ExclusionRule private constructor(
             startSymbol = tempSym
 
             // Make new Grammar
-            val tempG = LinkedHashMap<Sym, Rule>(oldGrammar)
+            val tempG = linkedMapOf<Sym, Rule>()
+            for ((key, value) in oldGrammar) {
+                tempG[key] = value
+            }
             tempG[startSymbol] = ConcatRule.create(listOf(excluded, EOFTerm.default))
             ReductionType.applyStandardReductionToProductions(tempG)
 

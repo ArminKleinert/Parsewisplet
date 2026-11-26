@@ -32,7 +32,7 @@ internal class TestGrammarPoetic {
     }
 
     private fun transform(pt: ParseResult): String {
-        val m: MutableMap<Sym, (List<Any?>)-> Any?> = HashMap()
+        val m: MutableMap<Sym, (List<Any?>)-> Any?> = mutableMapOf()
         m[Sym.sym("S")] = { l -> l }
         m[Sym.sym("i1")] = { '[' } // 1 corresponds to BF's '[' instruction
         m[Sym.sym("i2")] = { ']' } // 2 corresponds to BF's ']' instruction

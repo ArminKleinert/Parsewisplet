@@ -15,7 +15,7 @@ object Gr {
      */
     fun grammar(vararg g: Any?): Grammar {
         require(!(g.size == 0 || (g.size and 1) == 1))
-        val lhm = LinkedHashMap<Sym, Rule>()
+        val lhm = linkedMapOf<Sym, Rule>()
         var start: Sym? = null
         val iter = g.iterator()
         do {
@@ -35,7 +35,7 @@ object Gr {
      */
     fun grammarS(startName: String, vararg g: Any?): Grammar {
         require(!(g.size == 0 || (g.size and 1) == 1))
-        val lhm = LinkedHashMap<Sym, Rule>()
+        val lhm = linkedMapOf<Sym, Rule>()
         val start = Sym.sym(startName)
         val iter = g.iterator()
         do {

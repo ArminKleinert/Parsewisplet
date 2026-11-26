@@ -11,7 +11,7 @@ import de.kleinert.parsewisp.parsing.StringTerm
  * `if (Objects.equals(x, y)) { buffer.getOrAdd(x) == buffer.getOrAdd(y); }`
  */
 internal class BufferForRules {
-    private val nonTerminalMap: MutableMap<NonTerminal?, NonTerminal?> = HashMap()
+    private val nonTerminalMap: MutableMap<NonTerminal?, NonTerminal?> = mutableMapOf()
 
     /**
      * Adds a [NonTerminal]. If the object was already present in the buffer, returns the old one.
@@ -23,7 +23,7 @@ internal class BufferForRules {
         return if (temp == null) nonTerminal else temp
     }
 
-    private val regexTermMap: MutableMap<RegexTerm?, RegexTerm?> = HashMap()
+    private val regexTermMap: MutableMap<RegexTerm?, RegexTerm?> = mutableMapOf()
 
     /**
      * Adds a [RegexTerm]. If the object was already present in the buffer, returns the old one.
@@ -35,7 +35,7 @@ internal class BufferForRules {
         return if (temp == null) rule else temp
     }
 
-    private val stringTermMap: MutableMap<StringTerm?, StringTerm?> = HashMap()
+    private val stringTermMap: MutableMap<StringTerm?, StringTerm?> = mutableMapOf()
 
     /**
      * Adds a [StringTerm]. If the object was already present in the buffer, returns the old one.
@@ -47,7 +47,7 @@ internal class BufferForRules {
         return if (temp == null) rule else temp
     }
 
-    private val symToNtSet: MutableMap<Sym?, NonTerminal> = HashMap()
+    private val symToNtSet: MutableMap<Sym?, NonTerminal> = mutableMapOf()
 
     /**
      * Adds a [NonTerminal] based on the keyword. If the object was already present in the buffer, returns the old one.
@@ -59,8 +59,8 @@ internal class BufferForRules {
         return symToNtSet.computeIfAbsent(keyword) { keyword: Sym?-> NonTerminal.create(keyword!!) }
     }
 
-    private val stringCsTerms: MutableMap<String?, Rule> = HashMap()
-    private val stringCiTerms: MutableMap<String?, Rule> = HashMap()
+    private val stringCsTerms: MutableMap<String?, Rule> = mutableMapOf()
+    private val stringCiTerms: MutableMap<String?, Rule> = mutableMapOf()
 
     /**
      * Adds a [Rule] based on the string. If the object was already present in the buffer, returns the old one.
@@ -77,7 +77,7 @@ internal class BufferForRules {
         }
     }
 
-    private val regexTermMap1: MutableMap<Regex, Rule> = HashMap()
+    private val regexTermMap1: MutableMap<Regex, Rule> = mutableMapOf()
 
     /**
      * Adds a [Rule] based on the string. If the object was already present in the buffer, returns the old one.

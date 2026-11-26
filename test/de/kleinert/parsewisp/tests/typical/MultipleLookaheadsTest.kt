@@ -21,7 +21,7 @@ internal class MultipleLookaheadsTest {
 
     @Test
     fun lookaheads1() {
-        val grammarAsMap = LinkedHashMap<Sym, Rule>()
+        val grammarAsMap = linkedMapOf<Sym, Rule>()
         grammarAsMap[sym("S")] = ConcatRule.create(
             listOf(
                 LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),

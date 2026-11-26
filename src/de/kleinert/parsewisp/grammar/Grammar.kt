@@ -117,7 +117,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
         fun collect(collector: (Rule) -> Boolean): Set<Rule> {
             val result: MutableSet<Rule> = HashSet()
             val analyzedRules = mutableSetOf<Rule>()
-            val ruleStack = ArrayList<Rule>(grammar.values)
+            val ruleStack = grammar.values.toMutableList()
             var rule: Rule
 
             while (!ruleStack.isEmpty()) {
@@ -219,8 +219,8 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
 
             requireNotNull(startRule) { "Symbol not in grammar: " + start }
 
-            val visited = HashSet<Rule>()
-            val stack = ArrayList<Rule>()
+            val visited = mutableSetOf<Rule>()
+            val stack = mutableListOf<Rule>()
             stack.add(startRule)
 
             val reachable = LinkedHashSet<Sym>()
@@ -245,9 +245,9 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
                 }
             }
 
-            val subGrammar = LinkedHashMap<Sym, Rule>(reachable.size)
+            val subGrammar = linkedMapOf<Sym, Rule>()
             for (sym in reachable) {
-                subGrammar.put(sym, grammar.getProduction(sym)!!)
+                subGrammar[sym] = grammar.getProduction(sym)!!
             }
 
             return Grammar(start, subGrammar)
@@ -271,7 +271,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
          * @since 0.9.7
          */
         fun isProductive(start: Sym): Boolean {
-            return isProductive(start, HashMap<Sym?, Boolean?>())
+            return isProductive(start, mutableMapOf())
         }
 
         private fun isProductive(start: Sym, productive: MutableMap<Sym?, Boolean?>): Boolean {

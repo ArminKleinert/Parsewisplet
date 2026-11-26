@@ -14,7 +14,7 @@ import de.kleinert.parsewisp.result.ParseTree
 object Transform {
     private fun transform(
         node: Node,
-        transformMap: Map<Sym, (List<Any?>)->Any?>
+        transformMap: Map<Sym, (List<Any?>) -> Any?>
     ): Any {
         if (node is NodeParseTree) return Transform.transform(node.content, transformMap)
         return node.content()
@@ -22,7 +22,7 @@ object Transform {
 
     private fun transform(
         parseTree: ParseTree,
-        transformMap: Map<Sym, (List<Any?>)->Any?>
+        transformMap: Map<Sym, (List<Any?>) -> Any?>
     ): Any {
         val tagSym = parseTree.tag.content
         val transformFn = transformMap[tagSym]
@@ -49,8 +49,8 @@ object Transform {
      */
     fun <T> transform(
         parseResult: ParseResult,
-        transformMap: Map<Sym, (List<Any?>)->Any?>,
-        finalizer: (Any?)->T?
+        transformMap: Map<Sym, (List<Any?>) -> Any?>,
+        finalizer: (Any?) -> T?
     ): T? {
         return finalizer(transform(parseResult, transformMap))
     }
@@ -66,7 +66,7 @@ object Transform {
      */
     fun transform(
         parseResult: ParseResult,
-        transformMap: Map<Sym, (List<Any?>)->Any?>
+        transformMap: Map<Sym, (List<Any?>) -> Any?>
     ): Any {
         require(parseResult is ParseTree) { parseResult.toString() }
         val tagSym = parseResult.tag.content
@@ -76,7 +76,7 @@ object Transform {
         if (transformFn != null) {
             result = transformFn(transformedNodes)!!
         } else {
-            val resultL = ArrayList<Any?>()
+            val resultL = mutableListOf<Any?>()
             resultL.add(tagSym)
             resultL.addAll(transformedNodes)
             result = resultL

@@ -31,7 +31,7 @@ object Unhide {
      * @since 0.9.7
      */
     fun unhideContent(grammar: Grammar): Grammar {
-        val res = LinkedHashMap<Sym, Rule>()
+        val res = linkedMapOf<Sym, Rule>()
         for (symRuleEntry in grammar.entries) {
             res.put(symRuleEntry.key, symRuleEntry.value.includeInResult())
         }
@@ -46,7 +46,7 @@ object Unhide {
      * @since 0.9.7
      */
     fun unhideTags(grammar: Grammar): Grammar {
-        val res = LinkedHashMap<Sym, Rule>()
+        val res = linkedMapOf<Sym, Rule>()
         for (symRuleEntry in grammar.entries) {
             val key = symRuleEntry.key
             val reduction: ReductionType = ReductionType.taggedTree(key)
@@ -65,7 +65,7 @@ object Unhide {
      * @since 0.9.7
      */
     fun unhideAll(grammar: Grammar): Grammar {
-        val res = LinkedHashMap<Sym, Rule>()
+        val res = linkedMapOf<Sym, Rule>()
         for (symRuleEntry in grammar.entries) {
             val key = symRuleEntry.key
             val reduction: ReductionType = ReductionType.taggedTree(key)

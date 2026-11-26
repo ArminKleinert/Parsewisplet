@@ -214,9 +214,7 @@ interface GrammarPrinter {
      * @return A string-representation of the rule.
      */
     fun altToString(rule: AlternationRule): String {
-        return rule.rules
-            .map { it: Rule -> parens(rule, it) }
-            .joinToString(" | ")
+        return rule.rules.joinToString(" | ") { it: Rule -> parens(rule, it) }
     }
 
     /**
@@ -229,9 +227,7 @@ interface GrammarPrinter {
      * @return A string-representation of the rule.
      */
     fun catToString(rule: ConcatRule): String {
-        return rule.rules
-            .map { parens(rule, it) }
-            .joinToString(" ")
+        return rule.rules.joinToString(" ") { parens(rule, it) }
     }
 
     /**
@@ -352,9 +348,7 @@ interface GrammarPrinter {
      * @return A string-representation of the rule.
      */
     fun ordToString(rule: OrderedChoiceRule): String {
-        return rule.rules
-            .map { parens(rule, it) }
-            .joinToString(" / ")
+        return rule.rules.joinToString(" / ") { parens(rule, it) }
     }
 
     /**

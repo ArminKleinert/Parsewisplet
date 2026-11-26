@@ -22,7 +22,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
     init {
         require(m.isNotEmpty()) { "Empty grammar." }
 
-        super.put(startSym, m.get(startSym)!!)
+        super.put(startSym, m[startSym]!!)
         super.putAll(m)
 
         this.startSym = startSym
@@ -31,8 +31,8 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
     override fun equals(o: Any?): Boolean {
         if ((o !is Grammar) || o.size != size || (this.startSym != o.startSym)) return false
 
-        for (symRuleEntry in entries) {
-            if (o.getProduction(symRuleEntry.key) != symRuleEntry.value) {
+        for ((key, value) in entries) {
+            if (o.getProduction(key) != value) {
                 return false
             }
         }
@@ -111,7 +111,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
             val ruleStack = grammar.values.toMutableList()
             var rule: Rule
 
-            while (!ruleStack.isEmpty()) {
+            while (ruleStack.isNotEmpty()) {
                 rule = ruleStack.removeAt(ruleStack.size - 1)
                 if (analyzedRules.contains(rule)) {
                     continue
@@ -203,7 +203,7 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
         fun subGrammar(start: Sym): Grammar {
             val startRule = grammar.getProduction(start)
 
-            requireNotNull(startRule) { "Symbol not in grammar: " + start }
+            requireNotNull(startRule) { "Symbol not in grammar: $start" }
 
             val visited = mutableSetOf<Rule>()
             val stack = mutableListOf<Rule>()
@@ -212,22 +212,23 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
             val reachable = LinkedHashSet<Sym>()
             reachable.add(start)
 
-            while (!stack.isEmpty()) {
+            while (stack.isNotEmpty()) {
                 val rule = stack.removeAt(stack.size - 1)
 
                 // If already in set -> Ignore
                 if (!visited.add(rule)) continue
 
-                if (rule is RuleWithManyChildren) {
-                    stack.addAll(rule.rules)
-                } else if (rule is RuleWithChild) {
-                    stack.add(rule.rule)
-                } else if (rule is NonTerminal) {
-                    val key = rule.keyword
-                    val prod = grammar.getProduction(key)
-                    requireNotNull(prod) { "Symbol not in grammar: $start" }
-                    stack.add(prod)
-                    reachable.add(key)
+                when (rule) {
+                    is RuleWithManyChildren -> stack.addAll(rule.rules)
+                    is RuleWithChild -> stack.add(rule.rule)
+
+                    is NonTerminal -> {
+                        val key = rule.keyword
+                        val prod = grammar.getProduction(key)
+                        requireNotNull(prod) { "Symbol not in grammar: $start" }
+                        stack.add(prod)
+                        reachable.add(key)
+                    }
                 }
             }
 
@@ -262,18 +263,16 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
         private fun isProductive(start: Sym, productive: MutableMap<Sym?, Boolean?>): Boolean {
             var changed: Boolean
 
-            if (productive.containsKey(start)) return productive.get(start)!!
+            if (productive.containsKey(start)) return productive[start]!!
 
             do {
                 changed = false
-                for (entry in grammar.entries) {
-                    val nt = entry.key
-                    val rule = entry.value
+                for ((nt, rule) in grammar) {
 
                     productive.putIfAbsent(nt, false)
 
-                    if (productiveRule(rule, productive) && !productive.get(nt)!!) {
-                        productive.put(nt, true)
+                    if (productiveRule(rule, productive) && !productive[nt]!!) {
+                        productive[nt] = true
                         changed = true
                     }
                 }
@@ -282,25 +281,16 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
         }
 
         private fun productiveRule(rule: Rule, productive: MutableMap<Sym?, Boolean?>): Boolean {
-            if (rule is Terminal || rule is OptionalRule || rule is ZeroOrMoreRule) {
-                return true
-            } else if (rule is SpecialSequenceRule) {
-                return true
-            } else if (rule is NonTerminal) {
-                return productive.getOrDefault(rule.keyword, false)!!
-            } else if (rule is ConcatRule) {
-                return rule.rules.all { it: Rule? -> productiveRule(it!!, productive) }
-            } else if (rule is AlternationRule || rule is OrderedChoiceRule) {
-                return rule.rules.any { it: Rule? -> productiveRule(it!!, productive) }
-            } else if (rule is OnceOrMoreRule || rule is LookaheadRule || rule is NegativeLookaheadRule) {
-                return productiveRule(rule.rule, productive)
-            } else if (rule is ExclusionRule) {
-                return productiveRule(rule.expected, productive)
-                        && productiveRule(rule.excluded, productive)
-            } else if (rule is VariableRepetitionRule) {
-                return rule.min == 0 || productiveRule(rule, productive)
-            } else {
-                throw IllegalArgumentException("Can not handle value " + rule + " of type " + rule.javaClass + ".")
+            return when (rule) {
+                is Terminal, is OptionalRule, is ZeroOrMoreRule ->  true
+                is SpecialSequenceRule ->  true
+                is NonTerminal ->   productive.getOrDefault(rule.keyword, false)!!
+                is ConcatRule -> rule.rules.all { it: Rule? -> productiveRule(it!!, productive) }
+                is AlternationRule, is OrderedChoiceRule -> rule.rules.any { it: Rule? -> productiveRule(it!!, productive) }
+                is OnceOrMoreRule, is LookaheadRule, is NegativeLookaheadRule -> productiveRule(rule.rule, productive)
+                is ExclusionRule -> productiveRule(rule.expected, productive) && productiveRule(rule.excluded, productive)
+                is VariableRepetitionRule -> rule.min == 0 || productiveRule(rule, productive)
+                else -> throw IllegalArgumentException("Can not handle value " + rule + " of type " + rule.javaClass + ".")
             }
         }
 

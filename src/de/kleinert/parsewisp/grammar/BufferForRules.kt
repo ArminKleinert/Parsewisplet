@@ -11,7 +11,7 @@ import de.kleinert.parsewisp.parsing.StringTerm
  * `if (Objects.equals(x, y)) { buffer.getOrAdd(x) == buffer.getOrAdd(y); }`
  */
 internal class BufferForRules {
-    private val nonTerminalMap: MutableMap<NonTerminal?, NonTerminal?> = mutableMapOf()
+    private val nonTerminalMap: MutableMap<NonTerminal, NonTerminal> = mutableMapOf()
 
     /**
      * Adds a [NonTerminal]. If the object was already present in the buffer, returns the old one.
@@ -20,7 +20,7 @@ internal class BufferForRules {
      */
     fun getOrAdd(nonTerminal: NonTerminal): NonTerminal {
         val temp = nonTerminalMap.putIfAbsent(nonTerminal, nonTerminal)
-        return if (temp == null) nonTerminal else temp
+        return temp ?: nonTerminal
     }
 
     private val regexTermMap: MutableMap<RegexTerm?, RegexTerm?> = mutableMapOf()
@@ -32,10 +32,10 @@ internal class BufferForRules {
      */
     fun getOrAdd(rule: RegexTerm): RegexTerm {
         val temp = regexTermMap.putIfAbsent(rule, rule)
-        return if (temp == null) rule else temp
+        return temp ?: rule
     }
 
-    private val stringTermMap: MutableMap<StringTerm?, StringTerm?> = mutableMapOf()
+    private val stringTermMap: MutableMap<StringTerm, StringTerm> = mutableMapOf()
 
     /**
      * Adds a [StringTerm]. If the object was already present in the buffer, returns the old one.
@@ -44,10 +44,10 @@ internal class BufferForRules {
      */
     fun getOrAdd(rule: StringTerm): StringTerm {
         val temp = stringTermMap.putIfAbsent(rule, rule)
-        return if (temp == null) rule else temp
+        return temp ?: rule
     }
 
-    private val symToNtSet: MutableMap<Sym?, NonTerminal> = mutableMapOf()
+    private val symToNtSet: MutableMap<Sym, NonTerminal> = mutableMapOf()
 
     /**
      * Adds a [NonTerminal] based on the keyword. If the object was already present in the buffer, returns the old one.
@@ -56,11 +56,11 @@ internal class BufferForRules {
      * @see NonTerminal.create
      */
     fun getOrAddNt(keyword: Sym): NonTerminal {
-        return symToNtSet.computeIfAbsent(keyword) { keyword: Sym?-> NonTerminal.create(keyword!!) }
+        return symToNtSet.computeIfAbsent(keyword) { keyword: Sym -> NonTerminal.create(keyword) }
     }
 
-    private val stringCsTerms: MutableMap<String?, Rule> = mutableMapOf()
-    private val stringCiTerms: MutableMap<String?, Rule> = mutableMapOf()
+    private val stringCsTerms: MutableMap<String, Rule> = mutableMapOf()
+    private val stringCiTerms: MutableMap<String, Rule> = mutableMapOf()
 
     /**
      * Adds a [Rule] based on the string. If the object was already present in the buffer, returns the old one.
@@ -70,10 +70,10 @@ internal class BufferForRules {
      * @see StringTerm.create
      */
     fun getOrAddString(string: String, caseInsensitive: Boolean): Rule {
-        if (caseInsensitive) {
-            return stringCiTerms.computeIfAbsent(string) { s: String? -> StringTerm.create(s!!, true) }
+        return if (caseInsensitive) {
+            stringCiTerms.computeIfAbsent(string) { s: String -> StringTerm.create(s, true) }
         } else {
-            return stringCsTerms.computeIfAbsent(string) { s: String? -> StringTerm.create(s!!, false) }
+            stringCsTerms.computeIfAbsent(string) { s: String -> StringTerm.create(s, false) }
         }
     }
 
@@ -86,6 +86,6 @@ internal class BufferForRules {
      * @see RegexTerm.create
      */
     fun getOrAddRegex(pattern: Regex): Rule {
-        return regexTermMap1.computeIfAbsent(pattern) { regexp: Regex? -> RegexTerm.create(regexp!!) }
+        return regexTermMap1.computeIfAbsent(pattern) { regexp: Regex -> RegexTerm.create(regexp) }
     }
 }

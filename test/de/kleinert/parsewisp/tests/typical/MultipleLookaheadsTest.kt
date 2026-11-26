@@ -9,7 +9,6 @@ import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 import java.util.regex.Pattern
 
 internal class MultipleLookaheadsTest {
@@ -24,13 +23,10 @@ internal class MultipleLookaheadsTest {
     @Test
     fun lookaheads1() {
         val grammarAsMap = LinkedHashMap<Sym, Rule>()
-        grammarAsMap.put(
-            sym("S"),
-            ConcatRule.create(
-                List.of<Rule>(
-                    LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),
-                    RegexTerm.create(Pattern.compile("[abc]"))
-                )
+        grammarAsMap[sym("S")] = ConcatRule.create(
+            listOf(
+                LookaheadRule.create(LookaheadRule.create(StringTerm.create("a", false))),
+                RegexTerm.create(Pattern.compile("[abc]"))
             )
         )
         val p = parser(

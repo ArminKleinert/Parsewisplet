@@ -44,27 +44,27 @@ class VariableRepetitionRule private constructor(
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
         if (min == 0) {
-            runner.pushSuccessMessageWithoutValue(Rule.Companion.makeKey(index, this), index)
+            runner.pushSuccessMessageWithoutValue(makeKey(index, this), index)
         }
         if (max == 0) {
             return
         }
         runner.pushListener(
-            Rule.Companion.makeKey(index, rule),
-            repListener(make(), 0, this, Rule.Companion.makeKey(index, this), runner, index)
+            makeKey(index, rule),
+            repListener(make(), 0, this, makeKey(index, this), runner, index)
         )
     }
 
     override fun fullParse(index: Int, runner: Gll) {
         if (min == 0) {
-            runner.pushSuccessMessageWithoutValue(Rule.Companion.makeKey(index, this), index)
+            runner.pushSuccessMessageWithoutValue(makeKey(index, this), index)
         }
         if (max == 0) {
             return
         }
         runner.pushListener(
-            Rule.Companion.makeKey(index, rule),
-            repFullListener(make(), 0, rule, min, max, Rule.Companion.makeKey(index, this), runner)
+            makeKey(index, rule),
+            repFullListener(make(), 0, rule, min, max, makeKey(index, this), runner)
         )
     }
 
@@ -98,7 +98,7 @@ class VariableRepetitionRule private constructor(
             }
             if (newNResultsSoFar < repRule.max) {
                 runner.pushListener(
-                    Rule.Companion.makeKey(continueIndex, repRule.rule),
+                    makeKey(continueIndex, repRule.rule),
                     repListener(newResultsSoFar, newNResultsSoFar, repRule, nodeKey, runner, continueIndex)
                 )
             }
@@ -119,7 +119,7 @@ class VariableRepetitionRule private constructor(
             val continueIndex = result.index()
             val newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult)
             val newNResultsSoFar = nResultsSoFar + 1
-            if (continueIndex == runner.tramp().getText1().length) {
+            if (continueIndex == runner.tramp().text.length) {
                 if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum) {
                     runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
                 } else {
@@ -131,7 +131,7 @@ class VariableRepetitionRule private constructor(
                         newResultsSoFar, newNResultsSoFar,
                         rule, minimum, maximum, nodeKey, runner
                     )
-                    runner.pushListener(Rule.Companion.makeKey(continueIndex, rule), listener)
+                    runner.pushListener(makeKey(continueIndex, rule), listener)
                 } else {
                     runner.fail(nodeKey, continueIndex, this, true)
                 }
@@ -190,8 +190,8 @@ class VariableRepetitionRule private constructor(
                 return create(rule.rule, newMin, newMax)
             }
             return VariableRepetitionRule(
-                Rule.Companion.defaultHidden,
-                Rule.Companion.defaultReductionType,
+                defaultHidden,
+                defaultReductionType,
                 rule,
                 min,
                 max

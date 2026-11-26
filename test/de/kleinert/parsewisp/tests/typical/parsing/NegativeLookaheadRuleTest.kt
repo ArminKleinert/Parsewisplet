@@ -8,7 +8,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 import java.util.regex.Pattern
 
 internal class NegativeLookaheadRuleTest {
@@ -70,7 +69,7 @@ internal class NegativeLookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         NegativeLookaheadRule.create(StringTerm.create("a", false)),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -97,7 +96,7 @@ internal class NegativeLookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         StringTerm.create("a", false),
                         NegativeLookaheadRule.create(StringTerm.create("a", false))
                     )
@@ -196,7 +195,7 @@ internal class NegativeLookaheadRuleTest {
         val pDefault = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    listOf<Rule>(
+                    listOf(
                         r,
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -210,7 +209,7 @@ internal class NegativeLookaheadRuleTest {
         val pShow = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    listOf<Rule>(
+                    listOf(
                         r.withHideTag(false),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -224,7 +223,7 @@ internal class NegativeLookaheadRuleTest {
         val pHide = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         r.withHideTag(true),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -251,7 +250,7 @@ internal class NegativeLookaheadRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         r,
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -310,7 +309,7 @@ internal class NegativeLookaheadRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         r.withReduction(ReductionType.taggedTree(sym("B"))),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )

@@ -6,13 +6,11 @@ import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.RegexTerm
-import de.kleinert.parsewisp.parsing.Rule
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 import java.util.regex.Pattern
 
 internal class RegexTermTest {
@@ -50,25 +48,25 @@ internal class RegexTermTest {
 
     @Test
     fun parse() {
-        val gD = Gr.grammar("S", ConcatRule.create(List.of<Rule>(digit(), digit())))
+        val gD = Gr.grammar("S", ConcatRule.create(listOf(digit(), digit())))
         val pD = parser(gD)
         Assertions.assertEquals(PT.create("S", "1", "2"), pD.parse("12"))
 
-        val gN = Gr.grammar("S", ConcatRule.create(List.of<Rule>(digit(), number())))
+        val gN = Gr.grammar("S", ConcatRule.create(listOf(digit(), number())))
         val pN = parser(gN)
         Assertions.assertEquals(PT.create("S", "1", "234"), pN.parse("1234"))
     }
 
     @Test
     fun parseEager() {
-        val gN = Gr.grammar("S", ConcatRule.create(List.of<Rule>(number(), digit())))
+        val gN = Gr.grammar("S", ConcatRule.create(listOf(number(), digit())))
         val pN = parser(gN)
         Assertions.assertTrue(pN.parse("1234").isFailure)
     }
 
     @Test
     fun parseIncremental() {
-        val gN = Gr.grammar("S", ConcatRule.create(List.of<Rule>(number(), digit())))
+        val gN = Gr.grammar("S", ConcatRule.create(listOf(number(), digit())))
         val pN = parser(gN)
         Assertions.assertEquals(
             PT.create("S", "123", "4"),
@@ -78,7 +76,7 @@ internal class RegexTermTest {
 
     @Test
     fun parseError() {
-        val g = Gr.grammar("S", ConcatRule.create(List.of<Rule>(digit(), digit())))
+        val g = Gr.grammar("S", ConcatRule.create(listOf(digit(), digit())))
         val p = parser(g)
         Assertions.assertTrue(p.parse("-1").isFailure)
         Assertions.assertTrue(p.parse("1").isFailure)
@@ -97,11 +95,11 @@ internal class RegexTermTest {
 
     @Test
     fun fullParseConcat() {
-        val gD = Gr.grammar("S", ConcatRule.create(List.of<Rule>(digit(), digit())))
+        val gD = Gr.grammar("S", ConcatRule.create(listOf(digit(), digit())))
         val pD = parser(gD)
         Assertions.assertEquals(PT.create("S", "1", "2"), pD.parse("12"))
 
-        val gN = Gr.grammar("S", ConcatRule.create(List.of<Rule>(digit(), number())))
+        val gN = Gr.grammar("S", ConcatRule.create(listOf(digit(), number())))
         val pN = parser(gN)
         Assertions.assertEquals(PT.create("S", "1", "234"), pN.parse("1234"))
     }
@@ -232,7 +230,7 @@ internal class RegexTermTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         digit().withReduction(ReductionType.taggedTree(sym("B"))),
                         digit()
                     )

@@ -4,12 +4,10 @@ import de.kleinert.parsewisp.Parsewisp.parser
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
-import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class OrderedChoiceRuleTest {
     private fun string_a(): Rule {
@@ -32,13 +30,13 @@ internal class OrderedChoiceRuleTest {
     fun createEmpty() {
         // create(...) called with an empty input is free to create an Epsilon or something equivalent instead.
         Assertions.assertEquals(
-            OrderedChoiceRule.create(mutableListOf<Rule>()),
-            OrderedChoiceRule.create(mutableListOf<Rule>())
+            OrderedChoiceRule.create(listOf()),
+            OrderedChoiceRule.create(listOf())
         )
 
         Assertions.assertEquals(
             parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
-            parser(Gr.grammar("S", OrderedChoiceRule.create(mutableListOf<Rule>()))).parse("")
+            parser(Gr.grammar("S", OrderedChoiceRule.create(listOf()))).parse("")
         )
     }
 
@@ -119,7 +117,7 @@ internal class OrderedChoiceRuleTest {
             )
         )
         Assertions.assertEquals(
-            List.of<ParseTree?>(PT.create("S", "a", "a")),
+            listOf(PT.create("S", "a", "a")),
             p_a.parses("aa")
         )
     }
@@ -169,7 +167,7 @@ internal class OrderedChoiceRuleTest {
         // Tests the grammar `S = "a" | "a" | "a"` on input "a". The expectation is that it creates exactly one tree, not three different ones.
         val p_a = parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_a(), string_a()))))
         Assertions.assertEquals(
-            List.of<ParseTree?>(PT.create("S", "a")),
+            listOf(PT.create("S", "a")),
             p_a.parses("a")
         )
     }
@@ -374,7 +372,7 @@ internal class OrderedChoiceRuleTest {
         )
 
         Assertions.assertEquals(
-            List.of<ParseTree?>(
+            listOf(
                 PT.create("S", PT.create("A")),
                 PT.create("S", PT.create("B")),
                 PT.create("S", PT.create("C")),
@@ -404,7 +402,7 @@ internal class OrderedChoiceRuleTest {
         )
 
         Assertions.assertEquals(
-            List.of<ParseTree?>(
+            listOf(
                 PT.create(
                     "S",
                     "a",
@@ -441,7 +439,7 @@ internal class OrderedChoiceRuleTest {
 
         // Results for parsing "aaa"
         Assertions.assertEquals(
-            List.of<ParseTree>(
+            listOf(
                 PT.create(
                     "S",
                     PT.create("S", "a"),
@@ -466,7 +464,7 @@ internal class OrderedChoiceRuleTest {
 
         // Results for parsing "aaaaa" (5x "a")
         Assertions.assertEquals(
-            List.of<ParseTree?>(
+            listOf(
                 PT.create(
                     "S",
                     PT.create("S", "a"),

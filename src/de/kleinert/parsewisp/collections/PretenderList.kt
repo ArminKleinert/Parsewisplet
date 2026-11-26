@@ -14,7 +14,7 @@ interface PretenderList<T> : List<T> {
         throw UnsupportedOperationException()
     }
 
-    override fun contains(o: T): Boolean {
+    override fun contains(element: T): Boolean {
         throw UnsupportedOperationException()
     }
 
@@ -22,19 +22,19 @@ interface PretenderList<T> : List<T> {
         throw UnsupportedOperationException()
     }
 
-    override fun containsAll(collection: Collection<T>): Boolean {
+    override fun containsAll(elements: Collection<T>): Boolean {
         throw UnsupportedOperationException()
     }
 
-    override fun get(i: Int): T {
+    override fun get(index: Int): T {
         throw UnsupportedOperationException()
     }
 
-    override fun indexOf(o: T): Int {
+    override fun indexOf(element: T): Int {
         throw UnsupportedOperationException()
     }
 
-    override fun lastIndexOf(o: T): Int {
+    override fun lastIndexOf(element: T): Int {
         throw UnsupportedOperationException()
     }
 
@@ -42,11 +42,11 @@ interface PretenderList<T> : List<T> {
         throw UnsupportedOperationException()
     }
 
-    override fun listIterator(i: Int): ListIterator<T> {
+    override fun listIterator(index: Int): ListIterator<T> {
         throw UnsupportedOperationException()
     }
 
-    override fun subList(i: Int, i1: Int): List<T> {
+    override fun subList(fromIndex: Int, toIndex: Int): List<T> {
         throw UnsupportedOperationException()
     }
 }

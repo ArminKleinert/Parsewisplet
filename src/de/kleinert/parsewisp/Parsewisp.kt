@@ -21,8 +21,6 @@ object Parsewisp {
      * @return The parser.
      * @since 0.9.7
      */
-    @JvmStatic
-    @JvmOverloads
     fun parser(
         grammar: String,
         options: ParserCreationOptions = ParserCreationOptions.default
@@ -32,7 +30,6 @@ object Parsewisp {
         return parser(g, options)
     }
 
-    @JvmStatic
     fun parser(grammar: Grammar): Parser {
         return parser(grammar, null)
     }
@@ -46,7 +43,6 @@ object Parsewisp {
      * @throws ParserCreationFailure If the start production is invalid.
      * @since 0.9.7
      */
-    @JvmStatic
     fun parser(
         grammar: Grammar,
         options: ParserCreationOptions?
@@ -92,7 +88,6 @@ object Parsewisp {
      * @return A parser or null.
      * @since 0.9.7
      */
-    @JvmStatic
     fun getPredefinedWhitespaceParser(
         wsParserName: String?
     ): Parser? {

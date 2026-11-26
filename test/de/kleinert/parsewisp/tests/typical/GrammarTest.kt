@@ -8,8 +8,6 @@ import de.kleinert.parsewisp.parsing.Rule
 import de.kleinert.parsewisp.parsing.StringTerm
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.Set
-import java.util.function.Predicate
 
 internal class GrammarTest {
     @Test
@@ -19,12 +17,12 @@ internal class GrammarTest {
 
         Assertions.assertTrue(ga.isValid)
 
-        Assertions.assertEquals(Set.of<Sym>(sym("S")), HashSet<Sym?>(ga.usedNTs()))
-        Assertions.assertEquals(Set.of<Sym>(sym("S")), HashSet<Sym?>(ga.definedNTs()))
+        Assertions.assertEquals(setOf(sym("S")), HashSet<Sym?>(ga.usedNTs()))
+        Assertions.assertEquals(setOf(sym("S")), HashSet<Sym?>(ga.definedNTs()))
 
         Assertions.assertEquals(
-            Set.of<Rule?>(StringTerm.create("1", false), StringTerm.create("2", false)),
-            HashSet<Rule?>(ga.collect(Predicate { it: Rule? -> it is StringTerm }))
+            setOf(StringTerm.create("1", false), StringTerm.create("2", false)),
+            ga.collect({ it: Rule? -> it is StringTerm }).toSet()
         )
     }
 
@@ -57,15 +55,15 @@ internal class GrammarTest {
                 """.trimIndent()
         ).grammar.analyze()
         Assertions.assertEquals(
-            Set.of<Sym>(sym("S"), sym("A"), sym("B"), sym("C")),
+            setOf(sym("S"), sym("A"), sym("B"), sym("C")),
             ga.definedNTs()
         )
         Assertions.assertEquals(
-            Set.of<Sym>(sym("A")),
+            setOf(sym("A")),
             ga.usedNTs()
         )
         Assertions.assertEquals(
-            Set.of<Sym>(sym("B"), sym("C")),
+            setOf(sym("B"), sym("C")),
             ga.unusedNTs
         )
         Assertions.assertFalse(ga.unusedNTs.contains(sym("S")))
@@ -80,7 +78,6 @@ internal class GrammarTest {
                 A = A B | epsilon
                 B = C
                 C = "c"
-                
                 """.trimIndent()
         ).grammar.analyze()
         Assertions.assertEquals(
@@ -101,11 +98,11 @@ internal class GrammarTest {
                 """.trimIndent()
         ).grammar.analyze()
         Assertions.assertEquals(
-            Set.of<Sym>(sym("S"), sym("A"), sym("C")),
+            setOf(sym("S"), sym("A"), sym("C")),
             ga.subGrammar(sym("S")).keys
         )
         Assertions.assertEquals(
-            Set.of<Sym>(sym("A"), sym("C")),
+            setOf(sym("A"), sym("C")),
             ga.subGrammar(sym("A")).keys
         )
     }

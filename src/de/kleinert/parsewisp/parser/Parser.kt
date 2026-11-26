@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.parser
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.collections.FlatResultSeq.Companion.make
 import de.kleinert.parsewisp.error.ParserCreationFailure
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.grammar.GrammarPrinter
@@ -23,13 +22,13 @@ import de.kleinert.parsewisp.result.ParsesResult.LazyResultList
  * @param printer         The printer for the grammar. Used in [.show].
  * @since 0.9.7
  */
-data class Parser(@JvmField val grammar: Grammar, val startProduction: Sym, @JvmField val printer: GrammarPrinter) {
+data class Parser(val grammar: Grammar, val startProduction: Sym, val printer: GrammarPrinter) {
     private fun getStartProductionFromParserOrOptionsAndCheck(
         options: ParsingOptions
     ): Sym {
         var startProduction = options.start
         if (startProduction == null) startProduction = this.startProduction
-        if (!this.grammar.containsKey(startProduction)) throw ParserCreationFailure("Start production not in grammar: " + startProduction)
+        if (!this.grammar.containsKey(startProduction)) throw ParserCreationFailure("Start production not in grammar: $startProduction")
         return startProduction
     }
 
@@ -58,37 +57,25 @@ data class Parser(@JvmField val grammar: Grammar, val startProduction: Sym, @Jvm
      * @return [ParseTree] if successful, [ParseFailure] if not.
      * @since 0.9.7
      */
-    /**
-     * Same as [parse] using [ParsingOptions.default] as the options.
-     *
-     * @param text The text.
-     * @return The result of the parse.
-     * @see parse
-     * @see ParsingOptions.default
-     * @since 0.9.7
-     */
-    @JvmOverloads
     fun parse(
         text: String,
         options: ParsingOptions = ParsingOptions.default
     ): ParseResult {
         val startProduction = getStartProductionFromParserOrOptionsAndCheck(options)
         val unhiddenParser = unhideParser(options.unhide)
-
-        val parsingResult: ParseResult
-        if (options.embedFailureInParseTree) {
-            parsingResult = Gll.Companion.parseEmbedFailure(
+        val parsingResult = if (options.embedFailureInParseTree) {
+            Gll.parseEmbedFailure(
                 unhiddenParser.grammar, startProduction, text, false,
                 options.iterativeDeepening, printer
             )
         } else {
-            parsingResult = Gll.Companion.parse(
+            Gll.parse(
                 unhiddenParser.grammar, startProduction, text, false,
                 options.iterativeDeepening, printer
             )
         }
 
-        return ParseResult.Companion.make(parsingResult)
+        return ParseResult.make(parsingResult)
     }
 
     /**
@@ -109,15 +96,6 @@ data class Parser(@JvmField val grammar: Grammar, val startProduction: Sym, @Jvm
      * @see parses
      * @since 0.9.7
      */
-    /**
-     * Same as [parses] using [ParsingOptions.default] as the options.
-     *
-     * @param text The text.
-     * @return The parse forest or error, as needed.
-     * @see parses
-     * @since 0.9.7
-     */
-    @JvmOverloads
     fun parses(
         text: String,
         options: ParsingOptions = ParsingOptions.default
@@ -127,14 +105,14 @@ data class Parser(@JvmField val grammar: Grammar, val startProduction: Sym, @Jvm
         val usePartial = options.usePartial
 
         val embedFailure = options.embedFailureInParseTree
-        if (embedFailure) {
-            return Gll.Companion.parsesEmbedFailure(
+        return if (embedFailure) {
+            Gll.parsesEmbedFailure(
                 unhiddenParser.grammar, startProduction, text,
                 usePartial, options.iterativeDeepening, printer,
                 options.stopEarlyOnEmptyRepetition, options.resultLimit
             )
         } else {
-            return Gll.Companion.parses(
+            Gll.parses(
                 unhiddenParser.grammar, startProduction, text,
                 usePartial, options.iterativeDeepening,
                 options.failureIfEmpty, printer,
@@ -166,15 +144,7 @@ data class Parser(@JvmField val grammar: Grammar, val startProduction: Sym, @Jvm
         return printer.toString(this.grammar)
     }
 
-    /**
-     * Creates a new Parser.
-     *
-     * @param grammar         The grammar.
-     * @param startProduction The first production to try.
-     * @throws ParserCreationFailure if the parameters are invalid (for example, if the grammar does not contain the start-production symbol).
-     * @since 0.9.7
-     */
     init {
-        if (!grammar.containsKey(startProduction)) throw ParserCreationFailure("Illegal start-production " + startProduction + ": not in grammar.")
+        if (!grammar.containsKey(startProduction)) throw ParserCreationFailure("Illegal start-production $startProduction: not in grammar.")
     }
 }

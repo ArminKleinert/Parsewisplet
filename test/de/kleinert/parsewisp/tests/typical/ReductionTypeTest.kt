@@ -4,14 +4,12 @@ import de.kleinert.parsewisp.Parsewisp.parser
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
-import de.kleinert.parsewisp.parsing.Rule
 import de.kleinert.parsewisp.parsing.StringTerm
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class ReductionTypeTest {
     @Test
@@ -81,7 +79,7 @@ internal class ReductionTypeTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         StringTerm.createDirect("a", false)
                             .withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.createDirect("b", false)

@@ -19,15 +19,15 @@ class OnceOrMoreRule private constructor(
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
         runner.pushListener(
-            Rule.Companion.makeKey(index, rule),
-            plusListener(make(), rule, index, Rule.Companion.makeKey(index, this), runner)
+            makeKey(index, rule),
+            plusListener(make(), rule, index, makeKey(index, this), runner)
         )
     }
 
     override fun fullParse(index: Int, runner: Gll) {
         runner.pushListener(
-            Rule.Companion.makeKey(index, rule),
-            plusFullListener(make(), rule, index, Rule.Companion.makeKey(index, this), runner)
+            makeKey(index, rule),
+            plusFullListener(make(), rule, index, makeKey(index, this), runner)
         )
     }
 
@@ -53,7 +53,7 @@ class OnceOrMoreRule private constructor(
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule
-            return OnceOrMoreRule(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, rule)
+            return OnceOrMoreRule(defaultHidden, defaultReductionType, rule)
         }
 
         fun plusListener(
@@ -66,16 +66,14 @@ class OnceOrMoreRule private constructor(
             return Listener { result: ParseMessage? ->
                 val continueIndex = result!!.index()
                 val newResultsSoFar = resultsSoFar.appendOrConcat(result.result)
-                if ( //runner.stopEarlyOnEmptyRepetition &&
-                    continueIndex == prevIndex) {
+                if (continueIndex == prevIndex) {
                     if (resultsSoFar.isEmpty) {
                         runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
-                        //runner.pushSuccessMessageWithoutValue(nodeKey, continueIndex);
                     }
                     return@Listener
                 }
                 runner.pushListener(
-                    Rule.Companion.makeKey(continueIndex, rule),
+                    ListenerKey(continueIndex, rule),
                     plusListener(newResultsSoFar, rule, continueIndex, nodeKey, runner)
                 )
                 runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
@@ -100,11 +98,11 @@ class OnceOrMoreRule private constructor(
                     }
                     return@Listener
                 }
-                if (continueIndex == runner.tramp().getText1().length) {
+                if (continueIndex == runner.tramp().text.length) {
                     runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
                 } else {
                     runner.pushListener(
-                        Rule.Companion.makeKey(continueIndex, rule),
+                        ListenerKey(continueIndex, rule),
                         plusFullListener(newResultsSoFar, rule, continueIndex, nodeKey, runner)
                     )
                 }

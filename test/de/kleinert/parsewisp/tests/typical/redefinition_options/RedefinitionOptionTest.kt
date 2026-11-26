@@ -6,7 +6,6 @@ import de.kleinert.parsewisp.parser_options.RedefinitionOption
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.function.Executable
 
 internal class RedefinitionOptionTest {
     @Test
@@ -35,12 +34,12 @@ internal class RedefinitionOptionTest {
         // Duplicate name, different lhs -> Problem
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable { parser("S = 'A'\nS = 'B'\nS = 'C'", redefinitionOpts) })
+            { parser("S = 'A'\nS = 'B'\nS = 'C'", redefinitionOpts) })
 
         // Fails even if the production does not change
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable { parser("S = 'A'\nS = 'A'\nS = 'A'", redefinitionOpts) })
+            { parser("S = 'A'\nS = 'A'\nS = 'A'", redefinitionOpts) })
     }
 
     @Test

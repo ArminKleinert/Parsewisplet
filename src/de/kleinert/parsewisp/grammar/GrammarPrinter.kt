@@ -138,7 +138,7 @@ interface GrammarPrinter {
      *  1. [LookaheadRule] and [NegativeLookaheadRule]
      *  1. [OptionalRule], [OnceOrMoreRule] and [ZeroOrMoreRule]
      *  1. [VariableRepetitionRule]
-     *  1. Any rule that can not wrap other rules. In other words: [Terminal], [NonTerminal] or [SpecialSequenceRule]
+     *  1. Any rule that can not wrap other rules. In other words: [de.kleinert.parsewisp.parsing.Terminal], [NonTerminal] or [SpecialSequenceRule]
      *
      *
      * @param rule the rule of which the precedence is needed.
@@ -168,24 +168,6 @@ interface GrammarPrinter {
         return sym.name() + " = " + ruleToString(rhs) + " ;"
     }
 
-    /**
-     * Wraps the second argument in parentheses if its precedence is lower than the first rule's precedence.
-     *
-     *
-     * Example: [AlternationRule] has a higher precedence than [ConcatRule], so an alternation of concatenations would print the concatenations in parentheses.
-     * <pre>
-     * `// As a grammar, this would be `S = "a" "b" | "c" "d"` or the equivalent `S = ("a" "b") | ("c" "d")`     var rule0 = AlternationRule.create(List.of(             ConcatRule.create(List.of(                     StringTerm.create("a", false),                     StringTerm.create("b", false))),             ConcatRule.create(List.of(                     StringTerm.create("c", false),                     StringTerm.create("d", false)))     ));     System.out.println(printer.ruleToString(rule0)); // => "a" "b" | "c" "d" `
-    </pre> *
-     * But if a concatenation contains two alternations, parentheses are required.
-     * <pre>
-     * `// As a grammar, this would be `S = ("a" | "b") ("c" | "d")`     var rule1 = ConcatRule.create(List.of(             AlternationRule.create(List.of(                     StringTerm.create("a", false),                     StringTerm.create("b", false))),             AlternationRule.create(List.of(                     StringTerm.create("c", false),                     StringTerm.create("d", false)))     ));     System.out.println(printer.ruleToString(rule1)); // => ("a" | "b") ("c" | "d") `
-    </pre> *
-     *
-     * @param current     The parent rule.
-     * @param ruleToPrint The rule which is wrapped by the first rule.
-     * @return A string.
-     * @since 0.9.7
-     */
     fun parens(current: Rule, ruleToPrint: Rule): String {
         if (precedence(current) <= precedence(ruleToPrint)) return "(" + ruleToString(ruleToPrint) + ")"
         return ruleToString(ruleToPrint)
@@ -200,48 +182,29 @@ interface GrammarPrinter {
      */
     fun ruleToString(rule: Rule): String {
         val sb = StringBuilder()
-        val s: String
 
         if (rule.isHiddenInResult1()) sb.append('<')
 
-        if (rule is AlternationRule) {
-            s = altToString(rule)
-        } else if (rule is OrderedChoiceRule) {
-            s = ordToString(rule)
-        } else if (rule is ConcatRule) {
-            s = catToString(rule)
-        } else if (rule is ExclusionRule) {
-            s = exclusionToString(rule)
-        } else if (rule is LookaheadRule) {
-            s = lookToString(rule)
-        } else if (rule is NegativeLookaheadRule) {
-            s = negToString(rule)
-        } else if (rule is OptionalRule) {
-            s = optToString(rule)
-        } else if (rule is OnceOrMoreRule) {
-            s = onceOrMoreToString(rule)
-        } else if (rule is ZeroOrMoreRule) {
-            s = zeroOrMoreToString(rule)
-        } else if (rule is VariableRepetitionRule) {
-            s = repToString(rule)
-        } else if (rule is NonTerminal) {
-            s = ntToString(rule)
-        } else if (rule is SpecialSequenceRule) {
-            s = specialToString(rule)
-        } else if (rule is EOFTerm) {
-            s = eofToString(rule)
-        } else if (rule is EpsilonTerm) {
-            s = epsToString(rule)
-        } else if (rule is RegexTerm) {
-            s = regexpToString(rule)
-        } else if (rule is StringTerm) {
-            s = strTermToString(rule)
-        } else if (rule is ValueRangeTerm) {
-            s = valRangeToString(rule)
-        } else if (rule is TransformRule) {
-            s = transformerToString(rule)
-        } else {
-            throw IllegalArgumentException("Unsupported rule type: " + rule)
+        val s: String = when (rule) {
+            is AlternationRule -> altToString(rule)
+            is OrderedChoiceRule -> ordToString(rule)
+            is ConcatRule -> catToString(rule)
+            is ExclusionRule -> exclusionToString(rule)
+            is LookaheadRule -> lookToString(rule)
+            is NegativeLookaheadRule -> negToString(rule)
+            is OptionalRule -> optToString(rule)
+            is OnceOrMoreRule -> onceOrMoreToString(rule)
+            is ZeroOrMoreRule -> zeroOrMoreToString(rule)
+            is VariableRepetitionRule -> repToString(rule)
+            is NonTerminal -> ntToString(rule)
+            is SpecialSequenceRule -> specialToString(rule)
+            is EOFTerm -> eofToString(rule)
+            is EpsilonTerm -> epsToString(rule)
+            is RegexTerm -> regexpToString(rule)
+            is StringTerm -> strTermToString(rule)
+            is ValueRangeTerm -> valRangeToString(rule)
+            is TransformRule -> transformerToString(rule)
+            else -> throw IllegalArgumentException("Unsupported rule type: " + rule)
         }
 
         sb.append(s)
@@ -296,7 +259,7 @@ interface GrammarPrinter {
     fun eofToString(
         @Suppress("unused") rule: EOFTerm
     ): String {
-        return EOFTerm.Companion.text()
+        return EOFTerm.text()
     }
 
     /**
@@ -518,7 +481,6 @@ interface GrammarPrinter {
     }
 
     companion object {
-        @JvmStatic
         val default: GrammarPrinter
             /**
              * Returns a default GrammarPrinter.
@@ -526,8 +488,8 @@ interface GrammarPrinter {
              * @return A GrammarPrinter.
              */
             get() = object : GrammarPrinter {
-                override fun equals(o: Any?): Boolean {
-                    return o != null && javaClass == o.javaClass
+                override fun equals(other: Any?): Boolean {
+                    return other != null && javaClass == other.javaClass
                 }
 
                 override fun hashCode(): Int {

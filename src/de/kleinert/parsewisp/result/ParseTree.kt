@@ -38,55 +38,46 @@ class ParseTree private constructor(
      * @since 0.9.7
      */
     val content: List<Node>,
-    spanStart: Int,
-    spanEndExclusive: Int
-) : List<Node>, ParseResult {
-    private var hashCode = 0
-
     /**
      * The starting index in the input string of the parse (inclusive).
-     * <pre>
-     * `var p = Parsewisp.parser("S = 'b' A 'n'\nA = 'A'");     var tree = p.parse("bAn").castToParseSuccess();     System.out.println(tree.toString());            // [:S, b, [:A, A], n]     System.out.println(tree.getSpanStart());        // 0     System.out.println(tree.getSpanEndExclusive()); // 3 `
-    </pre> *
      *
      * @return The starting index in the input string of the parse (inclusive).
      * @since 0.9.7
      */
-    @JvmField
-    val spanStart: Int
-
+    val spanStart1: Int,
     /**
      * The end index in the input string of the parse (exclusive).
-     * <pre>
-     * `var p = Parsewisp.parser("S = 'b' A 'n'\nA = 'A'");     var tree = p.parse("bAn").castToParseSuccess();     System.out.println(tree.toString());            // [:S, b, [:A, A], n]     System.out.println(tree.getSpanStart());        // 0     System.out.println(tree.getSpanEndExclusive()); // 3 `
-    </pre> *
      *
      * @return The end index in the input string of the parse (exclusive).
      * @since 0.9.7
      */
-    @JvmField
-    val spanEndExclusive: Int
+    val spanEndExclusive1: Int
+) : List<Node>, ParseResult {
+    private var hashCode = 0
 
     init {
-        require(!((spanStart == -1 && spanEndExclusive != -1) || (spanStart != -1 && spanStart > spanEndExclusive))) { "Invalid span " + spanStart + " to " + spanEndExclusive + "." }
-
-        this.spanStart = spanStart
-        this.spanEndExclusive = spanEndExclusive
+        require(!((spanStart == -1 && spanEndExclusive != -1) || (spanStart != -1 && spanStart > spanEndExclusive))) { "Invalid span $spanStart to $spanEndExclusive." }
     }
 
+    val spanStart: Int
+        get()=spanStart1
+
+    val spanEndExclusive: Int
+        get()=spanEndExclusive1
+
     /**
-     * Equivalent to `getContent().get(index)`.
+     * Equivalent to `content.get(index)`.
      *
      * @param index The index in content.
      * @return A node.
      * @since 0.9.7
      */
     fun getNode(index: Int): Node {
-        return this.content.get(index)
+        return this.content[index]
     }
 
     /**
-     * Returns the tag ([.getTag] and content ([.getContent]) into a single list.
+     * Returns the tag ([ParseTree.tag]) and content ([ParseTree.content]) into a single list.
      * This method is not recursive, ie does not apply to subtrees.
      *
      * @return The tree as a list of nodes.
@@ -110,9 +101,9 @@ class ParseTree private constructor(
 
         val l: Array<Any?>
         if (tag == NULL_TAG) {
-            l = arrayOfNulls<Any>(content.size)
+            l = arrayOfNulls(content.size)
         } else {
-            l = arrayOfNulls<Any>(content.size + 1)
+            l = arrayOfNulls(content.size + 1)
             l[i++] = tag.content
         }
 
@@ -176,8 +167,8 @@ class ParseTree private constructor(
         return false
     }
 
-    override fun contains(o: Node): Boolean {
-        return tag == o || content.contains(o)
+    override fun contains(element: Node): Boolean {
+        return tag == element || content.contains(element)
     }
 
     override fun iterator(): Iterator<Node> {
@@ -211,9 +202,9 @@ class ParseTree private constructor(
         return hc
     }
 
-    override fun get(i: Int): Node {
-        if (i == 0) return tag
-        return content.get(i - 1)
+    override fun get(index: Int): Node {
+        if (index == 0) return tag
+        return content[index - 1]
     }
 
     override fun indexOf(element: Node): Int {
@@ -234,13 +225,13 @@ class ParseTree private constructor(
         return toList().listIterator()
     }
 
-    override fun listIterator(i: Int): ListIterator<Node> {
+    override fun listIterator(index: Int): ListIterator<Node> {
         return toList().listIterator()
     }
 
-    override fun subList(i: Int, i1: Int): List<Node> {
-        if (i == 1 && i1 == content.size + 1) return content
-        return toList().subList(i, i1)
+    override fun subList(fromIndex: Int, toIndex: Int): List<Node> {
+        if (fromIndex == 1 && toIndex == content.size + 1) return content
+        return toList().subList(fromIndex, toIndex)
     }
 
     companion object {
@@ -264,43 +255,21 @@ class ParseTree private constructor(
          * @return A new parse tree.
          * @since 0.9.7
          */
-        /**
-         * Creates a parse tree from a tag and content.
-         *
-         *
-         * If {@param content} is null, the content list of the tree will be empty. If {@param content} is a [FlatResultSeq], it becomes the content of the tree. Otherwise, {@param content} becomes a singleton list.
-         *
-         * @param tag     The tag as a node.
-         * @param content The content as a node.
-         * @return A new parse tree.
-         * @since 0.9.7
-         */
-        @JvmStatic
-        @JvmOverloads
         fun create(
             tag: Sym,
             content: Any?,
             spanStart: Int = -1,
             spanEnd: Int = -1
         ): ParseTree {
-            val afs: List<Node>
-            if (content == null) {
-                afs = listOf<Node>()
-            } else if (content is FlatResultSeq) {
-                afs = content.stream().map { o: Any? -> Node.Companion.of(o) }.toList()
-            } else if (content is String) {
-                afs = listOf<Node>(Node.Companion.of(content))
-            } else if (content is TotalParsesFailureNode) {
-                afs = listOf<Node>(Node.Companion.of(content))
-            } else if (content is ParseFailureNode) {
-                afs = listOf<Node>(Node.Companion.of(content))
-            } else if (content is ParseTree) {
-                afs = listOf<Node>(Node.Companion.of(content))
-            } else if (content is MutableList<*>) {
-                afs = content.map { o: Any? -> Node.Companion.of(o) }
-            } else {
-                //throw new IllegalArgumentException(content.getClass().toString());
-                afs = listOf<Node>(Node.Companion.of(content))
+            val afs = when (content) {
+                null -> listOf()
+                is FlatResultSeq -> content.stream().map { o: Any? -> Node.of(o) }.toList()
+                is String -> listOf(Node.of(content))
+                is TotalParsesFailureNode -> listOf(Node.of(content))
+                is ParseFailureNode -> listOf(Node.of(content))
+                is ParseTree -> listOf(Node.of(content))
+                is List<*> -> content.map { o: Any? -> Node.of(o) }
+                else -> listOf(Node.of(content))
             }
             return create(NodeTreeTag(tag), afs, spanStart, spanEnd)
         }
@@ -351,7 +320,7 @@ class ParseTree private constructor(
                     continue
                 }
 
-                val subTree = e.content() as ParseTree
+                val subTree = e.content()
 
                 if (subTree.tag == NULL_TAG) {
                     entries.addAll(subTree.content)

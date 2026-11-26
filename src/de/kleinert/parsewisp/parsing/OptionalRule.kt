@@ -15,18 +15,18 @@ class OptionalRule private constructor(
     rule: Rule
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
-        val nodeKeyForOpt: ListenerKey = Rule.Companion.makeKey(index, this)
+        val nodeKeyForOpt: ListenerKey = makeKey(index, this)
         runner.pushListener(
-            Rule.Companion.makeKey(index, rule),
+            makeKey(index, rule),
             runner.nodeListener(nodeKeyForOpt)
         )
         runner.pushSuccessMessageWithoutValue(nodeKeyForOpt, index)
     }
 
     override fun fullParse(index: Int, runner: Gll) {
-        val thisNodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
-        runner.pushFullListener(Rule.Companion.makeKey(index, rule), runner.nodeListener(thisNodeKey))
-        if (index == runner.tramp().getText1().length) {
+        val thisNodeKey: ListenerKey = makeKey(index, this)
+        runner.pushFullListener(makeKey(index, rule), runner.nodeListener(thisNodeKey))
+        if (index == runner.tramp().text.length) {
             runner.pushSuccessMessageWithoutValue(thisNodeKey, index)
         } else {
             runner.fail(thisNodeKey, index, this, true)
@@ -55,7 +55,7 @@ class OptionalRule private constructor(
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule
-            return OptionalRule(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, rule)
+            return OptionalRule(defaultHidden, defaultReductionType, rule)
         }
     }
 }

@@ -8,8 +8,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.function.Executable
-import java.util.List
 
 internal class VariableRepetitionRuleTest {
     private fun rep_a14(): VariableRepetitionRule {
@@ -77,7 +75,7 @@ internal class VariableRepetitionRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a14(), string_a()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a14(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"))
@@ -86,7 +84,7 @@ internal class VariableRepetitionRuleTest {
 
     @Test
     fun parseError() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a14(), string_a()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a14(), string_a()))))
         Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertTrue(p.parse("aaaaaa").isFailure)
     }
@@ -102,13 +100,13 @@ internal class VariableRepetitionRuleTest {
 
     @Test
     fun fullParseConcat() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(string_a(), rep_a14()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), rep_a14()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), p.parse("aaaa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a", "a"), p.parse("aaaaa"))
 
-        val pRR = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a14(), rep_a14()))))
+        val pRR = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a14(), rep_a14()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), pRR.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pRR.parse("aaa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a"), pRR.parse("aaaa"))
@@ -315,7 +313,7 @@ internal class VariableRepetitionRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         rep_a14().withReduction(ReductionType.taggedTree(sym("B"))),
                         OptionalRule.create(StringTerm.create("b", false))
                     )

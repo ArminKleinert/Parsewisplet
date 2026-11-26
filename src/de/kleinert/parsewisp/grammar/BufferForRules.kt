@@ -12,7 +12,7 @@ import java.util.regex.Pattern
  * `if (Objects.equals(x, y)) { buffer.getOrAdd(x) == buffer.getOrAdd(y); }`
  */
 internal class BufferForRules {
-    private val nonTerminalMap: MutableMap<NonTerminal?, NonTerminal?> = HashMap<NonTerminal?, NonTerminal?>()
+    private val nonTerminalMap: MutableMap<NonTerminal?, NonTerminal?> = HashMap()
 
     /**
      * Adds a [NonTerminal]. If the object was already present in the buffer, returns the old one.
@@ -24,7 +24,7 @@ internal class BufferForRules {
         return if (temp == null) nonTerminal else temp
     }
 
-    private val regexTermMap: MutableMap<RegexTerm?, RegexTerm?> = HashMap<RegexTerm?, RegexTerm?>()
+    private val regexTermMap: MutableMap<RegexTerm?, RegexTerm?> = HashMap()
 
     /**
      * Adds a [RegexTerm]. If the object was already present in the buffer, returns the old one.
@@ -36,7 +36,7 @@ internal class BufferForRules {
         return if (temp == null) rule else temp
     }
 
-    private val stringTermMap: MutableMap<StringTerm?, StringTerm?> = HashMap<StringTerm?, StringTerm?>()
+    private val stringTermMap: MutableMap<StringTerm?, StringTerm?> = HashMap()
 
     /**
      * Adds a [StringTerm]. If the object was already present in the buffer, returns the old one.
@@ -48,7 +48,7 @@ internal class BufferForRules {
         return if (temp == null) rule else temp
     }
 
-    private val symToNtSet: MutableMap<Sym?, NonTerminal> = HashMap<Sym?, NonTerminal>()
+    private val symToNtSet: MutableMap<Sym?, NonTerminal> = HashMap()
 
     /**
      * Adds a [NonTerminal] based on the keyword. If the object was already present in the buffer, returns the old one.
@@ -60,8 +60,8 @@ internal class BufferForRules {
         return symToNtSet.computeIfAbsent(keyword) { keyword: Sym?-> NonTerminal.create(keyword!!) }
     }
 
-    private val stringCsTerms: MutableMap<String?, Rule> = HashMap<String?, Rule>()
-    private val stringCiTerms: MutableMap<String?, Rule> = HashMap<String?, Rule>()
+    private val stringCsTerms: MutableMap<String?, Rule> = HashMap()
+    private val stringCiTerms: MutableMap<String?, Rule> = HashMap()
 
     /**
      * Adds a [Rule] based on the string. If the object was already present in the buffer, returns the old one.
@@ -72,13 +72,13 @@ internal class BufferForRules {
      */
     fun getOrAddString(string: String, caseInsensitive: Boolean): Rule {
         if (caseInsensitive) {
-            return stringCiTerms.computeIfAbsent(string) { s: String? -> StringTerm.Companion.create(s!!, true) }
+            return stringCiTerms.computeIfAbsent(string) { s: String? -> StringTerm.create(s!!, true) }
         } else {
-            return stringCsTerms.computeIfAbsent(string) { s: String? -> StringTerm.Companion.create(s!!, false) }
+            return stringCsTerms.computeIfAbsent(string) { s: String? -> StringTerm.create(s!!, false) }
         }
     }
 
-    private val regexTermMap1: MutableMap<Pattern?, Rule> = HashMap<Pattern?, Rule>()
+    private val regexTermMap1: MutableMap<Pattern, Rule> = HashMap()
 
     /**
      * Adds a [Rule] based on the string. If the object was already present in the buffer, returns the old one.
@@ -87,6 +87,6 @@ internal class BufferForRules {
      * @see RegexTerm.create
      */
     fun getOrAddRegex(pattern: Pattern): Rule {
-        return regexTermMap1.computeIfAbsent(pattern) { regexp: Pattern? -> RegexTerm.Companion.create(regexp!!) }
+        return regexTermMap1.computeIfAbsent(pattern) { regexp: Pattern? -> RegexTerm.create(regexp!!) }
     }
 }

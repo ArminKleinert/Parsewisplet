@@ -22,7 +22,7 @@ class ConcatRule private constructor(
     override fun parse(index: Int, runner: Gll) {
         val parsers = rules
         runner.pushListener(
-            Rule.Companion.makeKey(index, parsers.get(0)),
+            makeKey(index, parsers.get(0)),
             catListener(make(), parsers.subList(1, parsers.size), makeKey(index, this), runner)
         )
     }
@@ -30,8 +30,8 @@ class ConcatRule private constructor(
     override fun fullParse(index: Int, runner: Gll) {
         val parsers = rules
         runner.pushListener(
-            Rule.Companion.makeKey(index, parsers.get(0)),
-            catFullListener(make(), parsers.subList(1, parsers.size), Rule.Companion.makeKey(index, this), runner)
+            makeKey(index, parsers.get(0)),
+            catFullListener(make(), parsers.subList(1, parsers.size), makeKey(index, this), runner)
         )
     }
 
@@ -48,7 +48,7 @@ class ConcatRule private constructor(
                 runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
             } else {
                 runner.pushListener(
-                    Rule.Companion.makeKey(continueIndex, parserSequence.get(0)),
+                    makeKey(continueIndex, parserSequence.get(0)),
                     catListener(
                         newResultsSoFar,
                         parserSequence.subList(1, parserSequence.size),
@@ -70,7 +70,7 @@ class ConcatRule private constructor(
             val continueIndex = result!!.index()
             val newResultsSoFar = resultsSoFar.appendOrConcat(result.result)
             if (parserSequence.isNotEmpty()) {
-                val listenerKey: ListenerKey = Rule.Companion.makeKey(continueIndex, parserSequence.get(0))
+                val listenerKey: ListenerKey = makeKey(continueIndex, parserSequence.get(0))
                 val listener = catFullListener(
                     newResultsSoFar,
                     parserSequence.subList(1, parserSequence.size),
@@ -112,7 +112,7 @@ class ConcatRule private constructor(
             val compressedResult = ArrayList<Rule>()
 
             for (rule in rules) {
-                if (rule is ConcatRule && !rule.isHiddenInResult1() && rule.red == Rule.Companion.defaultReductionType) {
+                if (rule is ConcatRule && !rule.isHiddenInResult1() && rule.red == defaultReductionType) {
                     compressedResult.addAll(rule.rules)
                 } else {
                     compressedResult.add(rule)
@@ -120,7 +120,7 @@ class ConcatRule private constructor(
             }
 
             return ConcatRule(
-                Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType,
+                defaultHidden, defaultReductionType,
                 compressedResult
             )
         }
@@ -136,7 +136,7 @@ class ConcatRule private constructor(
         fun createDirect(
             rules: List<Rule>
         ): ConcatRule {
-            return ConcatRule(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, rules)
+            return ConcatRule(defaultHidden, defaultReductionType, rules)
         }
     }
 }

@@ -6,7 +6,6 @@ import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.Set
 
 internal class CornerCasesTests {
     /**
@@ -47,7 +46,7 @@ internal class CornerCasesTests {
     @Test
     fun repetitionWithMoreEpsilons() {
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf(
                 PT.create("S", "a", PT.create("E"), "b"),
                 PT.create("S", "a", PT.create("E"), PT.create("E"), "b"),
                 PT.create("S", "a", PT.create("E"), PT.create("E"), PT.create("E"), "b")

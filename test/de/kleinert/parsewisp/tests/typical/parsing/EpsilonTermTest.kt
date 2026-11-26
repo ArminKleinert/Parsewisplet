@@ -8,7 +8,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class EpsilonTermTest {
     private fun string_a(): Rule {
@@ -24,14 +23,14 @@ internal class EpsilonTermTest {
     fun parse() {
         val p1 = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, string_a()))
+                "S", ConcatRule.createDirect(listOf(EpsilonTerm.default, string_a()))
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), p1.parse("a"))
 
         val p2 = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
+                "S", ConcatRule.createDirect(listOf(EpsilonTerm.default, EpsilonTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), p2.parse(""))
@@ -49,14 +48,14 @@ internal class EpsilonTermTest {
     fun fullParseConcat() {
         val pE = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
+                "S", ConcatRule.createDirect(listOf(EpsilonTerm.default, EpsilonTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), pE.parse(""))
 
         val pA = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(string_a(), EpsilonTerm.default))
+                "S", ConcatRule.createDirect(listOf(string_a(), EpsilonTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pA.parse("a"))
@@ -169,7 +168,7 @@ internal class EpsilonTermTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         EpsilonTerm.default.withReduction(ReductionType.taggedTree(sym("B"))),
                         EpsilonTerm.default
                     )

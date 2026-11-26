@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.reduction.ReductionType
-import de.kleinert.parsewisp.result.success.ParseMessage
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -15,18 +14,18 @@ class LookaheadRule private constructor(
     rule: Rule
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
+        val nodeKey: ListenerKey = makeKey(index, this)
         runner.pushListener(
-            Rule.Companion.makeKey(index, rule),
-            { ignored: ParseMessage? -> runner.pushSuccessMessageWithoutValue(nodeKey, index) })
+            makeKey(index, rule),
+            { runner.pushSuccessMessageWithoutValue(nodeKey, index) })
     }
 
     override fun fullParse(index: Int, runner: Gll) {
-        if (index == runner.tramp().getText1().length) {
+        if (index == runner.tramp().text.length) {
             parse(index, runner)
         } else if (!(rule is EpsilonTerm || rule is EOFTerm)) {
             runner.fail(
-                Rule.Companion.makeKey(index, this),
+                makeKey(index, this),
                 index, this, false
             )
         }
@@ -54,7 +53,7 @@ class LookaheadRule private constructor(
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule
-            return LookaheadRule(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, rule)
+            return LookaheadRule(defaultHidden, defaultReductionType, rule)
         }
     }
 }

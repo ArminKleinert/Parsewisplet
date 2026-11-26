@@ -4,18 +4,16 @@ import de.kleinert.parsewisp.Parsewisp.parser
 import de.kleinert.parsewisp.error.ParserCreationFailure
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parser_options.ParsingOptions
-import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
-import java.util.Set
 
 internal class TestVariableRepetitionFailures {
     @Test
     fun parseWithPartial1() {
         val text = "aaaaaa"
-        val treesPartial = setOf<ParseTree>(
+        val treesPartial = setOf(
             PT.create("S", "a"),
             PT.create("S", "a", "a"),
             PT.create("S", "a", "a", "a"),
@@ -33,13 +31,13 @@ internal class TestVariableRepetitionFailures {
             creationOpts
         )
         //System.out.println(repeated_a);
-        Assertions.assertEquals(treesPartial, HashSet<ParseTree?>(repeated_a.parses(text, partialOpts)))
+        Assertions.assertEquals(treesPartial, repeated_a.parses(text, partialOpts).toSet())
     }
 
     @Test
     fun parseWithPartial2() {
         val text = "baaaaa"
-        val treesPartial = Set.of<ParseTree?>(
+        val treesPartial = setOf(
             PT.create("S", "b"),
             PT.create("S", "b", "a"),
             PT.create("S", "b", "a", "a"),
@@ -57,13 +55,13 @@ internal class TestVariableRepetitionFailures {
             creationOpts
         )
         //System.out.println(repeated_a);
-        Assertions.assertEquals(treesPartial, HashSet<ParseTree?>(repeated_a.parses(text, partialOpts)))
+        Assertions.assertEquals(treesPartial, repeated_a.parses(text, partialOpts).toSet())
     }
 
     @Test
     fun parseFullWithPartial() {
         val text = "aaaaaa"
-        val treesPartial = Set.of<ParseTree?>(
+        val treesPartial = setOf(
             PT.create("S", "a"),
             PT.create("S", "a", "a"),
             PT.create("S", "a", "a", "a"),
@@ -81,7 +79,7 @@ internal class TestVariableRepetitionFailures {
             creationOpts
         )
         //System.out.println(repeated_a);
-        Assertions.assertEquals(treesPartial, HashSet<ParseTree?>(repeated_a.parses(text, partialOpts)))
+        Assertions.assertEquals(treesPartial, repeated_a.parses(text, partialOpts).toSet())
     }
 
     @Test

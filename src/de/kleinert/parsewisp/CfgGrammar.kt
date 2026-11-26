@@ -4,7 +4,6 @@ import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.grammar.GrammarBuilder
 import de.kleinert.parsewisp.parser_options.RedefinitionOption
 import de.kleinert.parsewisp.parsing.EOFTerm
-import de.kleinert.parsewisp.parsing.Rule
 import java.util.Optional
 import java.util.regex.Pattern
 
@@ -272,7 +271,6 @@ class CfgGrammar internal constructor() : GrammarBuilder(RedefinitionOption.ERRO
          * @return The base grammar for Parsewisp.
          * @since 0.9.7
          */
-        @JvmStatic
         fun makeCfg(): Grammar {
             return CfgGrammar().build()
         }

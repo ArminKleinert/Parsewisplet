@@ -9,10 +9,7 @@ import java.util.function.BiFunction
 import java.util.stream.Stream
 
 /**
- * This class provides limited utility for interacting with the host environment and can modify the parse tree
- * <pre>
- * `var g = new Grammar(Sym.sym("S"), new LinkedHashMap<>(Map.of(             Sym.sym("S"), ConcatRule.create(List.of(                     TransformRule.create(                             StringTerm.create("abc", false),                             (r, i) -> List.of("a", "b", "c")                     ))))));     var p = Parsewisp.parser(g);     System.out.println(p.parse("abc")); // [:S, "a", "b", "c"] `
-</pre> *
+ * This class provides limited utility for interacting with the host environment and can modify the parse tree.
  *
  * @since 0.9.7
  */
@@ -23,11 +20,11 @@ class TransformRule private constructor(
     private val transformer: BiFunction<List<Any?>, Int, List<Any?>>
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
-        runner.pushListener(Rule.Companion.makeKey(index, rule), commonListener(runner, index))
+        runner.pushListener(makeKey(index, rule), commonListener(runner, index))
     }
 
     override fun fullParse(index: Int, runner: Gll) {
-        runner.pushFullListener(Rule.Companion.makeKey(index, rule), commonListener(runner, index))
+        runner.pushFullListener(makeKey(index, rule), commonListener(runner, index))
     }
 
     private fun commonListener(runner: Gll, index: Int): Listener {
@@ -86,7 +83,7 @@ class TransformRule private constructor(
          * @since 0.9.7
          */
         fun create(rule: Rule, transformer: BiFunction<List<Any?>, Int, List<Any?>>): Rule {
-            return TransformRule(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, rule, transformer)
+            return TransformRule(defaultHidden, defaultReductionType, rule, transformer)
         }
 
         private fun frs(init: List<Any?>): FlatResultSeq {

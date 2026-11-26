@@ -9,7 +9,6 @@ import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
-import java.util.List
 
 internal class ValueRangeTermTest {
     @Test
@@ -25,17 +24,17 @@ internal class ValueRangeTermTest {
         // Condition broken: lo <= hi
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable { ValueRangeTerm.create(66, 65) })
+            { ValueRangeTerm.create(66, 65) })
 
         // Condition broken: lo >= 0
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable { ValueRangeTerm.create(-1, 255) })
+            { ValueRangeTerm.create(-1, 255) })
 
         // Condition broken: hi <= 0x10FFFF
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable { ValueRangeTerm.create(0, 0x110000) })
+            { ValueRangeTerm.create(0, 0x110000) })
     }
 
     @Test
@@ -45,7 +44,7 @@ internal class ValueRangeTermTest {
 
         // Case-sensitive.
         // Will use parse(...) for "a" and fullParse(...) for "b"
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a, fullUnicode))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a, fullUnicode))))
         Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"))
     }
 
@@ -55,7 +54,7 @@ internal class ValueRangeTermTest {
         val fullUnicode = ValueRangeTerm.create(0, 0x10FFFF) as ValueRangeTerm
 
         // Will use parse(...) for "a" and fullParse(...) for "b"
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a, fullUnicode))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a, fullUnicode))))
         Assertions.assertTrue(p.parse("b").isFailure)
     }
 
@@ -75,7 +74,7 @@ internal class ValueRangeTermTest {
 
         val p = parser(
             Gr.grammar(
-                "S", ConcatRule.create(List.of<Rule>(simple_a, fullUnicode))
+                "S", ConcatRule.create(listOf(simple_a, fullUnicode))
             )
         )
         Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"))
@@ -221,7 +220,7 @@ internal class ValueRangeTermTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         simple_a.withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.createDirect("b", false)
                     )

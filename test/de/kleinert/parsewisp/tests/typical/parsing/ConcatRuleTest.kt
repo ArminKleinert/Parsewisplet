@@ -8,7 +8,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class ConcatRuleTest {
     private fun string_a(): Rule {
@@ -18,8 +17,8 @@ internal class ConcatRuleTest {
     @Test
     fun create() {
         Assertions.assertEquals(
-            ConcatRule.create(List.of<Rule>(string_a(), string_a(), string_a())),
-            ConcatRule.create(List.of<Rule>(string_a(), string_a(), string_a()))
+            ConcatRule.create(listOf(string_a(), string_a(), string_a())),
+            ConcatRule.create(listOf(string_a(), string_a(), string_a()))
         )
     }
 
@@ -28,13 +27,13 @@ internal class ConcatRuleTest {
         // Empty list as input -> Can create an Epsilon rule or something equivalent.
         // Restriction: Equivalent input -> equivalent output
         Assertions.assertEquals(
-            ConcatRule.create(mutableListOf<Rule>()),
-            ConcatRule.create(mutableListOf<Rule>())
+            ConcatRule.create(listOf()),
+            ConcatRule.create(listOf())
         )
 
         Assertions.assertEquals(
             parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
-            parser(Gr.grammar("S", ConcatRule.create(mutableListOf<Rule>()))).parse("")
+            parser(Gr.grammar("S", ConcatRule.create(listOf()))).parse("")
         )
     }
 
@@ -44,27 +43,27 @@ internal class ConcatRuleTest {
         // I.e. `cat(eps, eps) == eps` is not necessarily true, but they must give the same parse result.
 
         Assertions.assertEquals(
-            ConcatRule.create(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default)),
-            ConcatRule.create(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
+            ConcatRule.create(listOf(EpsilonTerm.default, EpsilonTerm.default)),
+            ConcatRule.create(listOf(EpsilonTerm.default, EpsilonTerm.default))
         )
 
         Assertions.assertTrue(
             ConcatRule.createDirect(
-                List.of<Rule>(
+                listOf(
                     EpsilonTerm.default,
                     EpsilonTerm.default
                 )
-            ) == ConcatRule.create(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
+            ) == ConcatRule.create(listOf(EpsilonTerm.default, EpsilonTerm.default))
                     ||
-                    ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default)) == ConcatRule.create(
-                List.of<Rule>(
+                    ConcatRule.createDirect(listOf(EpsilonTerm.default)) == ConcatRule.create(
+                listOf(
                     EpsilonTerm.default,
                     EpsilonTerm.default
                 )
             )
                     ||
                     EpsilonTerm.default == ConcatRule.create(
-                List.of<Rule>(
+                listOf(
                     EpsilonTerm.default,
                     EpsilonTerm.default
                 )
@@ -73,7 +72,7 @@ internal class ConcatRuleTest {
 
         // create(...) is allowed to remove any epsilon terms.
         val r = (ConcatRule.create(
-            List.of<Rule>(
+            listOf(
                 EpsilonTerm.default,
                 string_a(),
                 EpsilonTerm.default,
@@ -89,7 +88,7 @@ internal class ConcatRuleTest {
             parser(
                 Gr.grammar(
                     "S",
-                    ConcatRule.create(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
+                    ConcatRule.create(listOf(EpsilonTerm.default, EpsilonTerm.default))
                 )
             )
                 .parse("")
@@ -100,44 +99,44 @@ internal class ConcatRuleTest {
     fun createOnlyOneElement() {
         // Only one element in list -> Parser must give equivalent output to the single element
         Assertions.assertEquals(
-            ConcatRule.create(List.of<Rule>(string_a())),
-            ConcatRule.create(List.of<Rule>(string_a()))
+            ConcatRule.create(listOf(string_a())),
+            ConcatRule.create(listOf(string_a()))
         )
 
         Assertions.assertTrue(
-            ConcatRule.createDirect(List.of<Rule>(string_a())) == ConcatRule.create(List.of<Rule>(string_a()))
+            ConcatRule.createDirect(listOf(string_a())) == ConcatRule.create(listOf(string_a()))
                     ||
-                    string_a() == ConcatRule.create(List.of<Rule>(string_a()))
+                    string_a() == ConcatRule.create(listOf(string_a()))
         )
         Assertions.assertEquals(
             parser(Gr.grammar("S", string_a())).parse(""),
-            parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(string_a())))).parse("")
+            parser(Gr.grammar("S", ConcatRule.create(listOf(string_a())))).parse("")
         )
     }
 
     @Test
     fun createWithNested() {
         // Nested concatenation -> Parser must give equivalent output to a flat concatenation
-        val flat = ConcatRule.create(List.of<Rule>(string_a(), string_a(), string_a(), string_a()))
+        val flat = ConcatRule.create(listOf(string_a(), string_a(), string_a(), string_a()))
         val nest1 = ConcatRule.create(
-            List.of<Rule>(
-                ConcatRule.create(List.of<Rule>(string_a(), string_a())),
+            listOf(
+                ConcatRule.create(listOf(string_a(), string_a())),
                 string_a(),
                 string_a()
             )
         )
         val nest2 = ConcatRule.create(
-            List.of<Rule>(
+            listOf(
                 string_a(),
-                ConcatRule.create(List.of<Rule>(string_a(), string_a())),
+                ConcatRule.create(listOf(string_a(), string_a())),
                 string_a()
             )
         )
         val nest3 = ConcatRule.create(
-            List.of<Rule>(
+            listOf(
                 string_a(),
                 string_a(),
-                ConcatRule.create(List.of<Rule>(string_a(), string_a()))
+                ConcatRule.create(listOf(string_a(), string_a()))
             )
         )
         Assertions.assertEquals(
@@ -157,52 +156,52 @@ internal class ConcatRuleTest {
     @Test
     fun createDirect() {
         Assertions.assertEquals(
-            ConcatRule.createDirect(List.of<Rule>(string_a(), string_a(), string_a())),
-            ConcatRule.createDirect(List.of<Rule>(string_a(), string_a(), string_a()))
+            ConcatRule.createDirect(listOf(string_a(), string_a(), string_a())),
+            ConcatRule.createDirect(listOf(string_a(), string_a(), string_a()))
         )
         Assertions.assertEquals(
-            ConcatRule.create(List.of<Rule>(string_a(), string_a(), string_a())),
-            ConcatRule.createDirect(List.of<Rule>(string_a(), string_a(), string_a()))
-        )
-
-        Assertions.assertEquals(
-            ConcatRule.createDirect(mutableListOf<Rule>()),
-            ConcatRule.createDirect(mutableListOf<Rule>())
+            ConcatRule.create(listOf(string_a(), string_a(), string_a())),
+            ConcatRule.createDirect(listOf(string_a(), string_a(), string_a()))
         )
 
         Assertions.assertEquals(
-            ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default)),
-            ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
+            ConcatRule.createDirect(listOf()),
+            ConcatRule.createDirect(listOf())
+        )
+
+        Assertions.assertEquals(
+            ConcatRule.createDirect(listOf(EpsilonTerm.default, EpsilonTerm.default)),
+            ConcatRule.createDirect(listOf(EpsilonTerm.default, EpsilonTerm.default))
         )
         Assertions.assertNotEquals(
-            ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default)),
-            ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default))
+            ConcatRule.createDirect(listOf(EpsilonTerm.default)),
+            ConcatRule.createDirect(listOf(EpsilonTerm.default, EpsilonTerm.default))
         )
         Assertions.assertEquals(
             2,
-            ConcatRule.createDirect(List.of<Rule>(EpsilonTerm.default, EpsilonTerm.default)).rules.size
+            ConcatRule.createDirect(listOf(EpsilonTerm.default, EpsilonTerm.default)).rules.size
         )
 
-        val flat = ConcatRule.createDirect(List.of<Rule>(string_a(), string_a(), string_a(), string_a()))
+        val flat = ConcatRule.createDirect(listOf(string_a(), string_a(), string_a(), string_a()))
         val nest1 = ConcatRule.createDirect(
-            List.of<Rule>(
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a())),
+            listOf(
+                ConcatRule.createDirect(listOf(string_a(), string_a())),
                 string_a(),
                 string_a()
             )
         )
         val nest2 = ConcatRule.createDirect(
-            List.of<Rule>(
+            listOf(
                 string_a(),
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a())),
+                ConcatRule.createDirect(listOf(string_a(), string_a())),
                 string_a()
             )
         )
         val nest3 = ConcatRule.createDirect(
-            List.of<Rule>(
+            listOf(
                 string_a(),
                 string_a(),
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a()))
+                ConcatRule.createDirect(listOf(string_a(), string_a()))
             )
         )
         Assertions.assertNotEquals(flat, nest1)
@@ -216,16 +215,16 @@ internal class ConcatRuleTest {
      */
     @Test
     fun createDoesNotMergeConcatIfRedOrHidden() {
-        val c1 = ConcatRule.create(List.of<Rule>(string_a(), string_a()))
+        val c1 = ConcatRule.create(listOf(string_a(), string_a()))
             .withHideTag(true) // different hide-tag
-        val c2 = ConcatRule.create(List.of<Rule>(string_a(), string_a()))
+        val c2 = ConcatRule.create(listOf(string_a(), string_a()))
             .withReduction(ReductionType.taggedTree(sym("A"))) // reduction has changed
-        val c3 = ConcatRule.create(List.of<Rule>(string_a(), string_a()))
+        val c3 = ConcatRule.create(listOf(string_a(), string_a()))
             .withReduction(ReductionType.taggedTree(sym("B"))).withHideTag(true) // different reduction and hide-tag
 
-        val cc = ConcatRule.create(List.of<Rule>(c1, c2, c3))
+        val cc = ConcatRule.create(listOf(c1, c2, c3))
         Assertions.assertEquals(
-            ConcatRule.createDirect(List.of<Rule>(c1, c2, c3)),
+            ConcatRule.createDirect(listOf(c1, c2, c3)),
             cc
         )
 
@@ -249,13 +248,13 @@ internal class ConcatRuleTest {
                 "S",
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         NonTerminal.create(sym("A")),
                         string_a()
                     )
                 ),  // Rule#fullParse for this concat.
                 "A",
-                ConcatRule.create(List.of<Rule>(string_a(), string_a()))
+                ConcatRule.create(listOf(string_a(), string_a()))
             )
         ) // << Rule#parse for this one.
         Assertions.assertEquals(
@@ -271,13 +270,13 @@ internal class ConcatRuleTest {
                 "S",
                 "S",
                 ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         NonTerminal.create(sym("A")),
                         string_a()
                     )
                 ),  // Rule#fullParse for this concat.
                 "A",
-                ConcatRule.create(List.of<Rule>(string_a(), string_a()))
+                ConcatRule.create(listOf(string_a(), string_a()))
             )
         ) // << Rule#parse for this one.
         Assertions.assertTrue(p.parse("").isFailure)
@@ -287,26 +286,26 @@ internal class ConcatRuleTest {
     @Test
     fun fullParseSingle() {
         // Nested concatenation -> Parser must give equivalent output to a flat concatenation
-        val flat = ConcatRule.createDirect(List.of<Rule>(string_a(), string_a(), string_a(), string_a()))
+        val flat = ConcatRule.createDirect(listOf(string_a(), string_a(), string_a(), string_a()))
         val nest1 = ConcatRule.createDirect(
-            List.of<Rule>(
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a())),
+            listOf(
+                ConcatRule.createDirect(listOf(string_a(), string_a())),
                 string_a(),
                 string_a()
             )
         )
         val nest2 = ConcatRule.createDirect(
-            List.of<Rule>(
+            listOf(
                 string_a(),
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a())),
+                ConcatRule.createDirect(listOf(string_a(), string_a())),
                 string_a()
             )
         )
         val nest3 = ConcatRule.createDirect(
-            List.of<Rule>(
+            listOf(
                 string_a(),
                 string_a(),
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a()))
+                ConcatRule.createDirect(listOf(string_a(), string_a()))
             )
         )
         Assertions.assertEquals(
@@ -335,49 +334,49 @@ internal class ConcatRuleTest {
 
     @Test
     fun getRules() {
-        val flat = ConcatRule.createDirect(List.of<Rule>(string_a(), string_a(), string_a(), string_a()))
+        val flat = ConcatRule.createDirect(listOf(string_a(), string_a(), string_a(), string_a()))
         val nest1 = ConcatRule.createDirect(
-            List.of<Rule>(
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a())),
+            listOf(
+                ConcatRule.createDirect(listOf(string_a(), string_a())),
                 string_a(),
                 string_a()
             )
         )
         val nest2 = ConcatRule.createDirect(
-            List.of<Rule>(
+            listOf(
                 string_a(),
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a())),
+                ConcatRule.createDirect(listOf(string_a(), string_a())),
                 string_a()
             )
         )
         val nest3 = ConcatRule.createDirect(
-            List.of<Rule>(
+            listOf(
                 string_a(),
                 string_a(),
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a()))
+                ConcatRule.createDirect(listOf(string_a(), string_a()))
             )
         )
 
-        Assertions.assertEquals(List.of<Rule?>(string_a(), string_a(), string_a(), string_a()), flat.rules)
+        Assertions.assertEquals(listOf(string_a(), string_a(), string_a(), string_a()), flat.rules)
         Assertions.assertEquals(
-            List.of<Rule?>(
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a())),
+            listOf(
+                ConcatRule.createDirect(listOf(string_a(), string_a())),
                 string_a(),
                 string_a()
             ), nest1.rules
         )
         Assertions.assertEquals(
-            List.of<Rule?>(
+            listOf(
                 string_a(),
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a())),
+                ConcatRule.createDirect(listOf(string_a(), string_a())),
                 string_a()
             ), nest2.rules
         )
         Assertions.assertEquals(
-            List.of<Rule?>(
+            listOf(
                 string_a(),
                 string_a(),
-                ConcatRule.createDirect(List.of<Rule>(string_a(), string_a()))
+                ConcatRule.createDirect(listOf(string_a(), string_a()))
             ), nest3.rules
         )
     }
@@ -390,7 +389,7 @@ internal class ConcatRuleTest {
         // Expected
         Assertions.assertEquals(i, r.rules)
 
-        val ni = List.of<Rule>(string_a(), StringTerm.createDirect("c", false))
+        val ni = listOf(string_a(), StringTerm.createDirect("c", false))
         val nr = r.withRules(ni)
 
         // The new rule.
@@ -412,7 +411,7 @@ internal class ConcatRuleTest {
         Assertions.assertEquals(i, r.rules)
 
         // Create a new rule, check whether hide and reduction are still unchanged.
-        val ni = List.of<Rule>(string_a(), string_a())
+        val ni = listOf(string_a(), string_a())
         val nr = r.withRules(ni)
         Assertions.assertEquals(ni, nr.rules)
         Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
@@ -424,7 +423,7 @@ internal class ConcatRuleTest {
 
     @Test
     fun withHideTag() {
-        val simpleRuleForTests = ConcatRule.createDirect(List.of<Rule>(string_a(), string_a()))
+        val simpleRuleForTests = ConcatRule.createDirect(listOf(string_a(), string_a()))
 
         // By default, not hidden in result. May create a new object, but the output must be equal to the original.
         Assertions.assertEquals(simpleRuleForTests, simpleRuleForTests.withHideTag(false))
@@ -447,7 +446,7 @@ internal class ConcatRuleTest {
 
     @Test
     fun withHideTagParse() {
-        val simpleRuleForTests = ConcatRule.createDirect(List.of<Rule>(string_a(), string_a()))
+        val simpleRuleForTests = ConcatRule.createDirect(listOf(string_a(), string_a()))
 
         // By default, not hidden in output
         val pDefault = parser(
@@ -470,7 +469,7 @@ internal class ConcatRuleTest {
 
     @Test
     fun withReduction() {
-        val simpleRuleForTests = ConcatRule.createDirect(List.of<Rule>(string_a(), string_a()))
+        val simpleRuleForTests = ConcatRule.createDirect(listOf(string_a(), string_a()))
 
         // Default.
         Assertions.assertEquals(
@@ -523,7 +522,7 @@ internal class ConcatRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.create("b", false)
                     )

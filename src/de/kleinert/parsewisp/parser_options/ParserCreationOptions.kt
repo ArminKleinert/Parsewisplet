@@ -177,9 +177,9 @@ class ParserCreationOptions
             return ParserCreationOptions(
                 whitespaceParser,
                 startProduction,
-                if (redefinitionOption == null) RedefinitionOption.defaultOption else redefinitionOption,
+                redefinitionOption ?: RedefinitionOption.defaultOption,
                 checkCorrectness,
-                if (printer == null) GrammarPrinter.default else printer
+                printer ?: GrammarPrinter.default
             )
         }
 
@@ -192,13 +192,11 @@ class ParserCreationOptions
          * @return A new instance.
          * @since 0.9.7
          */
-        @JvmStatic
         fun newWithStandardWhitespace(): ParserCreationOptions {
             return default
                 .withWhitespaceParser(getPredefinedWhitespaceParser("standard"))
         }
 
-        @JvmStatic
         val default: ParserCreationOptions
             /**
              * The default settings. Equivalent to [.ParserCreationOptions] with using `null` or whichever defaults this class provides.

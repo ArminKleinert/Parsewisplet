@@ -51,7 +51,7 @@ internal class LookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    listOf<Rule>(
+                    listOf(
                         LookaheadRule.create(StringTerm.create("a", false)),
                         LookaheadRule.create(StringTerm.create("a", false)),
                         RegexTerm.create(Pattern.compile("[a-z]"))
@@ -68,7 +68,7 @@ internal class LookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    listOf<Rule>(
+                    listOf(
                         LookaheadRule.create(StringTerm.create("a", false)),
                         RegexTerm.create(Pattern.compile("[a-z]"))
                     )
@@ -84,7 +84,7 @@ internal class LookaheadRuleTest {
         val p = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    listOf<Rule>(
+                    listOf(
                         LookaheadRule.create(StringTerm.create("a", false)),
                         LookaheadRule.create(StringTerm.create("b", false)),
                         RegexTerm.create(Pattern.compile("[a-z]"))

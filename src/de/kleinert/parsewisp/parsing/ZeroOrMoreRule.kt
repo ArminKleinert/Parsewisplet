@@ -18,7 +18,7 @@ class ZeroOrMoreRule private constructor(
     rule: Rule
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
-        val nodeKeyForStar: ListenerKey = Rule.makeKey(index, this)
+        val nodeKeyForStar: ListenerKey = makeKey(index, this)
         runner.pushListener(
             makeKey(index, rule),
             OnceOrMoreRule.plusListener(make(), rule, index, nodeKeyForStar, runner)

@@ -29,11 +29,11 @@ class StringTerm private constructor(
     val isCaseInsensitive: Boolean
 ) : Terminal(hide, red) {
     override fun parse(index: Int, runner: Gll) {
-        val text = runner.tramp().getText1()
+        val text = runner.tramp().text
         val end = Integer.min(text.length, index + this.string.length)
         val head = text.substring(index, end)
 
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
+        val nodeKey: ListenerKey = makeKey(index, this)
         if (if (this.isCaseInsensitive) this.string.equals(head, ignoreCase = true) else (this.string == head)) {
             runner.pushSuccessMessage(nodeKey, this.string, end)
         } else {
@@ -42,10 +42,10 @@ class StringTerm private constructor(
     }
 
     override fun fullParse(index: Int, runner: Gll) {
-        val text = runner.tramp().getText1()
+        val text = runner.tramp().text
         val end = Integer.min(text.length, this.string.length + index)
         val head = text.substring(index, end)
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
+        val nodeKey: ListenerKey = makeKey(index, this)
         if (text.length == end && (if (this.isCaseInsensitive) this.string.equals(
                 head,
                 ignoreCase = true
@@ -65,12 +65,12 @@ class StringTerm private constructor(
         return if (getReduction1() === red) this else StringTerm(hide, red, string, this.isCaseInsensitive)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is StringTerm) return false
-        if (this === o) return true
-        return hide == o.hide && red == o.red
-                && string == o.string
-                && (string.isEmpty() || this.isCaseInsensitive == o.isCaseInsensitive)
+    override fun equals(other: Any?): Boolean {
+        if (other !is StringTerm) return false
+        if (this === other) return true
+        return hide == other.hide && red == other.red
+                && string == other.string
+                && (string.isEmpty() || this.isCaseInsensitive == other.isCaseInsensitive)
     }
 
     override fun hashCode(): Int {
@@ -87,14 +87,13 @@ class StringTerm private constructor(
          * @return A rule.
          * @since 0.9.7
          */
-        @JvmStatic
         fun create(string: String, caseInsensitive: Boolean): Rule {
             if (string.isEmpty()) {
                 return EpsilonTerm.default
             }
             return StringTerm(
-                Rule.Companion.defaultHidden,
-                Rule.Companion.defaultReductionType,
+                defaultHidden,
+                defaultReductionType,
                 string,
                 caseInsensitive
             )
@@ -111,8 +110,8 @@ class StringTerm private constructor(
          */
         fun createDirect(string: String, caseInsensitive: Boolean): StringTerm {
             return StringTerm(
-                Rule.Companion.defaultHidden,
-                Rule.Companion.defaultReductionType,
+                defaultHidden,
+                defaultReductionType,
                 string,
                 caseInsensitive
             )

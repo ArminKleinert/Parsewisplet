@@ -8,8 +8,6 @@ import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.function.Executable
-import java.util.Set
 
 internal class VariableRepetitionTest {
     @Test
@@ -82,7 +80,7 @@ internal class VariableRepetitionTest {
     @Test
     fun parseWithPartial() {
         val text = "aaaaaa"
-        val treesPartial = Set.of<ParseTree?>(
+        val treesPartial = setOf(
             PT.create("S", "a"),
             PT.create("S", "a", "a"),
             PT.create("S", "a", "a", "a"),
@@ -106,7 +104,7 @@ internal class VariableRepetitionTest {
     @Test
     fun parseFullWithPartial() {
         val text = "aaaaaa"
-        val treesPartial = Set.of<ParseTree?>(
+        val treesPartial = setOf(
             PT.create("S", "a"),
             PT.create("S", "a", "a"),
             PT.create("S", "a", "a", "a"),
@@ -132,23 +130,23 @@ internal class VariableRepetitionTest {
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = -1*2") })
+            { parser("S = -1*2") })
         // Negative maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = *-1") })
+            { parser("S = *-1") })
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = -1*") })
+            { parser("S = -1*") })
         // Negative exact
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = -1") })
+            { parser("S = -1") })
         // Minimum greater than maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = 4*2") })
+            { parser("S = 4*2") })
     }
 
     @Test
@@ -156,22 +154,22 @@ internal class VariableRepetitionTest {
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = -1*2 'a'") })
+            { parser("S = -1*2 'a'") })
         // Negative maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = *-1 'a'") })
+            { parser("S = *-1 'a'") })
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = -1* 'a'") })
+            { parser("S = -1* 'a'") })
         // Negative exact
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = -1 'a'") })
+            { parser("S = -1 'a'") })
         // Minimum greater than maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = 4*2 'a'") })
+            { parser("S = 4*2 'a'") })
     }
 }

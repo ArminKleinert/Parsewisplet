@@ -11,7 +11,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class NonTerminalTest {
     private fun nt(name: String): NonTerminal {
@@ -259,7 +258,7 @@ internal class NonTerminalTest {
             Gr.grammar(
                 "S", nt("A"),
                 "A", ConcatRule.create(
-                    listOf<Rule>(
+                    listOf(
                         nt("B").withReduction(ReductionType.taggedTree(sym("C"))),
                         StringTerm.create("b", false)
                     )

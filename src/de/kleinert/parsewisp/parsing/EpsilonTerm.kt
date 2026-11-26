@@ -14,14 +14,13 @@ import java.util.*
 class EpsilonTerm  //private static final @NotNull EpsilonTerm epsilon = new EpsilonTerm(defaultHidden, defaultReductionType);
 private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
     override fun parse(index: Int, runner: Gll) {
-        runner.pushSuccessMessageWithoutValue(Rule.Companion.makeKey(index, this), index)
+        runner.pushSuccessMessageWithoutValue(makeKey(index, this), index)
     }
 
     override fun fullParse(index: Int, runner: Gll) {
-        if (index == runner.tramp()
-                .getText1().length
-        ) runner.pushSuccessMessageWithoutValue(Rule.Companion.makeKey(index, this), index)
-        else runner.fail(Rule.Companion.makeKey(index, this), index, this, true)
+        if (index == runner.tramp().text.length)
+            runner.pushSuccessMessageWithoutValue(makeKey(index, this), index)
+        else runner.fail(makeKey(index, this), index, this, true)
     }
 
     override fun withHideTag(hide: Boolean): EpsilonTerm {

@@ -19,11 +19,8 @@ import java.nio.file.Path
 internal class NewFeaturesTest {
     @Test
     fun t10() {
-//        Parsewisp.parser("S = 'a'{2}");
-//        Parsewisp.parser("S = 'a'{2,}");
-//        Parsewisp.parser("S = 'a'{,2}");
-        val p = parser(makeCfg())
-        println(p.show())
+        val regex = Regex("[^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%\\-0-9][^, \\r\\t\\n<>(){}\\[\\]+*?:=|'\"#&!;./%]*")
+        println(regex.matchAt("1 = 'a'", 0)?.value)
     }
 
     @Test

@@ -128,10 +128,10 @@ class FlatResultSeq {
      */
     fun stream(): Stream<Any?> {
         if (cached == null) {
-            cached = arrayOfNulls<Any>(size)
+            cached = arrayOfNulls(size)
             flatten(cached!!, size - 1)
         }
-        return Arrays.stream<Any?>(cached)
+        return Arrays.stream(cached)
     }
 
     /**
@@ -158,7 +158,6 @@ class FlatResultSeq {
          * @return The empty instance.
          * @since 0.9.7
          */
-        @JvmStatic
         fun make(): FlatResultSeq {
 //        if (EMPTY == null) EMPTY = new FlatResultSeq();
 //        return EMPTY;

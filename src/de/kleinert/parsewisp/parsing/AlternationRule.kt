@@ -32,8 +32,8 @@ class AlternationRule private constructor(
     override fun parse(index: Int, runner: Gll) {
         for (rule in rules) {
             runner.pushListener(
-                Rule.Companion.makeKey(index, rule),
-                runner.nodeListener(Rule.Companion.makeKey(index, this))
+                makeKey(index, rule),
+                runner.nodeListener(makeKey(index, this))
             )
         }
     }
@@ -41,8 +41,8 @@ class AlternationRule private constructor(
     override fun fullParse(index: Int, runner: Gll) {
         for (rule in rules) {
             runner.pushFullListener(
-                Rule.Companion.makeKey(index, rule),
-                runner.nodeListener(Rule.Companion.makeKey(index, this))
+                makeKey(index, rule),
+                runner.nodeListener(makeKey(index, this))
             )
         }
     }
@@ -77,7 +77,7 @@ class AlternationRule private constructor(
             for (rule in rules) {
                 if (!uniques.add(rule)) {
                     // continue;
-                } else if (rule is AlternationRule && !rule.isHiddenInResult1() && rule.red == Rule.Companion.defaultReductionType) {
+                } else if (rule is AlternationRule && !rule.isHiddenInResult1() && rule.red == defaultReductionType) {
                     compressedRules.addAll(rule.rules)
                 } else {
                     compressedRules.add(rule)
@@ -104,7 +104,7 @@ class AlternationRule private constructor(
         fun altUnsafe(
             rules: List<Rule>
         ): AlternationRule {
-            return AlternationRule(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, rules)
+            return AlternationRule(defaultHidden, defaultReductionType, rules)
         }
     }
 }

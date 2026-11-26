@@ -19,23 +19,16 @@ import de.kleinert.parsewisp.result.ParseTree
  * @param unhide                     Which parts of a parse result to show when they would normally be hidden by the parser.
  * @param embedFailureInParseTree    If true, a failed parse results in a [ParseTree], as a success would, but a [ParseFailureNode] is embedded in the tree.
  * @param iterativeDeepening         Whether to iteratively deepen parsing when parsing with a regex terminal. See [RegexTerm.parse].
- * @param failureIfEmpty             Important for [Parser.parses] only. If false, return an empty list if the parsing failed. If true, return the failure.
+ * @param failureIfEmpty             Important for [de.kleinert.parsewisp.parser.Parser.parses] only. If false, return an empty list if the parsing failed. If true, return the failure.
  * @param stopEarlyOnEmptyRepetition If a repetition (once-or-more, zero-or-more, variable) returns an empty parse, it can be stopped early, provided that the minimum number of parses has been resolved.
- * @param resultLimit                Limit for the number of results. This setting only takes effect if [Parser.parses] is used.
+ * @param resultLimit                Limit for the number of results. This setting only takes effect if [de.kleinert.parsewisp.parser.Parser.parses] is used.
  * @see DEFAULT_START
- *
  * @see DEFAULT_PARTIAL
- *
  * @see DEFAULT_UNHIDE
- *
  * @see DEFAULT_EMBED_FAILURES
- *
  * @see DEFAULT_FAILURE_IF_EMPTY
- *
  * @see DEFAULT_STOP_EARLY_ON_EMPTY_REPETITION
- *
  * @see DEFAULT_RESULT_LIMIT
- *
  * @since 0.9.7
  */
 data class ParsingOptions(
@@ -83,7 +76,7 @@ data class ParsingOptions(
     /**
      * When generating a parse tree, the parser tries to parse the full string first. With this option, partial parses can be made available.
      * <br></br>
-     * The option only applies when requesting the full parse forest (e.g. [Parser.parses]), but not when only a single parse is requested (e.g. [Parser.parse]).
+     * The option only applies when requesting the full parse forest (e.g. [de.kleinert.parsewisp.parser.Parser.parses]), but not when only a single parse is requested (e.g. [de.kleinert.parsewisp.parser.Parser.parse]).
      * <pre>
      * `var p = Parsewisp.parser("S := 'a'+");     println(p.parses("aa")); // [[:S, a, a]]     var opts = Parsewisp.ParsingOptions.getDefault().withPartialSetTo(true);     println(p.parses("aa", opts)); // [[:S, a], [:S, a, a]]     // The option has no effect on single parse:     println(p.parse("aa", opts)); // [:S, a, a] `
     </pre> *
@@ -311,26 +304,19 @@ data class ParsingOptions(
          *
          * @since 0.9.7
          */
-        val DEFAULT_RESULT_LIMIT: Int = Int.MAX_VALUE
+        const val DEFAULT_RESULT_LIMIT: Int = Int.MAX_VALUE
 
-        @JvmStatic
         val default: ParsingOptions
             /**
-             * Calls [ParsingOptions.ParsingOptions] with the static defaults.
+             * Calls [ParsingOptions] with the static defaults.
              *
              * @return An instance of this class, using all the static DEFAULT_* values.
              * @see DEFAULT_START
-             *
              * @see DEFAULT_PARTIAL
-             *
              * @see DEFAULT_UNHIDE
-             *
              * @see DEFAULT_EMBED_FAILURES
-             *
              * @see DEFAULT_ITERATIVE_DEEPENING
-             *
              * @see DEFAULT_FAILURE_IF_EMPTY
-             *
              * @since 0.9.7
              */
             get() = ParsingOptions(

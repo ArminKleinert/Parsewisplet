@@ -4,12 +4,11 @@ import de.kleinert.parsewisp.collections.LazySupplierList
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
-import java.util.function.IntFunction
 
 internal class LazySupplierListTest {
     @Test
     fun simpleTest() {
-        val lsl = LazySupplierList<Int?>(IntFunction { i: Int -> if (i < 15) i else null }, Int.MAX_VALUE)
+        val lsl = LazySupplierList<Int?>({ i: Int -> if (i < 15) i else null }, Int.MAX_VALUE)
 
         Assertions.assertFalse(lsl.isFullyEvaluated)
 
@@ -30,7 +29,7 @@ internal class LazySupplierListTest {
 
     @Test
     fun emptyTest() {
-        val lsl = LazySupplierList<Any?>(IntFunction { i: Int -> null }, Int.MAX_VALUE)
+        val lsl = LazySupplierList<Any?>({ null }, Int.MAX_VALUE)
 
         Assertions.assertFalse(lsl.isFullyEvaluated)
         Assertions.assertNull(lsl.getOrNull(0))
@@ -47,7 +46,7 @@ internal class LazySupplierListTest {
     fun streamOnInfinite() {
         // The list is not infinite, but it would still be too big to fit into an array, so it's practically infinite.
 
-        val lsl = LazySupplierList<Int?>(IntFunction { i: Int -> i }, Int.MAX_VALUE)
+        val lsl = LazySupplierList<Int?>({ i: Int -> i }, Int.MAX_VALUE)
 
         Assertions.assertEquals(mutableListOf<Int?>(0, 1, 2, 3, 4), lsl.stream().limit(5).toList())
     }

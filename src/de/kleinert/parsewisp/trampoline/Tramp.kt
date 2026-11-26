@@ -3,9 +3,7 @@ package de.kleinert.parsewisp.trampoline
 import de.kleinert.parsewisp.functions.NegativeListener
 import de.kleinert.parsewisp.functions.Procedure
 import de.kleinert.parsewisp.grammar.Grammar
-import de.kleinert.parsewisp.parsing.StringTerm
 import de.kleinert.parsewisp.result.ParseFailure
-import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.result.success.ParseMessage
 import java.util.*
 
@@ -14,7 +12,7 @@ import java.util.*
  *
  * @since 0.9.7
  */
-class Tramp @JvmOverloads constructor(
+class Tramp(
     /**
      * Get the grammar.
      *
@@ -44,7 +42,7 @@ class Tramp @JvmOverloads constructor(
      * @since 0.9.7
      */
     val stack: ArrayList<Procedure> = ArrayList<Procedure>()
-    private val nextStack: ArrayList<Procedure>
+    private val nextStack: ArrayList<Procedure> = ArrayList<Procedure>()
 
     /**
      * The current generation of derivatives.
@@ -61,58 +59,24 @@ class Tramp @JvmOverloads constructor(
      * @return Sequential map of negative lookaheads.
      * @since 0.9.7
      */
-    val negativeListeners: TreeMap<Int, ArrayList<NegativeListener>>
+    val negativeListeners: TreeMap<Int, ArrayList<NegativeListener>> = TreeMap()
 
-    //private final @NotNull IntMap<@NotNull NegativeListener> negativeListeners;
-    private val msgCache: LinkedHashMap<MsgCacheKey?, Int?>
-    private val nodes: LinkedHashMap<ListenerKey?, ListenerNode?>
-    /**
-     * Sets the last detected parsing success. This is usually a String for a parsed [StringTerm] or a finished [ParseTree].
-     *
-     * @param success The new success or null.
-     * @since 0.9.7
-     */
+    private val msgCache: LinkedHashMap<MsgCacheKey, Int> = LinkedHashMap()
+    private val nodes: LinkedHashMap<ListenerKey, ListenerNode> = LinkedHashMap()
+
     /**
      * Last registered success.
      *
      * @return Last registered success.
      * @since 0.9.7
      */
-    var success: ParseMessage?
+    var success: ParseMessage? = null
+
     private var failure: ParseFailure?
 
-    /**
-     * Used to continue parsing after a failure.
-     *
-     * @param grammar   The grammar.
-     * @param text      The text.
-     * @param failIndex The index at which to continue.
-     * @since 0.9.7
-     */
-    /**
-     * Normal constructor.
-     *
-     * @param grammar The grammar.
-     * @param text    The text.
-     * @since 0.9.7
-     */
     init {
-        this.nextStack = ArrayList<Procedure>()
-        //this.negativeListeners = new IntMap<>(1024);
-        this.negativeListeners = TreeMap<Int, ArrayList<NegativeListener>>()
-        this.msgCache = LinkedHashMap<MsgCacheKey?, Int?>()
-        this.nodes = LinkedHashMap<ListenerKey?, ListenerNode?>()
-        this.success = null
         this.failure = null
     }
-
-    fun getText1() = text
-
-    fun getGeneration1() = generation
-
-    fun getStack1() = stack
-    fun getNegativeListeners1() = negativeListeners
-    fun getFailIndex1() = failIndex
 
     /**
      * Adds a new listener at the key's index.
@@ -125,11 +89,11 @@ class Tramp @JvmOverloads constructor(
         creator: ListenerKey,
         negativeListener: NegativeListener
     ) {
-        val present = negativeListeners.get(creator.index)
+        val present = negativeListeners[creator.index]
         if (present == null) {
             val listeners = ArrayList<NegativeListener>()
             listeners.add(negativeListener)
-            negativeListeners.put(creator.index, listeners)
+            negativeListeners[creator.index] = listeners
         } else {
             present.add(negativeListener)
         }
@@ -151,7 +115,7 @@ class Tramp @JvmOverloads constructor(
      * @since 0.9.7
      */
     fun nextGeneration() {
-        generation = generation + 1
+        generation += 1
         stack.clear()
         stack.addAll(nextStack)
         nextStack.clear()
@@ -195,7 +159,7 @@ class Tramp @JvmOverloads constructor(
      * @since 0.9.7
      */
     fun getFromMsgCache(key: MsgCacheKey, defaultVal: Int): Int {
-        return msgCache.getOrDefault(key, defaultVal)!!
+        return msgCache.getOrDefault(key, defaultVal)
     }
 
     /**
@@ -206,7 +170,7 @@ class Tramp @JvmOverloads constructor(
      * @since 0.9.7
      */
     fun addToMsgCache(key: MsgCacheKey, defaultVal: Int) {
-        msgCache.put(key, defaultVal)
+        msgCache[key] = defaultVal
     }
 
     /**
@@ -227,7 +191,7 @@ class Tramp @JvmOverloads constructor(
      * @since 0.9.7
      */
     fun getNode(nodeKey: ListenerKey): ListenerNode? {
-        return nodes.get(nodeKey)
+        return nodes[nodeKey]
     }
 
     /**
@@ -241,7 +205,7 @@ class Tramp @JvmOverloads constructor(
         key: ListenerKey,
         node: ListenerNode
     ) {
-        nodes.put(key, node)
+        nodes[key] = node
     }
 
     override fun toString(): String {

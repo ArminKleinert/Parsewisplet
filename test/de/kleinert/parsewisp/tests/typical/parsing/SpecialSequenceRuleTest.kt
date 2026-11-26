@@ -8,15 +8,14 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.*
-import java.util.List
+import java.util.Optional
 import java.util.function.Function
 
 internal class SpecialSequenceRuleTest {
     private fun simpleRuleForTests(): SpecialSequenceRule {
         return SpecialSequenceRule.create(
             "match \"a\"",
-            Function { s: String? -> if (s!!.startsWith("a")) Optional.of<String?>("a") else Optional.empty<String?>() }) as SpecialSequenceRule
+            { s: String? -> if (s!!.startsWith("a")) Optional.of<String?>("a") else Optional.empty<String?>() }) as SpecialSequenceRule
     }
 
     private fun simple_a(): SpecialSequenceRule {
@@ -26,7 +25,7 @@ internal class SpecialSequenceRuleTest {
     private fun simple_b(): SpecialSequenceRule {
         return SpecialSequenceRule.create(
             "match \"b\"",
-            Function { s: String? -> if (s!!.startsWith("b")) Optional.of<String?>("b") else Optional.empty<String?>() }) as SpecialSequenceRule
+            { s: String? -> if (s!!.startsWith("b")) Optional.of<String?>("b") else Optional.empty<String?>() }) as SpecialSequenceRule
     }
 
     @Test
@@ -64,13 +63,13 @@ internal class SpecialSequenceRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a(), simple_b()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a(), simple_b()))))
         Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"))
     }
 
     @Test
     fun parseError() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a(), simple_b()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a(), simple_b()))))
         Assertions.assertTrue(p.parse("b").isFailure)
     }
 
@@ -84,7 +83,7 @@ internal class SpecialSequenceRuleTest {
     fun fullParseConcat() {
         val p = parser(
             Gr.grammar(
-                "S", ConcatRule.create(List.of<Rule>(simple_a(), simple_b()))
+                "S", ConcatRule.create(listOf(simple_a(), simple_b()))
             )
         )
         Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"))
@@ -200,7 +199,7 @@ internal class SpecialSequenceRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         simple_a().withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.createDirect("b", false)
                     )

@@ -4,14 +4,12 @@ import de.kleinert.parsewisp.Parsewisp.parser
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
-import de.kleinert.parsewisp.parsing.Rule
 import de.kleinert.parsewisp.parsing.StringTerm
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class StringTermTest {
     @Test
@@ -129,7 +127,7 @@ internal class StringTermTest {
 
         // Case-sensitive.
         // Will use parse(...) for "a" and fullParse(...) for "b"
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a, simple_b))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a, simple_b))))
         Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"))
 
         // Case-insensitive.
@@ -137,7 +135,7 @@ internal class StringTermTest {
         val pCI = parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         StringTerm.createDirect("a", true),
                         StringTerm.createDirect("b", true)
                     )
@@ -156,7 +154,7 @@ internal class StringTermTest {
         val simple_b = StringTerm.createDirect("b", false)
 
         // Will use parse(...) for "a" and fullParse(...) for "b"
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(simple_a, simple_b))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a, simple_b))))
         Assertions.assertTrue(p.parse("b").isFailure)
     }
 
@@ -181,7 +179,7 @@ internal class StringTermTest {
 
         val p = parser(
             Gr.grammar(
-                "S", ConcatRule.create(List.of<Rule>(simple_a, simple_b))
+                "S", ConcatRule.create(listOf(simple_a, simple_b))
             )
         )
         Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"))
@@ -331,7 +329,7 @@ internal class StringTermTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         simple_a.withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.createDirect("b", false)
                     )

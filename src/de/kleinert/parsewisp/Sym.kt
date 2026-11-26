@@ -48,7 +48,6 @@ class Sym private constructor(private val name: String) {
          * @return The new or already existing symbol.
          * @since 0.9.7
          */
-        @JvmStatic
         fun sym(sym: String): Sym {
             var k: Sym? = null
             var existingRef: Reference<Sym?>? = table[sym]

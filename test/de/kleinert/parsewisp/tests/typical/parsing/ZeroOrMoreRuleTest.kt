@@ -8,7 +8,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class ZeroOrMoreRuleTest {
     private fun rep_a(): ZeroOrMoreRule {
@@ -44,7 +43,7 @@ internal class ZeroOrMoreRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a(), string_a()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
@@ -74,12 +73,12 @@ internal class ZeroOrMoreRuleTest {
 
     @Test
     fun fullParseConcat() {
-        val pN = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(string_a(), rep_a()))))
+        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), rep_a()))))
         Assertions.assertEquals(PT.create("S", "a"), pN.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
 
-        val pM = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a(), rep_a()))))
+        val pM = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), rep_a()))))
         Assertions.assertEquals(PT.create("S"), pM.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), pM.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), pM.parse("aa"))
@@ -249,7 +248,7 @@ internal class ZeroOrMoreRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         rep_a().withReduction(ReductionType.taggedTree(sym("B"))),
                         OptionalRule.create(StringTerm.create("b", false))
                     )

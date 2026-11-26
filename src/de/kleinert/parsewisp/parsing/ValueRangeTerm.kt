@@ -43,8 +43,8 @@ class ValueRangeTerm private constructor(
     }
 
     private fun parse(index: Int, runner: Gll, expectEnd: Boolean) {
-        val text = runner.tramp().getText1()
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
+        val text = runner.tramp().text
+        val nodeKey: ListenerKey = makeKey(index, this)
 
         if (index >= text.length) {
             runner.fail(nodeKey, index, this, expectEnd)
@@ -92,7 +92,7 @@ class ValueRangeTerm private constructor(
          * @since 0.9.7
          */
         fun create(lo: Int, hi: Int): Rule {
-            return ValueRangeTerm(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, lo, hi)
+            return ValueRangeTerm(defaultHidden, defaultReductionType, lo, hi)
         }
     }
 }

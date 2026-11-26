@@ -8,7 +8,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class EOFTermTest {
     @Test
@@ -20,7 +19,7 @@ internal class EOFTermTest {
     fun parse() {
         val p2 = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.default, EOFTerm.default))
+                "S", ConcatRule.createDirect(listOf(EOFTerm.default, EOFTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), p2.parse(""))
@@ -44,7 +43,7 @@ internal class EOFTermTest {
     fun parseError() {
         val p = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.default, StringTerm.create("a", false)))
+                "S", ConcatRule.createDirect(listOf(EOFTerm.default, StringTerm.create("a", false)))
             )
         )
         Assertions.assertTrue(p.parse("a").isFailure)
@@ -60,14 +59,14 @@ internal class EOFTermTest {
     fun fullParseConcat() {
         val pE = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(EOFTerm.default, EOFTerm.default))
+                "S", ConcatRule.createDirect(listOf(EOFTerm.default, EOFTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), pE.parse(""))
 
         val pA = parser(
             Gr.grammar(
-                "S", ConcatRule.createDirect(List.of<Rule>(StringTerm.create("a", false), EOFTerm.default))
+                "S", ConcatRule.createDirect(listOf(StringTerm.create("a", false), EOFTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pA.parse("a"))
@@ -177,7 +176,7 @@ internal class EOFTermTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         EOFTerm.default.withReduction(ReductionType.taggedTree(sym("B"))),
                         EOFTerm.default
                     )

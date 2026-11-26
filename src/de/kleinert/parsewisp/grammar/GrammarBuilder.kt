@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.grammar
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.error.IllegalGrammarException
 import de.kleinert.parsewisp.grammar.Grammar.GrammarInfo
 import de.kleinert.parsewisp.parser.Parser
@@ -13,7 +12,6 @@ import java.util.*
 import java.util.function.BiFunction
 import java.util.function.Function
 import java.util.regex.Pattern
-import java.util.stream.Stream
 
 /**
  * This class provides an easy way to construct grammars. To use it, it needs to be inherited and the [.make] method overridden.
@@ -26,37 +24,20 @@ import java.util.stream.Stream
 </pre> *
  *
  *
- * The [.addProduction] method can be used to add new productions.
+ * The [GrammarBuilder.addProduction] method can be used to add new productions.
  *
  * @since 0.9.7
  */
-abstract class GrammarBuilder protected constructor(redefinitionOption: RedefinitionOption = RedefinitionOption.Companion.defaultOption) {
-    private val productions: LinkedHashMap<Sym, Rule>
-    private val buffer: BufferForRules
-    private val redefinitionOpt: RedefinitionOption
+abstract class GrammarBuilder protected constructor(redefinitionOption: RedefinitionOption = RedefinitionOption.defaultOption) {
+    private val productions: LinkedHashMap<Sym, Rule> = LinkedHashMap<Sym, Rule>()
+    private val buffer: BufferForRules = BufferForRules()
+    private val redefinitionOpt: RedefinitionOption = redefinitionOption
     private var wasMakeCalled = false
 
     /**
      * The starting production.
      */
     protected var startProduction: Sym? = null
-
-    /**
-     * Creates a new builder with the given option for redefinitions.
-     *
-     * @param redefinitionOption Option used when a production is added multiple times (see [.addProduction]).
-     * @since 0.9.7
-     */
-    /**
-     * Default constructor. Calls [GrammarBuilder] with the default value [RedefinitionOption.defaultOption].
-     *
-     * @since 0.9.7
-     */
-    init {
-        this.productions = LinkedHashMap<Sym, Rule>()
-        this.redefinitionOpt = redefinitionOption
-        this.buffer = BufferForRules()
-    }
 
     /**
      * Override this to create a grammar. Used in [.build].
@@ -99,16 +80,16 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
 
         val resultProductions = LinkedHashMap(productions)
 
-        if (startProduction != null) {
-            start = startProduction
+        start = if (startProduction != null) {
+            startProduction
         } else if (this.startProduction != null) {
-            start = this.startProduction!!
+            this.startProduction!!
         } else {
-            start = resultProductions.keys.iterator().next()!!
+            resultProductions.keys.iterator().next()!!
         }
 
         //compress(resultProductions);
-        ReductionType.Companion.applyStandardReductionToProductions(resultProductions)
+        ReductionType.applyStandardReductionToProductions(resultProductions)
         if (wsParser != null) {
             autoWhitespace(resultProductions, start, wsParser.grammar, wsParser.startProduction)
         }
@@ -145,13 +126,13 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun addAllProductions(
         entries: Collection<Map.Entry<Sym, Rule>>
     ) {
-        for (entry in entries) {
-            addProduction(entry!!.key!!, entry.value!!)
+        for ((key, value) in entries) {
+            addProduction(key, value)
         }
     }
 
     /**
-     * Adds a production to the output. The specific behavior depends on the [ParserCreationOptions.getRedefinitionOption] used.
+     * Adds a production to the output. The specific behavior depends on the [ParserCreationOptions.redefinitionOption] used.
      *
      * @param lhs The production's key. (left-hand-side)
      * @param rhs The production's right-hand-side.
@@ -160,16 +141,15 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun addProduction(
         lhs: Sym, rhs: Rule
     ) {
-        val existing = productions.putIfAbsent(lhs, rhs)
-        if (existing == null) return
+        val existing = productions.putIfAbsent(lhs, rhs) ?: return
 
         when (redefinitionOpt) {
-            RedefinitionOption.OVERRIDE -> productions.put(lhs, rhs)
+            RedefinitionOption.OVERRIDE -> productions[lhs] = rhs
             RedefinitionOption.ERROR -> throw IllegalArgumentException(
-                "Production already in grammar: " + lhs
+                "Production already in grammar: $lhs"
             )
 
-            RedefinitionOption.CHOICE -> productions.put(lhs, alt(existing, rhs))
+            RedefinitionOption.CHOICE -> productions[lhs] = alt(existing, rhs)
             RedefinitionOption.KEEP -> {
             }
         }
@@ -186,7 +166,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun addProduction(
         lhs: String, rhs: Rule
     ) {
-        addProduction(sym(lhs), rhs)
+        addProduction(Sym.sym(lhs), rhs)
     }
 
     /**
@@ -221,7 +201,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun look(input: Rule): Rule {
-        return LookaheadRule.Companion.create(input)
+        return LookaheadRule.create(input)
     }
 
     /**
@@ -233,7 +213,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun neg(input: Rule): Rule {
-        return NegativeLookaheadRule.Companion.create(input)
+        return NegativeLookaheadRule.create(input)
     }
 
     /**
@@ -246,7 +226,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun numVal(lo: Int, hi: Int): Rule {
-        return ValueRangeTerm.Companion.create(lo, hi)
+        return ValueRangeTerm.create(lo, hi)
     }
 
     /**
@@ -258,7 +238,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun numVal(loHi: Int): Rule {
-        return ValueRangeTerm.Companion.create(loHi, loHi)
+        return ValueRangeTerm.create(loHi, loHi)
     }
 
     /**
@@ -274,7 +254,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun ordAlt(inputRules: List<Rule>): Rule {
-        return OrderedChoiceRule.Companion.create(inputRules)
+        return OrderedChoiceRule.create(inputRules)
     }
 
     /**
@@ -296,7 +276,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun nt(name: String): NonTerminal {
-        return buffer.getOrAddNt(sym(name))
+        return buffer.getOrAddNt(Sym.sym(name))
     }
 
     /**
@@ -305,15 +285,6 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      *
      * @param string          The string to match.
      * @param caseInsensitive Whether the Terminal will match case-insensitive.
-     * @return The new rule.
-     * @since 0.9.7
-     */
-    /**
-     * Creates a [StringTerm]
-     * or [EpsilonTerm] if the string is empty
-     * . The case-sensitivity depends on the options used for this [GrammarBuilder].
-     *
-     * @param string The string to match.
      * @return The new rule.
      * @since 0.9.7
      */
@@ -404,7 +375,9 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun cat(
         rule: Rule, vararg rules: Rule
     ): Rule {
-        return cat(Stream.concat(Stream.of<Rule>(rule), Arrays.stream<Rule>(rules)).toList())
+        val l = mutableListOf(rule)
+        l.addAll(rules)
+        return cat(l)
     }
 
     /**
@@ -435,7 +408,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun catUnsafe(
         rules: List<Rule>
     ): ConcatRule {
-        return ConcatRule.Companion.createDirect(rules)
+        return ConcatRule.createDirect(rules)
     }
 
     /**
@@ -454,10 +427,9 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun alt(
         rule: Rule, vararg rules: Rule
     ): Rule {
-        val result = Stream
-            .concat(Stream.of<Rule>(rule), Arrays.stream<Rule>(rules))
-            .toList()
-        return alt(result)
+        val l = mutableListOf(rule)
+        l.addAll(rules)
+        return alt(l)
     }
 
     /**
@@ -473,7 +445,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun alt(rules: List<Rule>): Rule {
-        return AlternationRule.Companion.create(rules)
+        return AlternationRule.create(rules)
     }
 
     /**
@@ -486,8 +458,8 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun oneOf(chars: String): Rule {
         if (chars.isEmpty()) return eps()
         val split = ArrayList<Rule>()
-        for (i in 0..<chars.length) {
-            split.add(string(chars.get(i).toString()))
+        for (i in chars.indices) {
+            split.add(string(chars[i].toString()))
         }
         return alt(split)
     }
@@ -504,7 +476,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun altUnsafe(
         rules: List<Rule>
     ): AlternationRule {
-        return AlternationRule.Companion.altUnsafe(rules)
+        return AlternationRule.altUnsafe(rules)
     }
 
     /**
@@ -544,7 +516,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun rep(
         rule: Rule, min: Int, max: Int
     ): Rule {
-        return VariableRepetitionRule.Companion.create((rule), min, max)
+        return VariableRepetitionRule.create((rule), min, max)
     }
 
     /**
@@ -586,9 +558,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     protected fun exclude(
         ruleExpected: Rule, ruleExcluded: Rule
     ): Rule {
-        val r1 = ruleExpected
-        val r2 = ruleExcluded
-        return ExclusionRule.Companion.create(r1, r2)
+        return ExclusionRule.create(ruleExpected, ruleExcluded)
     }
 
     /**
@@ -629,7 +599,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun zeroOrMore(rule: Rule): Rule {
-        return ZeroOrMoreRule.Companion.create(rule)
+        return ZeroOrMoreRule.create(rule)
     }
 
     /**
@@ -640,7 +610,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun onceOrMore(rule: Rule): Rule {
-        return OnceOrMoreRule.Companion.create(rule)
+        return OnceOrMoreRule.create(rule)
     }
 
     /**
@@ -651,7 +621,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @since 0.9.7
      */
     protected fun opt(rule: Rule): Rule {
-        return OptionalRule.Companion.create(rule)
+        return OptionalRule.create(rule)
     }
 
     private fun autoWhitespaceHelper(
@@ -665,18 +635,16 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
             return originalRule
         }
         if (originalRule is RuleWithChild) {
-            val rule = originalRule
-            return rule.withRule(
-                autoWhitespaceHelper(rule.rule, whitespaceRule)
+            return originalRule.withRule(
+                autoWhitespaceHelper(originalRule.rule, whitespaceRule)
             )
         }
         if (originalRule is RuleWithManyChildren) {
-            val combWithParsers = originalRule
-            val rules = combWithParsers
+            val rules = originalRule
                 .rules
-                .map { p: Rule -> autoWhitespaceHelper(p!!, whitespaceRule) }
+                .map { p: Rule -> autoWhitespaceHelper(p, whitespaceRule) }
                 .toList()
-            return combWithParsers.withRules(rules)
+            return originalRule.withRules(rules)
         }
         if (originalRule is Terminal) {
             val rules: MutableList<Rule> = ArrayList()
@@ -700,7 +668,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
         if (originalRule is SpecialSequenceRule) {
             return originalRule
         }
-        throw IllegalArgumentException(originalRule.javaClass.getName())
+        throw IllegalArgumentException(originalRule.javaClass.name)
     }
 
     private fun autoWhitespace(
@@ -712,9 +680,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
         val wsRule =
             opt(nt(startWS)).hideInResult()
 
-        val finalGrammar =
-            productions
-        for (symRuleEntry in finalGrammar.entries) {
+        for (symRuleEntry in productions.entries) {
             symRuleEntry.setValue(
                 autoWhitespaceHelper(
                     symRuleEntry.value!!, wsRule
@@ -722,18 +688,15 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
             )
         }
 
-        val startWithoutReduction = (finalGrammar.get(start)!!
+        val startWithoutReduction = (productions[start]!!
             .withReduction(ReductionType.initial()))
         val newStartComb =
             cat(listOf(startWithoutReduction, wsRule))
-                .withReduction(finalGrammar.get(start)!!.reduction)
+                .withReduction(productions[start]!!.reduction)
 
-        finalGrammar.put(start, newStartComb)
-        finalGrammar.putAll(grammarWS)
-        finalGrammar.put(
-            startWS,
-            grammarWS.getProduction(startWS)!!.mergeToTop()
-        )
+        productions[start] = newStartComb
+        productions.putAll(grammarWS)
+        productions[startWS] = grammarWS.getProduction(startWS)!!.mergeToTop()
     }
 
     /**
@@ -744,14 +707,13 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
      * @return The same rule or a previously buffered equivalent.
      * @since 0.9.7
     </T> */
-    protected fun <T : Rule?> buffer(rule: T?): T? {
-        if (rule is StringTerm) {
-            return buffer.getOrAdd(rule as StringTerm) as T
-        } else if (rule is RegexTerm) {
-            return buffer.getOrAdd(rule as RegexTerm) as T
-        } else if (rule is NonTerminal) {
-            return buffer.getOrAdd(rule as NonTerminal) as T
+    protected fun <T : Rule?> buffer(rule: T): T {
+        @Suppress("UNCHECKED_CAST")
+        return when (rule) {
+            is StringTerm -> buffer.getOrAdd(rule as StringTerm) as T
+            is RegexTerm -> buffer.getOrAdd(rule as RegexTerm) as T
+            is NonTerminal -> buffer.getOrAdd(rule as NonTerminal) as T
+            else -> rule
         }
-        return rule
     }
 }

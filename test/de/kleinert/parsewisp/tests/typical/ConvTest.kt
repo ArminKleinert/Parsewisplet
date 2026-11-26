@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ConvTest {
     @Test
     fun listToTreeTest() {
-        val l = listOf<Any>(sym("S"), "A", listOf<Any>(sym("S"), "A"))
+        val l = listOf(sym("S"), "A", listOf(sym("S"), "A"))
         val pt: ParseTree = toParseTree(l)
         Assertions.assertEquals(
             PT.create("S", "A", PT.create("S", "A")),
@@ -23,7 +23,7 @@ internal class ConvTest {
     fun mapToTreeTest() {
         val l = mapOf(
             sym("tag")to sym("S"),
-            sym("content")to listOf("A", mapOf<Sym, Any>(sym("tag")to sym("S"), sym("content")to listOf<String?>("A")))
+            sym("content")to listOf("A", mapOf(sym("tag")to sym("S"), sym("content")to listOf<String?>("A")))
         )
         val pt: ParseTree = toParseTree(l)
         Assertions.assertEquals(
@@ -37,7 +37,7 @@ internal class ConvTest {
         val pt1: ParseTree = toParseTree(
             mapOf(
                 sym("tag")to sym("S"),
-                sym("content")to listOf<Any>("A", listOf<Any>(sym("S"), "A"))
+                sym("content")to listOf("A", listOf(sym("S"), "A"))
             )
         )
         Assertions.assertEquals(
@@ -46,10 +46,10 @@ internal class ConvTest {
         )
 
         val pt2: ParseTree = toParseTree(
-            listOf<Any>(
+            listOf(
                 sym("S"),
                 "A",
-                mapOf<Sym, Any?>(
+                mapOf(
                     sym("tag")to sym("S"),
                     sym("content")to mutableListOf<String?>("A")
                 )
@@ -64,10 +64,12 @@ internal class ConvTest {
     companion object {
         private fun toParseTreeHelper(o: List<*>): List<Any?> {
             return o.stream().map<Any?> { it: Any? ->
-                if (it is String || it is ParseFailureNode || it is ParseTree) return@map it
-                else if (it is MutableList<*>) return@map toParseTree(it)
-                else if (it is MutableMap<*, *>) return@map toParseTree(it)
-                else throw IllegalArgumentException()
+                when (it) {
+                    is String, is ParseFailureNode, is ParseTree -> return@map it
+                    is MutableList<*> -> return@map toParseTree(it)
+                    is MutableMap<*, *> -> return@map toParseTree(it)
+                    else -> throw IllegalArgumentException()
+                }
             }.toList()
         }
 
@@ -95,7 +97,7 @@ internal class ConvTest {
          * @return A parse tree.
          */
         fun toParseTree(m: Map<*, *>): ParseTree {
-            require(!(m.size != 2 || (m.get(sym("tag")) !is Sym) || (m.get(sym("content")) !is MutableList<*>))) { "Cannot handle Map " + m }
+            require(!(m.size != 2 || (m.get(sym("tag")) !is Sym) || (m.get(sym("content")) !is MutableList<*>))) { "Cannot handle Map $m" }
             return ParseTree.create(m.get(sym("tag")) as Sym, toParseTreeHelper(m.get(sym("content")) as MutableList<*>))
         }
     }

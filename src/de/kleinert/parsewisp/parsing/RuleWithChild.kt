@@ -40,10 +40,10 @@ internal constructor(
         return (withHideTag(false) as RuleWithChild).withRule(rule.includeInResult())
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (javaClass != o?.javaClass) return false
-        if (hashCode() != o.hashCode()) return false
-        val that = o as RuleWithChild
+    override fun equals(other: Any?): Boolean {
+        if (javaClass != other?.javaClass) return false
+        if (hashCode() != other.hashCode()) return false
+        val that = other as RuleWithChild
         if (isHiddenInResult != that.isHiddenInResult) return false
         if (reduction != that.reduction) return false
         return this.rule == that.rule

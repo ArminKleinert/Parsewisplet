@@ -11,8 +11,6 @@ import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
-import java.util.Set
 
 internal class ParsewispCoreTest {
     @Test
@@ -95,8 +93,8 @@ internal class ParsewispCoreTest {
         val bTag = sym("B")
         val treeHiccup = listOf(
             sym("S"),
-            List.of<Any?>(abTag, List.of<Any?>(aTag, "a", "a", "a", "a", "a"), List.of<Any?>(bTag, "b", "b", "b")),
-            List.of<Any?>(abTag, List.of<Any?>(aTag, "a", "a", "a", "a"), List.of<Any?>(bTag, "b", "b"))
+            listOf(abTag, listOf(aTag, "a", "a", "a", "a", "a"), listOf(bTag, "b", "b", "b")),
+            listOf(abTag, listOf(aTag, "a", "a", "a", "a"), listOf(bTag, "b", "b"))
         )
 
         Assertions.assertEquals(
@@ -427,7 +425,7 @@ internal class ParsewispCoreTest {
             p.parse("x-cx")
         )
         Assertions.assertEquals(
-            List.of<ParseTree?>(tree),
+            listOf(tree),
             p.parses("x-cx")
         )
     }

@@ -31,13 +31,13 @@ internal class AlternationRuleTest {
     fun createEmpty() {
         // create(...) called with an empty input is free to create an Epsilon or something equivalent instead.
         Assertions.assertEquals(
-            AlternationRule.create(mutableListOf<Rule>()),
-            AlternationRule.create(mutableListOf<Rule>())
+            AlternationRule.create(listOf()),
+            AlternationRule.create(listOf())
         )
 
         Assertions.assertEquals(
             parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
-            parser(Gr.grammar("S", AlternationRule.create(mutableListOf<Rule>()))).parse("")
+            parser(Gr.grammar("S", AlternationRule.create(listOf()))).parse("")
         )
     }
 
@@ -59,7 +59,7 @@ internal class AlternationRuleTest {
     @Test
     fun createManySimilar() {
         // If an element in the input is repeated, create(...) can (and should) make the inputs distinct.
-        val l = listOf<Rule>(
+        val l = listOf(
             string_a(),
             string_b(),
             string_a(),
@@ -93,8 +93,8 @@ internal class AlternationRuleTest {
         )
 
         Assertions.assertEquals(
-            AlternationRule.altUnsafe(mutableListOf<Rule>()),
-            AlternationRule.altUnsafe(mutableListOf<Rule>())
+            AlternationRule.altUnsafe(listOf()),
+            AlternationRule.altUnsafe(listOf())
         )
 
         Assertions.assertEquals(

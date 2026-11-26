@@ -31,8 +31,8 @@ class NegativeLookaheadRule private constructor(
     }
 
     override fun parse(index: Int, runner: Gll) {
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, rule)
-        val thisNodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
+        val nodeKey: ListenerKey = makeKey(index, rule)
+        val thisNodeKey: ListenerKey = makeKey(index, this)
 
         if (resultExists_Q(runner, nodeKey)) {
             runner.fail(thisNodeKey, index, this, false)
@@ -77,7 +77,7 @@ class NegativeLookaheadRule private constructor(
          * @since 0.9.7
          */
         fun create(rule: Rule): Rule {
-            return NegativeLookaheadRule(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, rule)
+            return NegativeLookaheadRule(defaultHidden, defaultReductionType, rule)
         }
     }
 }

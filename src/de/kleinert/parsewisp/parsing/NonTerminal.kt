@@ -24,8 +24,8 @@ class NonTerminal private constructor(
         val rule = runner.tramp().grammar.getProduction(this.keyword)
         checkNotNull(rule) { "Cannot use non terminal " + this.keyword + " Availability should be checked when initializing parser." }
         runner.pushListener(
-            Rule.Companion.makeKey(index, rule),
-            runner.nodeListener(Rule.Companion.makeKey(index, this))
+            makeKey(index, rule),
+            runner.nodeListener(makeKey(index, this))
         )
     }
 
@@ -33,8 +33,8 @@ class NonTerminal private constructor(
         val rule = runner.tramp().grammar.getProduction(this.keyword)
         checkNotNull(rule) { "Cannot use non terminal " + this.keyword + " Availability should be checked when initializing parser." }
         runner.pushFullListener(
-            Rule.Companion.makeKey(index, rule),
-            runner.nodeListener(Rule.Companion.makeKey(index, this))
+            makeKey(index, rule),
+            runner.nodeListener(makeKey(index, this))
         )
     }
 
@@ -46,10 +46,10 @@ class NonTerminal private constructor(
         return if (getReduction1() === red) this else NonTerminal(hide, red, keyword)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is NonTerminal) return false
-        if (this === o) return true
-        return hide == o.hide && red == o.red && keyword == o.keyword
+    override fun equals(other: Any?): Boolean {
+        if (other !is NonTerminal) return false
+        if (this === other) return true
+        return hide == other.hide && red == other.red && keyword == other.keyword
     }
 
     override fun hashCode(): Int {
@@ -65,7 +65,7 @@ class NonTerminal private constructor(
          * @since 0.9.7
          */
         fun create(keyword: Sym): NonTerminal {
-            return NonTerminal(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, keyword)
+            return NonTerminal(defaultHidden, defaultReductionType, keyword)
         }
     }
 }

@@ -77,7 +77,6 @@ object Viztool {
      * @throws InterruptedException If the operation is interrupted somehow.
      * @since 0.9.7
      */
-    @Throws(IOException::class, InterruptedException::class)
     fun dumpParseTree(
         dotFileNamePrefix: String,
         parseRes: ParseTree

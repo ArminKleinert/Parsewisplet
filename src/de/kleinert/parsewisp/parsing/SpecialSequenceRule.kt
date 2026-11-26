@@ -33,10 +33,10 @@ class SpecialSequenceRule private constructor(
     val function: Function<String, Optional<String>>
 ) : SimpleRule(hide, red) {
     override fun parse(index: Int, runner: Gll) {
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
-        val res = function.apply(runner.tramp().getText1().substring(index))
+        val nodeKey: ListenerKey = makeKey(index, this)
+        val res = function.apply(runner.tramp().text.substring(index))
 
-        if (res.isEmpty()) {
+        if (res.isEmpty) {
             runner.fail(nodeKey, index, this, false)
             return
         }
@@ -45,10 +45,10 @@ class SpecialSequenceRule private constructor(
     }
 
     override fun fullParse(index: Int, runner: Gll) {
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
-        val res = function.apply(runner.tramp().getText1().substring(index))
+        val nodeKey: ListenerKey = makeKey(index, this)
+        val res = function.apply(runner.tramp().text.substring(index))
 
-        if (res.isEmpty()) {
+        if (res.isEmpty) {
             runner.fail(nodeKey, index, this, true)
             return
         }
@@ -64,11 +64,11 @@ class SpecialSequenceRule private constructor(
         return if (getReduction1() === red) this else SpecialSequenceRule(hide, red, description, function)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is SpecialSequenceRule) return false
-        if (this === o) return true
-        return hide == o.hide && red == o.red
-                && function == o.function
+    override fun equals(other: Any?): Boolean {
+        if (other !is SpecialSequenceRule) return false
+        if (this === other) return true
+        return hide == other.hide && red == other.red
+                && function == other.function
     }
 
     override fun hashCode(): Int {

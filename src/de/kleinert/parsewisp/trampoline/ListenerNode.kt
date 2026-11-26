@@ -22,9 +22,9 @@ data class ListenerNode(
      * Creates a new instance.
      */
     constructor() : this(
-        ArrayList<Listener>(),
-        ArrayList<Listener>(),
-        LinkedHashSet<ParseMessage>(),
-        LinkedHashSet<ParseMessage>()
+        mutableListOf(),
+        mutableListOf(),
+        LinkedHashSet(),
+        LinkedHashSet()
     )
 }

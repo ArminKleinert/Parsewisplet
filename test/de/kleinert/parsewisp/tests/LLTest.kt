@@ -71,51 +71,46 @@ internal class LLTest {
 
     @Test
     fun pRegex_____() {
-        printStat(Procedure { pRegex.parse(s) })
+        printStat({ pRegex.parse(s) })
     }
 
     @Test
     fun pDirect____() {
-        printStat(Procedure { pDirect.parse(s) })
+        printStat({ pDirect.parse(s) })
     }
 
     @Test
     fun pLeftRec___() {
-        printStat(Procedure { pLeftRec.parse(s) })
+        printStat({ pLeftRec.parse(s) })
     }
 
     @Test
     fun pLeftRecH__() {
-        printStat(Procedure { pLeftRecH.parse(s) })
+        printStat({ pLeftRecH.parse(s) })
     }
 
     @Test
     fun pRightRec__() {
-        printStat(Procedure { pRightRec.parse(s) })
+        printStat({ pRightRec.parse(s) })
     }
 
     @Test
     fun pRightRecH_() {
-        printStat(Procedure { pRightRecH.parse(s) })
+        printStat({ pRightRecH.parse(s) })
     }
 
     @Test
     fun pRightRecE_() {
-        printStat(Procedure { pRightRecE.parse(s) })
+        printStat({ pRightRecE.parse(s) })
     }
 
     @Test
     fun pRightRecEH() {
-        printStat(Procedure { pRightRecEH.parse(s) })
+        printStat({ pRightRecEH.parse(s) })
     }
 
     private fun printStat(prod: Procedure) {
-        val ste = Thread.currentThread().getStackTrace()
-        println(
-            ("."
-                    + ste[2].getMethodName()
-                    + " : "
-                    + TimeUtil.measureTimeMillisMean(runsPerMeasure, prod))
-        )
+        val ste = Thread.currentThread().stackTrace
+        println("." + ste[2].methodName + " : " + TimeUtil.measureTimeMillisMean(runsPerMeasure, prod)        )
     }
 }

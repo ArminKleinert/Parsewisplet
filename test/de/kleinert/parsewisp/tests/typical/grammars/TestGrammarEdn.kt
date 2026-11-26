@@ -25,15 +25,15 @@ internal class TestGrammarEdn {
     }
 
     private fun symbolListWithNS(): List<String> {
-        return symbolList().stream().map { it: String? -> it + '/' + "sym" }.toList()
+        return symbolList().stream().map { it: String? -> "$it/sym" }.toList()
     }
 
     private fun keywordList(): List<String> {
-        return symbolList().stream().map { it: String -> ':'.toString() + it }.toList()
+        return symbolList().stream().map { it: String -> ":$it" }.toList()
     }
 
     private fun keywordListWithNS(): List<String> {
-        return symbolListWithNS().stream().map { it: String -> ':'.toString() + it }.toList()
+        return symbolListWithNS().stream().map { it: String -> ":$it" }.toList()
     }
 
     @Test

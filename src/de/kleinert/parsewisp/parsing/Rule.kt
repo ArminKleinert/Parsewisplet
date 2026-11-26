@@ -9,13 +9,6 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  *
  * @since 0.9.7
  */
-/**
- * The constructor. Do not call directly unless you are maintaining this library.
- *
- * @param hide The hide option.
- * @param red  The reduction type for this rule.
- * @since 0.9.7
- */
 abstract class Rule
 protected constructor(
     /**
@@ -23,22 +16,10 @@ protected constructor(
      *
      * @since 0.9.7
      */
-    /**
-     * Check whether the content is hidden in the output.
-     *
-     * @return true if the content is hidden in the output, false otherwise.
-     * @since 0.9.7
-     */
     val isHiddenInResult: Boolean,
     /**
      * See [ReductionType].
      *
-     * @since 0.9.7
-     */
-    /**
-     * Get the used reduction type.
-     *
-     * @return The current reduction type.
      * @since 0.9.7
      */
     val reduction: ReductionType
@@ -124,17 +105,28 @@ protected constructor(
      * @since 0.9.7
      */
     fun mergeToTop(): Rule {
-        return withReduction(ReductionType.Companion.merging())
+        return withReduction(ReductionType.merging())
     }
 
     // Force children to override this.
-    abstract override fun equals(o: Any?): Boolean
+    abstract override fun equals(other: Any?): Boolean
 
     // Force children to override this.
     abstract override fun hashCode(): Int
 
     override fun toString(): String {
         return GrammarPrinter.default.ruleToString(this)
+    }
+
+    /**
+     * A wrapper for the constructor of [ListenerKey].
+     *
+     * @param index The index.
+     * @param rule  The rule.
+     * @return A new [ListenerKey].
+     */
+    protected fun makeKey(index: Int, rule: Rule): ListenerKey {
+        return ListenerKey(index, rule)
     }
 
     companion object {
@@ -144,25 +136,12 @@ protected constructor(
          * @since 0.9.7
          */
         protected const val defaultHidden: Boolean = false
-
-        /**
-         * Default value for [Rule.getReduction1].
-         *
-         * @since 0.9.7
-         */
-        @JvmStatic
-        protected val defaultReductionType: ReductionType = ReductionType.Companion.initial()
-
-        /**
-         * A wrapper for the constructor of [ListenerKey].
-         *
-         * @param index The index.
-         * @param rule  The rule.
-         * @return A new [ListenerKey].
-         */
-        @JvmStatic
-        protected fun makeKey(index: Int, rule: Rule): ListenerKey {
-            return ListenerKey(index, rule)
-        }
     }
 }
+
+/**
+ * Default value for [Rule.getReduction1].
+ *
+ * @since 0.9.7
+ */
+internal val defaultReductionType: ReductionType = ReductionType.initial()

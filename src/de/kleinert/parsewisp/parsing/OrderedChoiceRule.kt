@@ -31,24 +31,24 @@ class OrderedChoiceRule private constructor(
     private constructor(
         rule1: Rule,
         rule2: Rule
-    ) : this(Rule.Companion.defaultHidden, ReductionType.Companion.initial(), rule1, rule2)
+    ) : this(defaultHidden, ReductionType.initial(), rule1, rule2)
 
     override fun parse(index: Int, runner: Gll) {
-        val nodeKeyForComb1: ListenerKey = Rule.Companion.makeKey(index, this.rule1)
-        val listener = runner.nodeListener(Rule.Companion.makeKey(index, this))
+        val nodeKeyForComb1: ListenerKey = makeKey(index, this.rule1)
+        val listener = runner.nodeListener(makeKey(index, this))
         runner.pushListener(nodeKeyForComb1, listener)
         runner.pushNegativeListener(
             nodeKeyForComb1,
-            NegativeListener { runner.pushListener(Rule.Companion.makeKey(index, this.rule2), listener) })
+            { runner.pushListener(makeKey(index, this.rule2), listener) })
     }
 
     override fun fullParse(index: Int, runner: Gll) {
-        val nodeKeyForComb1: ListenerKey = Rule.Companion.makeKey(index, this.rule1)
-        val listener = runner.nodeListener(Rule.Companion.makeKey(index, this))
+        val nodeKeyForComb1: ListenerKey = makeKey(index, this.rule1)
+        val listener = runner.nodeListener(makeKey(index, this))
         runner.pushFullListener(nodeKeyForComb1, listener)
         runner.pushNegativeListener(
             nodeKeyForComb1,
-            NegativeListener { runner.pushFullListener(Rule.Companion.makeKey(index, this.rule2), listener) })
+            { runner.pushFullListener(makeKey(index, this.rule2), listener) })
     }
 
     override fun withHideTag(hide: Boolean): OrderedChoiceRule {
@@ -91,7 +91,7 @@ class OrderedChoiceRule private constructor(
             val setup: OrderedChoiceRule = setupParsers(distinctRules)
 
             return OrderedChoiceRule(
-                Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType,
+                defaultHidden, defaultReductionType,
                 setup.rule1, setup.rule2
             )
         }

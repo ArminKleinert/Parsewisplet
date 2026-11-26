@@ -8,7 +8,6 @@ import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
 
 internal class OnceOrMoreRuleTest {
     private fun rep_a(): OnceOrMoreRule {
@@ -44,17 +43,17 @@ internal class OnceOrMoreRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a(), string_a()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
 
-        val pN = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(string_a(), rep_a(), string_a()))))
+        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), rep_a(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a", "a"), pN.parse("aaaaa"))
 
         val pM = parser(
             Gr.grammar(
-                "S", ConcatRule.create(List.of<Rule>(rep_a(), rep_a(), rep_a(), rep_a(), rep_a(), string_a()))
+                "S", ConcatRule.create(listOf(rep_a(), rep_a(), rep_a(), rep_a(), rep_a(), string_a()))
             )
         )
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a", "a", "a"), pM.parse("aaaaaa"))
@@ -63,7 +62,7 @@ internal class OnceOrMoreRuleTest {
 
     @Test
     fun parseError() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(rep_a(), string_a()))))
+        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), string_a()))))
         Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertTrue(p.parse("ba").isFailure)
     }
@@ -77,7 +76,7 @@ internal class OnceOrMoreRuleTest {
 
     @Test
     fun fullParseConcat() {
-        val pN = parser(Gr.grammar("S", ConcatRule.create(List.of<Rule>(string_a(), rep_a()))))
+        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), rep_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
 
@@ -242,7 +241,7 @@ internal class OnceOrMoreRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    List.of<Rule>(
+                    listOf(
                         rep_a().withReduction(ReductionType.taggedTree(sym("B"))),
                         OptionalRule.create(StringTerm.create("b", false))
                     )

@@ -52,8 +52,8 @@ class RegexTerm private constructor(
      * @since 0.9.7
      */
     override fun parse(index: Int, runner: Gll) {
-        val subString = runner.tramp().getText1().substring(index)
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
+        val subString = runner.tramp().text.substring(index)
+        val nodeKey: ListenerKey = makeKey(index, this)
         val firstMatch = reMatchAtFront(subString)
 
         if (firstMatch == null) {
@@ -78,11 +78,11 @@ class RegexTerm private constructor(
     }
 
     override fun fullParse(index: Int, runner: Gll) {
-        val substring = runner.tramp().getText1().substring(index)
+        val substring = runner.tramp().text.substring(index)
         val match = reMatchAtFront(substring)
-        val nodeKey: ListenerKey = Rule.Companion.makeKey(index, this)
+        val nodeKey: ListenerKey = makeKey(index, this)
         if (match != null && match.length == substring.length) {
-            runner.pushSuccessMessage(nodeKey, match, runner.tramp().getText1().length)
+            runner.pushSuccessMessage(nodeKey, match, runner.tramp().text.length)
         } else {
             runner.fail(nodeKey, index, this, true)
         }
@@ -96,11 +96,11 @@ class RegexTerm private constructor(
         return if (getReduction1() === red) this else RegexTerm(hide, red, regexp)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is RegexTerm) return false
-        if (this === o) return true
-        return hide == o.hide && red == o.red
-                && regexp.pattern() == o.regexp.pattern()
+    override fun equals(other: Any?): Boolean {
+        if (other !is RegexTerm) return false
+        if (this === other) return true
+        return hide == other.hide && red == other.red
+                && regexp.pattern() == other.regexp.pattern()
     }
 
     override fun hashCode(): Int {
@@ -118,9 +118,9 @@ class RegexTerm private constructor(
         fun create(regexp: Pattern): Rule {
             val s = regexp.pattern()
             if (regexp.flags() == 0 && s.chars()
-                    .allMatch(IntPredicate { codePoint: Int -> Character.isLetterOrDigit(codePoint) })
-            ) return StringTerm.Companion.createDirect(s, false)
-            return RegexTerm(Rule.Companion.defaultHidden, Rule.Companion.defaultReductionType, regexp)
+                    .allMatch({ codePoint: Int -> Character.isLetterOrDigit(codePoint) })
+            ) return StringTerm.createDirect(s, false)
+            return RegexTerm(defaultHidden, defaultReductionType, regexp)
         }
     }
 }

@@ -7,15 +7,9 @@ import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.grammar.GrammarBuilder
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
-import java.util.function.BiFunction
-import java.util.stream.Collectors
-import java.util.stream.IntStream
-import java.util.stream.Stream
 
 internal class GrammarBuilderTest {
     @Test
@@ -53,21 +47,15 @@ internal class GrammarBuilderTest {
     @Test
     fun equivalentToMoreExplicitGrammar() {
         val pGrammarList = LinkedHashMap<Sym, Rule>()
-        pGrammarList.put(
-            sym("S"),
-            ConcatRule.create(
-                listOf(
-                    NonTerminal.create(sym("NUMBER")),
-                    ZeroOrMoreRule.create(NonTerminal.create(sym("NUMBER")))
-                )
+        pGrammarList[sym("S")] = ConcatRule.create(
+            listOf(
+                NonTerminal.create(sym("NUMBER")),
+                ZeroOrMoreRule.create(NonTerminal.create(sym("NUMBER")))
             )
         )
-        pGrammarList.put(
-            sym("NUMBER"),
-            AlternationRule.create(
-                listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
-                    .map { it: String? -> StringTerm.create(it!!, true) }
-            )
+        pGrammarList[sym("NUMBER")] = AlternationRule.create(
+            listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
+                .map { it: String? -> StringTerm.create(it!!, true) }
         )
         val pFromGrammar = parser(
             Grammar(sym("S"), pGrammarList),
@@ -114,23 +102,15 @@ internal class GrammarBuilderTest {
                 addProduction(
                     "G", onceOrMore(
                         altUnsafe(
-                            Stream.concat(
-                                IntStream.range('0'.code, '9'.code + 1).boxed(),
-                                Stream.of<Int?>('_'.code)
-                            )
-                                .map { i: Int? -> i!!.toChar().toString() }
-                                .map { s: String? -> StringTerm.create(s!!, false) }
-                                .collect(Collectors.toList()))))
+                            (('0'..'9') + '_'                            )
+                                .map { i -> i.toString() }
+                                .map { s -> StringTerm.create(s, false) }.toList())))
                 addProduction(
                     "H", onceOrMore(
                         altUnsafe(
-                            Stream.concat(
-                                IntStream.range('0'.code, '9'.code + 1).boxed(),
-                                Stream.of<Int?>('_'.code)
-                            )
-                                .map { i: Int? -> i!!.toChar().toString() }
-                                .map { s: String? -> StringTerm.create(s!!, false) }
-                                .collect(Collectors.toList()))))
+                            (('0'..'9') + '_'                            )
+                                .map { i -> i.toString() }
+                                .map { s -> StringTerm.create(s, false) }.toList())))
                 addProduction("I", cat(regex("[0-9_]"), opt(onceOrMore(regex("[0-9_]")))))
                 addProduction("J", onceOrMore(oneOf("0123456789")))
                 addProduction("K", onceOrMore(oneOf("0123456789abcdefABCDEF")))
@@ -139,7 +119,7 @@ internal class GrammarBuilderTest {
         val p = parser(gFromGB, ParserCreationOptions.default)
 
         Assertions.assertEquals(
-            List.of<ParseTree?>(
+            listOf(
                 PT.create("S", PT.create("A", "9", "9")),
                 PT.create("S", PT.create("B", "9", "9")),
                 PT.create("S", PT.create("C", "9", "9")),
@@ -154,7 +134,7 @@ internal class GrammarBuilderTest {
             ),
             parser(gFromGB, ParserCreationOptions.default).parses("99")
         )
-        Assertions.assertEquals(List.of<ParseTree?>(PT.create("S")), p.parses(""))
+        Assertions.assertEquals(listOf(PT.create("S")), p.parses(""))
     }
 
     @Test
@@ -166,7 +146,7 @@ internal class GrammarBuilderTest {
                     zeroOrMore(
                         transform(
                             cat(regex("[0-9]+"), opt(string(" ")).hideInResult()),
-                            BiFunction { r, i -> listOf((r!!.get(0) as String?)!!.toLong()) })
+                            { r, _ -> listOf((r.get(0) as String?)!!.toLong()) })
                     )
                 )
                 startProduction = sym("S")

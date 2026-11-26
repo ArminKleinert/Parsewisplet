@@ -15,7 +15,6 @@ import de.kleinert.parsewisp.result.Node.NodeParseTree
 import de.kleinert.parsewisp.result.ParseFailure
 import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.util.StrParser
-import java.util.Map
 
 /**
  * This class provides the means of creating a Grammar
@@ -31,10 +30,10 @@ internal class Cfg private constructor(private val options: ParserCreationOption
             partsUncut = partsUncut.substring(1, partsUncut.length - 1) // Cut away "{" and "}"
             var parts = partsUncut.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
             if (partsUncut.isEmpty()) { // The input was only "{}"
-                parts = arrayOf<String>("", "")
+                parts = arrayOf("", "")
             } else if (parts.size == 1) {
                 // Format at this point is "[0-9]+" or "[0-9]+," or ",[0-9]+" or "[0-9]+,[0-9]+"
-                val temp = arrayOf<String>("", "")
+                val temp = arrayOf("", "")
                 if (partsUncut.get(0) == ',') { // Only maximum provided (e.g. `p{,m}`)
                     temp[1] = parts[0]
                 } else if (partsUncut.get(partsUncut.length - 1) == ',') { // Only minimum provided (e.g. `p{n,}`
@@ -44,7 +43,7 @@ internal class Cfg private constructor(private val options: ParserCreationOption
                     temp[1] = temp[0]
                 }
                 parts = temp
-            } else require(parts.size <= 2) { "Invalid format for repetition rule: " + partsUncut }
+            } else require(parts.size <= 2) { "Invalid format for repetition rule: $partsUncut" }
             // If none of the cases were true, the input had the usual format [0-9]+\\*[0-9]+
             val min = if (parts[0].isBlank()) 0 else parts[0].toInt()
             val max = if (parts[1].isBlank()) Int.MAX_VALUE else parts[1].toInt()
@@ -229,9 +228,9 @@ internal class Cfg private constructor(private val options: ParserCreationOption
 
                     "factor" -> {
                         val ruleAndPostfixStringIter = tree.content.iterator()
-                        var rule = buildRule(ruleAndPostfixStringIter.next()!!.content() as ParseTree) as Rule
+                        var rule = buildRule(ruleAndPostfixStringIter.next().content() as ParseTree) as Rule
                         while (ruleAndPostfixStringIter.hasNext()) {
-                            val postfix = ruleAndPostfixStringIter.next()!!.string()
+                            val postfix = ruleAndPostfixStringIter.next().string()
                             if (postfix == "?") {
                                 rule = opt(rule)
                             } else if (postfix == "*") {
@@ -260,12 +259,12 @@ internal class Cfg private constructor(private val options: ParserCreationOption
             val rules = Gll.parse(
                 grammarGrammar,
                 sym("rules"),
-                spec, false, false, GrammarPrinter.default
+                spec, partial = false, iterativeDeepening = false, printer = GrammarPrinter.default
             )
 
             if (rules is ParseFailure) {
                 throw ParserCreationFailure(
-                    "Error parsing grammar specification:\n" + rules + "\n"
+                    "Error parsing grammar specification:\n$rules\n"
                 )
             }
 

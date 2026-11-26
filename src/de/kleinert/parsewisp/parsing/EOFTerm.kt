@@ -18,9 +18,9 @@ class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(
 
     override fun fullParse(index: Int, runner: Gll) {
         if (index == runner.tramp()
-                .getText1().length
-        ) runner.pushSuccessMessageWithoutValue(Rule.Companion.makeKey(index, this), index)
-        else runner.fail(Rule.Companion.makeKey(index, this), index, this, true)
+                .text.length
+        ) runner.pushSuccessMessageWithoutValue(makeKey(index, this), index)
+        else runner.fail(makeKey(index, this), index, this, true)
     }
 
     override fun withHideTag(hide: Boolean): EOFTerm {
@@ -31,10 +31,10 @@ class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(
         return if (reduction === red) this else EOFTerm(hide, red)
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (o !is EOFTerm) return false
-        if (this === o) return true
-        return hide == o.hide && red == o.red
+    override fun equals(other: Any?): Boolean {
+        if (other !is EOFTerm) return false
+        if (this === other) return true
+        return hide == other.hide && red == other.red
     }
 
     override fun hashCode(): Int {

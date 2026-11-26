@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test
 import java.util.function.BiFunction
 
 internal class TransformRuleTest {
-    private val simple_f:BiFunction<List<Any?>, Int, List<Any?>> =
-        BiFunction { r: List<Any?>, i: Int -> listOf((r[0] as String).repeat(2)) }
+    private val simple_f: BiFunction<List<Any?>, Int, List<Any?>> =
+        BiFunction { r, _ -> listOf((r[0] as String).repeat(2)) }
 
     @Test
     fun create() {
@@ -29,9 +29,8 @@ internal class TransformRuleTest {
                 "S", ConcatRule.create(
                     listOf(
                         TransformRule.create(
-                            StringTerm.create("abc", false),
-                            { r, i ->
-                                (r!!.get(0) as String).split("".toRegex()).filterNot { it.isEmpty() }
+                            StringTerm.create("abc", false), { r, _ ->
+                                (r.get(0) as String).split("".toRegex()).filterNot { it.isEmpty() }
                             }),
                         StringTerm.create("def", false)
                     )
@@ -50,7 +49,7 @@ internal class TransformRuleTest {
             Gr.grammar(
                 "S", TransformRule.create(
                     StringTerm.create("abc", false)
-                ) { r: List<Any?>, i: Int -> listOf("a", "b", "c") }))
+                ) { _, _ -> listOf("a", "b", "c") }))
         Assertions.assertEquals(
             PT.create("S", "a", "b", "c"),
             p.parse("abc")
@@ -66,8 +65,8 @@ internal class TransformRuleTest {
                         StringTerm.create("abc", false),
                         TransformRule.create(
                             StringTerm.create("def", false)
-                        ) { r, i ->
-                                (r!!.get(0) as String).split("".toRegex()).filterNot { it.isEmpty() }
+                        ) { r, _ ->
+                                (r.get(0) as String).split("".toRegex()).filterNot { it.isEmpty() }
                         }
                     )
                 )
@@ -251,7 +250,7 @@ internal class TransformRuleTest {
                 "S",
                 "S", NonTerminal.create(sym("A")),
                 "A", ConcatRule.create(
-                    listOf<Rule>(
+                    listOf(
                         simple_a.withReduction(ReductionType.taggedTree(sym("B"))),
                         StringTerm.createDirect("b", false)
                     )

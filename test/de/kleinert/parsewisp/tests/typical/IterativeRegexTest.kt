@@ -2,12 +2,9 @@ package de.kleinert.parsewisp.tests.typical
 
 import de.kleinert.parsewisp.Parsewisp.parser
 import de.kleinert.parsewisp.parser_options.ParsingOptions
-import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.List
-import java.util.Set
 
 internal class IterativeRegexTest {
     @Test
@@ -42,12 +39,12 @@ internal class IterativeRegexTest {
             ParsingOptions.default.withIterativeDeepening(true)
         )
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf(
                 PT.create("S", "A", "AAA"),
                 PT.create("S", "AA", "AA"),
                 PT.create("S", "AAA", "A")
             ),
-            HashSet<ParseTree?>(parses)
+            parses.toSet()
         )
     }
 
@@ -63,12 +60,12 @@ internal class IterativeRegexTest {
             ParsingOptions.default.withIterativeDeepening(true)
         )
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf(
                 PT.create("S", "A", "AAA"),
                 PT.create("S", "AA", "AA"),
                 PT.create("S", "AAA", "A")
             ),
-            HashSet<ParseTree?>(parses)
+            parses.toSet()
         )
     }
 
@@ -84,12 +81,12 @@ internal class IterativeRegexTest {
             ParsingOptions.default.withIterativeDeepening(true)
         )
         Assertions.assertEquals(
-            Set.of<ParseTree?>(
+            setOf(
                 PT.create("S", "A", "AAA"),
                 PT.create("S", "AA", "AA"),
                 PT.create("S", "AAA", "A")
             ),
-            HashSet<ParseTree?>(parses)
+            parses.toSet()
         )
     }
 

@@ -67,7 +67,7 @@ interface ParsesResult : List<ParseTree> {
         ParsesResult
 
     /**
-     * This class is used for [Parser.parses] to represent the failure.
+     * This class is used for [de.kleinert.parsewisp.parser.Parser.parses] to represent the failure.
      *
      * @since 0.9.7
      */
@@ -83,18 +83,18 @@ interface ParsesResult : List<ParseTree> {
             return parseFailure
         }
 
-        override fun get(i: Int): ParseTree {
-            Objects.checkIndex(i, 0)
+        override fun get(index: Int): ParseTree {
+            Objects.checkIndex(index, 0)
             throw IllegalStateException()
         }
 
         override val size: Int
-            get()=0
+            get() = 0
 
-        override fun equals(o: Any?): Boolean {
-            if (o !is ParsesFailureResult) return false
-            if (!super.equals(o)) return false
-            return parseFailure == o.parseFailure
+        override fun equals(other: Any?): Boolean {
+            if (other !is ParsesFailureResult) return false
+            if (!super.equals(other)) return false
+            return parseFailure == other.parseFailure
         }
 
         override fun hashCode(): Int {

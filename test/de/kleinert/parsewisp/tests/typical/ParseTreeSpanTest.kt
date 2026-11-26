@@ -4,7 +4,6 @@ import de.kleinert.parsewisp.Parsewisp.parser
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.function.Executable
 
 internal class ParseTreeSpanTest {
     @Test
@@ -20,7 +19,7 @@ internal class ParseTreeSpanTest {
         Assertions.assertEquals(4, tree.spanEndExclusive)
 
         val spannedStringInTree = tree.containedString("bAan")
-        Assertions.assertTrue(spannedStringInTree.isPresent())
+        Assertions.assertTrue(spannedStringInTree.isPresent)
         Assertions.assertEquals("bAan", spannedStringInTree.get())
     }
 
@@ -35,7 +34,7 @@ internal class ParseTreeSpanTest {
         Assertions.assertEquals(3, subTree.spanEndExclusive)
 
         val spannedStringInSubTree = subTree.containedString("bAan")
-        Assertions.assertTrue(spannedStringInSubTree.isPresent())
+        Assertions.assertTrue(spannedStringInSubTree.isPresent)
         Assertions.assertEquals("Aa", spannedStringInSubTree.get())
     }
 
@@ -54,7 +53,7 @@ internal class ParseTreeSpanTest {
 
         Assertions.assertTrue(tree.spanStart < 0)
         Assertions.assertTrue(tree.spanEndExclusive < 0)
-        Assertions.assertTrue(tree.containedString("abcdef").isEmpty())
+        Assertions.assertTrue(tree.containedString("abcdef").isEmpty)
     }
 
     @Test
@@ -63,7 +62,7 @@ internal class ParseTreeSpanTest {
         val tree = p.parse("bAan").castToParseSuccess()
         Assertions.assertThrows<IllegalArgumentException?>(
             IllegalArgumentException::class.java,
-            Executable { tree.containedString("ban") })
+            { tree.containedString("ban") })
     }
 
     @Test

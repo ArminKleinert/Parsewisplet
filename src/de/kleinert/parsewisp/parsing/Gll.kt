@@ -20,7 +20,6 @@ import de.kleinert.parsewisp.trampoline.ListenerNode
 import de.kleinert.parsewisp.trampoline.MsgCacheKey
 import de.kleinert.parsewisp.trampoline.Tramp
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.function.IntFunction
 
 /**
  * This class provides the general parsing algorithms.
@@ -56,17 +55,15 @@ class Gll private constructor(
     private fun listenerExists_Q(
         nodeKey: ListenerKey
     ): Boolean {
-        val node = tramp.getNode(nodeKey)
-        if (node == null) return false
-        return !node.listeners.isEmpty()
+        val node = tramp.getNode(nodeKey) ?: return false
+        return node.listeners.isNotEmpty()
     }
 
     private fun fullListenerExists_Q(
         nodeKey: ListenerKey
     ): Boolean {
-        val node = tramp.getNode(nodeKey)
-        if (node == null) return false
-        return !node.listeners.isEmpty() || !node.fullListeners.isEmpty()
+        val node = tramp.getNode(nodeKey) ?: return false
+        return node.listeners.isNotEmpty() || node.fullListeners.isNotEmpty()
     }
 
     fun pushNegativeListener(
@@ -84,7 +81,7 @@ class Gll private constructor(
         val k = MsgCacheKey(i, listener)
         val c = tramp.getFromMsgCache(k, 0)
         val f = Procedure { listener.execute(result) }
-        if (c > tramp.getGeneration1()) {
+        if (c > tramp.generation) {
             tramp.addToNextStack(f)
         } else {
             tramp.addToStack(f)
@@ -97,7 +94,7 @@ class Gll private constructor(
     }
 
     private fun step() {
-        val top = tramp.getStack1().get(tramp.getStack1().size - 1)
+        val top = tramp.stack[tramp.stack.size - 1]
         tramp.popStack()
         top.execute()
     }
@@ -106,7 +103,7 @@ class Gll private constructor(
         maxResults: Int
     ): LazyResultList {
         val foundResult = AtomicBoolean(false)
-        return LazyResultList(IntFunction { i: Int -> run(foundResult) }, maxResults)
+        return LazyResultList({ run(foundResult) }, maxResults)
     }
 
     private fun run(
@@ -121,13 +118,13 @@ class Gll private constructor(
                 foundResult.set(true)
                 return resultTree
             }
-            val stack: MutableList<Procedure> = tramp.getStack1()
-            if (!stack.isEmpty()) {
+            val stack = tramp.stack
+            if (stack.isNotEmpty()) {
                 step()
                 continue  // Take it to the top.
             }
 
-            val negativeListeners = tramp.getNegativeListeners1()
+            val negativeListeners = tramp.negativeListeners
             if (!negativeListeners.isEmpty()) {
                 val latestIndexAndNegListeners = negativeListeners.lastEntry()
                 val latestNegListeners = latestIndexAndNegListeners.value
@@ -136,7 +133,7 @@ class Gll private constructor(
                 latestListener.execute()
 
                 if (latestNegListeners.isEmpty()) {
-                    tramp.getNegativeListeners1().remove(latestIndexAndNegListeners.key)
+                    tramp.negativeListeners.remove(latestIndexAndNegListeners.key)
                 }
 
                 continue  // Take it to the top.
@@ -165,7 +162,7 @@ class Gll private constructor(
             pushMessage(listener, fullResult)
         }
         if (!listenerAlreadyExists) {
-            pushStack(Procedure { nodeKey.rule.parse(nodeKey.index, this) })
+            pushStack({ nodeKey.rule.parse(nodeKey.index, this) })
         }
     }
 
@@ -181,7 +178,7 @@ class Gll private constructor(
             pushMessage(listener, fullResult)
         }
         if (!fullListenerAlreadyExists) {
-            pushStack(Procedure { nodeKey.rule.fullParse(nodeKey.index, this) })
+            pushStack({ nodeKey.rule.fullParse(nodeKey.index, this) })
         }
     }
 
@@ -202,20 +199,18 @@ class Gll private constructor(
             result = result.reset()
         }
         if (rule.reduction.getReductionType1() != ReductionType.Type.INITIAL) {
-            val tree: ParseTree = ParseTree.Companion.create(
+            val tree = ParseTree.create(
                 rule.reduction.getKey1(), result.result,
                 nodeKey.index, result.index()
             )
-            result = ParseMessage.Companion.create(result.index(), tree)
+            result = ParseMessage.create(result.index(), tree)
         }
 
-        val reachedEndOfInput = tramp.getText1().length == result.index()
-
-        val resultExisted: Boolean
-        if (reachedEndOfInput) {
-            resultExisted = node.fullResults.add(result)
+        val reachedEndOfInput = tramp.text.length == result.index()
+        val resultExisted: Boolean = if (reachedEndOfInput) {
+            node.fullResults.add(result)
         } else {
-            resultExisted = node.results.add(result)
+            node.results.add(result)
         }
         if (!resultExisted) {
             return
@@ -240,9 +235,9 @@ class Gll private constructor(
         partial: Boolean
     ) {
         if (partial) {
-            pushListener(ListenerKey(0, rule), Listener { success: ParseMessage -> tramp.success = success })
+            pushListener(ListenerKey(0, rule), { success: ParseMessage -> tramp.success = success })
         } else {
-            pushFullListener(ListenerKey(0, rule), Listener { success: ParseMessage -> tramp.success = success })
+            pushFullListener(ListenerKey(0, rule), { success: ParseMessage -> tramp.success = success })
         }
     }
 
@@ -251,7 +246,7 @@ class Gll private constructor(
         result: ParseFailureNode,
         end: Int
     ) {
-        pushResultHelper(nodeKey, ParseMessage.Companion.create(end, result))
+        pushResultHelper(nodeKey, ParseMessage.create(end, result))
     }
 
     fun pushSuccessMessage(
@@ -259,7 +254,7 @@ class Gll private constructor(
         result: String,
         end: Int
     ) {
-        val aps: ParseMessage = ParseMessage.Companion.create(end, result)
+        val aps = ParseMessage.create(end, result)
         pushResultHelper(nodeKey, aps)
     }
 
@@ -267,7 +262,7 @@ class Gll private constructor(
         nodeKey: ListenerKey,
         end: Int
     ) {
-        pushResultHelper(nodeKey, ParseMessage.Companion.create(end))
+        pushResultHelper(nodeKey, ParseMessage.create(end))
     }
 
     fun pushSuccessMessage(
@@ -275,7 +270,7 @@ class Gll private constructor(
         result: FlatResultSeq,
         end: Int
     ) {
-        val aps: ParseMessage = ParseMessage.Companion.create(end, result)
+        val aps: ParseMessage = ParseMessage.create(end, result)
         pushResultHelper(nodeKey, aps)
     }
 
@@ -295,16 +290,16 @@ class Gll private constructor(
         tramp.setFailure(
             FailureUtil.modifyFailureByIndex(
                 tramp.getFailure(),
-                ParseFailureReason.Companion.creatureFailReason(rule, untilEnd, this.grammarPrinter),
+                ParseFailureReason.creatureFailReason(rule, untilEnd, this.grammarPrinter),
                 index
             )
         )
-        if (index == tramp.getFailIndex1()) {
-            val subSeq = tramp.getText1().substring(index)
-            val textLen = tramp.getText1().length
+        if (index == tramp.failIndex) {
+            val subSeq = tramp.text.substring(index)
+            val textLen = tramp.text.length
             pushErrorMessage(
                 nodeKey,
-                buildFailureNode(sym("failure"), subSeq, index, tramp.getText1().length),
+                buildFailureNode(sym("failure"), subSeq, index, tramp.text.length),
                 textLen
             )
         }
@@ -325,7 +320,7 @@ class Gll private constructor(
         return Listener { result: ParseMessage? -> pushResultHelper(nodeKey, result!!) }
     }
 
-    private val instanceIdForDebug: String?
+    private val instanceIdForDebug: String
         get() = this.toString()
 
     companion object {
@@ -340,15 +335,15 @@ class Gll private constructor(
             resultLimit: Int
         ): ParsesResult {
             val tramp = Tramp(grammar, text, 0)
-            val parser: NonTerminal = NonTerminal.Companion.create(start)
+            val parser: NonTerminal = NonTerminal.create(start)
             val gll = Gll(tramp, iterativeDeepening, printer, stopRepetitionsIfInfiniteRepetitionHappens)
             gll.startParser(tramp, parser, partial)
             val allParses = gll.run(resultLimit)
-            return ParsesResult.Companion.make(allParses)
+            return ParsesResult.make(allParses)
         }
 
         /**
-         * This method should not be called directly. Use [Parser.parses] or [Parser.parses] instead.
+         * This method should not be called directly. Use [de.kleinert.parsewisp.parser.Parser.parses] or [de.kleinert.parsewisp.parser.Parser.parses] instead.
          *
          * @param grammar                    The grammar.
          * @param start                      The name of the start production.
@@ -360,8 +355,8 @@ class Gll private constructor(
          * @param stopEarlyOnEmptyRepetition Whether to end resolution of [VariableRepetitionRule] parses early when the rule first successfully parses an empty string.
          * @param resultLimit                Maximum number of results. See [ParsingOptions.resultLimit].
          * @return The parse forest.
-         * @see Parser.parses
-         * @see Parser.parses
+         * @see de.kleinert.parsewisp.parser.Parser.parses
+         * @see de.kleinert.parsewisp.parser.Parser.parses
          * @since 0.9.7
          */
         fun parses(
@@ -376,20 +371,20 @@ class Gll private constructor(
             resultLimit: Int
         ): ParsesResult {
             val tramp = Tramp(grammar, text)
-            val parser: NonTerminal = NonTerminal.Companion.create(start)
+            val parser: NonTerminal = NonTerminal.create(start)
             val gll = Gll(tramp, iterativeDeepening, printer, stopEarlyOnEmptyRepetition)
             gll.startParser(tramp, parser, partial)
             val allParses = gll.run(resultLimit)
             if (errorIfEmpty && allParses.isEmpty()) {
                 checkNotNull(tramp.getFailure()) { "Parsing failed. Perhaps the grammar was non-productive?" }
                 val apf = FailureUtil.augmentFailure(tramp.getFailure()!!, text)
-                return ParsesResult.Companion.make(apf)
+                return ParsesResult.make(apf)
             }
-            return ParsesResult.Companion.make(allParses)
+            return ParsesResult.make(allParses)
         }
 
         /**
-         * This method should not be called directly. Use [Parser.parse] or [Parser.parse] instead.
+         * This method should not be called directly. Use [de.kleinert.parsewisp.parser.Parser.parse] or [de.kleinert.parsewisp.parser.Parser.parse] instead.
          *
          * @param grammar            The grammar.
          * @param start              The name of the start production.
@@ -398,8 +393,8 @@ class Gll private constructor(
          * @param iterativeDeepening Iteratively deepens the evaluation of [RegexTerm.parse].
          * @param printer            The printer used for the parser. In the current version, it's used to format failure info if parsing fails.
          * @return The parse tree or failure.
-         * @see Parser.parse
-         * @see Parser.parse
+         * @see de.kleinert.parsewisp.parser.Parser.parse
+         * @see de.kleinert.parsewisp.parser.Parser.parse
          * @since 0.9.7
          */
         fun parse(
@@ -413,20 +408,20 @@ class Gll private constructor(
             val tramp = Tramp(grammar, text)
             val gll = Gll(
                 tramp, iterativeDeepening, printer,
-                ParsingOptions.Companion.DEFAULT_STOP_EARLY_ON_EMPTY_REPETITION
+                ParsingOptions.DEFAULT_STOP_EARLY_ON_EMPTY_REPETITION
             )
-            val parser: NonTerminal = NonTerminal.Companion.create(start)
+            val parser: NonTerminal = NonTerminal.create(start)
             gll.startParser(tramp, parser, partial)
             val allParses = gll.run(1)
             if (allParses.isEmpty()) {
                 checkNotNull(tramp.getFailure()) { "Parsing failed. Perhaps the grammar was non-productive?" }
-                return ParseResult.Companion.make(FailureUtil.augmentFailure(tramp.getFailure()!!, text))
+                return ParseResult.make(FailureUtil.augmentFailure(tramp.getFailure()!!, text))
             }
             return ParseResult.make(allParses.first())
         }
 
         /**
-         * This method should not be called directly. Use [Parser.parses] with [ParsingOptions.embedFailureInParseTree] set to true instead.
+         * This method should not be called directly. Use [de.kleinert.parsewisp.parser.Parser.parses] with [ParsingOptions.embedFailureInParseTree] set to true instead.
          *
          * @param grammar                    The grammar.
          * @param start                      The name of the start production.
@@ -437,7 +432,7 @@ class Gll private constructor(
          * @param stopEarlyOnEmptyRepetition Whether to end resolution of [VariableRepetitionRule] parses early when the rule first successfully parses an empty string.
          * @param resultLimit                Maximum number of results. See [ParsingOptions.resultLimit].
          * @return The parse forest.
-         * @see Parser.parses
+         * @see de.kleinert.parsewisp.parser.Parser.parses
          * @see ParsingOptions.embedFailureInParseTree
          * @since 0.9.7
          */
@@ -455,7 +450,7 @@ class Gll private constructor(
                 grammar, start, text, partial, iterativeDeepening, false, printer,
                 stopEarlyOnEmptyRepetition, resultLimit
             )
-            if (!allParses.castToParsesSuccess().isEmpty()) return ParsesResult.Companion.make(allParses)
+            if (!allParses.castToParsesSuccess().isEmpty()) return ParsesResult.make(allParses)
             return parsesEmbedFailureAfterFail(
                 grammar, start, text, partial, iterativeDeepening, printer,
                 stopEarlyOnEmptyRepetition, resultLimit
@@ -472,9 +467,9 @@ class Gll private constructor(
             printer: GrammarPrinter
         ): ParseResult {
             val tramp = Tramp(grammar, text, failIndex)
-            val parser: NonTerminal = NonTerminal.Companion.create(start)
+            val parser: NonTerminal = NonTerminal.create(start)
             val gll =
-                Gll(tramp, iterativeDeepening, printer, ParsingOptions.Companion.DEFAULT_STOP_EARLY_ON_EMPTY_REPETITION)
+                Gll(tramp, iterativeDeepening, printer, ParsingOptions.DEFAULT_STOP_EARLY_ON_EMPTY_REPETITION)
             gll.startParser(tramp, parser, partial)
             val allParses = gll.run(1)
             if (!allParses.isEmpty()) return ParseResult.make(allParses.first())
@@ -482,7 +477,7 @@ class Gll private constructor(
         }
 
         /**
-         * This method should not be called directly. Use [Parser.parse] with [ParsingOptions.embedFailureInParseTree] set to true instead.
+         * This method should not be called directly. Use [de.kleinert.parsewisp.parser.Parser.parse] with [ParsingOptions.embedFailureInParseTree] set to true instead.
          *
          * @param grammar            The grammar.
          * @param start              The name of the start production.
@@ -491,7 +486,7 @@ class Gll private constructor(
          * @param iterativeDeepening Iteratively deepens the evaluation of [RegexTerm.parse].
          * @param printer            The printer used for the parser. In the current version, it's used to format failure info if parsing fails.
          * @return The parse tree or failure.
-         * @see Parser.parse
+         * @see de.kleinert.parsewisp.parser.Parser.parse
          * @see ParsingOptions.embedFailureInParseTree
          * @since 0.9.7
          */

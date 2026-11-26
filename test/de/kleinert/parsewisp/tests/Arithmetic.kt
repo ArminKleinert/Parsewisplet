@@ -231,7 +231,6 @@ object Arithmetic {
      *
      * @param args Ignored.
      */
-    @JvmStatic
     fun main(args: Array<String>) {
         println("1:  " + state1())
         println("2:  " + state2())

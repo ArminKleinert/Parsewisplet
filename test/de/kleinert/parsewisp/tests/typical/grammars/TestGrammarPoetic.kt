@@ -1,8 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.grammars
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parser.Parser
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.result.ParseResult
@@ -11,8 +10,7 @@ import org.junit.jupiter.api.Test
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.*
-import java.util.function.Function
+import kotlin.random.Random
 
 /**
  * Test(s) for the Poetic (esolang) grammar.
@@ -24,7 +22,7 @@ import java.util.function.Function
 internal class TestGrammarPoetic {
     private fun parser(): Parser {
         try {
-            return parser(
+            return Parsewisp.parser(
                 Files.readString(Path.of("testres/grammars/poetic.grammar")),
                 ParserCreationOptions.default
             )
@@ -34,25 +32,25 @@ internal class TestGrammarPoetic {
     }
 
     private fun transform(pt: ParseResult): String {
-        val m: MutableMap<Sym, Function<List<Any?>, Any?>> = HashMap()
-        m.put(sym("S"), Function { l -> l })
-        m.put(sym("i1"), Function { '[' }) // 1 corresponds to BF's '[' instruction
-        m.put(sym("i2"), Function { ']' }) // 2 corresponds to BF's ']' instruction
-        m.put(sym("i3"), Function { '+' }) // 3 corresponds to BF's '+' instruction
-        m.put(sym("i4"), Function { '-' }) // 4 corresponds to BF's '-' instruction
-        m.put(sym("i5"), Function { '>' }) // 5 corresponds to BF's '>' instruction
-        m.put(sym("i6"), Function { '<' }) // 6 corresponds to BF's '<' instruction
-        m.put(sym("i7"), Function { '.' }) // 7 corresponds to BF's '.' instruction
-        m.put(sym("i8"), Function { ',' }) // 8 corresponds to BF's ',' instruction
+        val m: MutableMap<Sym, (List<Any?>)-> Any?> = HashMap()
+        m[Sym.sym("S")] = { l -> l }
+        m[Sym.sym("i1")] = { '[' } // 1 corresponds to BF's '[' instruction
+        m[Sym.sym("i2")] = { ']' } // 2 corresponds to BF's ']' instruction
+        m[Sym.sym("i3")] = { '+' } // 3 corresponds to BF's '+' instruction
+        m[Sym.sym("i4")] = { '-' } // 4 corresponds to BF's '-' instruction
+        m[Sym.sym("i5")] = { '>' } // 5 corresponds to BF's '>' instruction
+        m[Sym.sym("i6")] = { '<' } // 6 corresponds to BF's '<' instruction
+        m[Sym.sym("i7")] = { '.' } // 7 corresponds to BF's '.' instruction
+        m[Sym.sym("i8")] = { ',' } // 8 corresponds to BF's ',' instruction
 
         // 9 fills the current cell with a random number in 0..255
-        m.put(sym("i9"), Function { "[-]" + "+".repeat(Random().nextInt(0, 255)) })
+        m[Sym.sym("i9")] = { "[-]" + "+".repeat(Random.nextInt(0, 255)) }
 
         // 10 terminates the program under certain conditions. I will ignore this.
-        m.put(sym("i10"), Function { '_' })
+        m[Sym.sym("i10")] = { '_' }
 
         // Anything over 10 writes the number into the current cell. This is implemented as setting the cell to 0 and then mindlessly incrementing.
-        m[sym("imore")] = Function { l -> "[-]" + "+".repeat(l!!.size) }
+        m[Sym.sym("imore")] =  { l -> "[-]" + "+".repeat(l.size) }
 
         return (Transform.transform(pt, m) as List<*>)
             .joinToString { obj: Any? -> obj.toString() }

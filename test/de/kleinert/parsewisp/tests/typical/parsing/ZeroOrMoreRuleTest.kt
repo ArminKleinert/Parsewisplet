@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
@@ -43,17 +43,17 @@ internal class ZeroOrMoreRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), string_a()))))
+        val p = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
 
-        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), rep_a(), string_a()))))
+        val pN = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), rep_a(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a", "a", "a"), pN.parse("aaaaa"))
 
-        val pM = parser(
+        val pM = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(listOf(rep_a(), rep_a(), rep_a(), rep_a(), rep_a(), string_a()))
             )
@@ -65,7 +65,7 @@ internal class ZeroOrMoreRuleTest {
     // @Test void parseError() {}
     @Test
     fun fullParseSingle() {
-        val p = parser(Gr.grammar("S", rep_a()))
+        val p = Parsewisp.parser(Gr.grammar("S", rep_a()))
         Assertions.assertEquals(PT.create("S"), p.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), p.parse("aaa"))
@@ -73,12 +73,12 @@ internal class ZeroOrMoreRuleTest {
 
     @Test
     fun fullParseConcat() {
-        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), rep_a()))))
+        val pN = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), rep_a()))))
         Assertions.assertEquals(PT.create("S", "a"), pN.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
 
-        val pM = parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), rep_a()))))
+        val pM = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(rep_a(), rep_a()))))
         Assertions.assertEquals(PT.create("S"), pM.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), pM.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), pM.parse("aa"))
@@ -87,7 +87,7 @@ internal class ZeroOrMoreRuleTest {
 
     @Test
     fun fullParseError() {
-        val p = parser(Gr.grammar("S", rep_a()))
+        val p = Parsewisp.parser(Gr.grammar("S", rep_a()))
         Assertions.assertTrue(p.parse("b").isFailure)
     }
 
@@ -121,7 +121,7 @@ internal class ZeroOrMoreRuleTest {
         val r = ZeroOrMoreRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(sym("A"))) as ZeroOrMoreRule
+            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as ZeroOrMoreRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -161,21 +161,21 @@ internal class ZeroOrMoreRuleTest {
     @Test
     fun withHideTagParse() {
         // By default, not hidden in output
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar("S", rep_a())
         )
         Assertions.assertEquals(PT.create("S"), pDefault.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), pDefault.parse("a"))
 
         // With explicit show, also not hidden
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar("S", rep_a().withHideTag(false))
         )
         Assertions.assertEquals(PT.create("S"), pShow.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), pShow.parse("a"))
 
         // With explicit hide
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar("S", rep_a().withHideTag(true))
         )
         Assertions.assertEquals(PT.create("S"), pHide.parse(""))
@@ -191,10 +191,10 @@ internal class ZeroOrMoreRuleTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", rep_a()
             )
         )
@@ -205,10 +205,10 @@ internal class ZeroOrMoreRuleTest {
     @Test
     fun withReductionMergeUp() {
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", rep_a().withReduction(ReductionType.merging())
             )
         )
@@ -219,21 +219,21 @@ internal class ZeroOrMoreRuleTest {
     @Test
     fun withReductionTaggedTree() {
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", rep_a().withReduction(ReductionType.taggedTree(sym("B")))
+                "S", rep_a().withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", rep_a().withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", rep_a().withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -243,13 +243,13 @@ internal class ZeroOrMoreRuleTest {
     @Test
     fun withReductionNotDirectRhs() {
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        rep_a().withReduction(ReductionType.taggedTree(sym("B"))),
+                        rep_a().withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         OptionalRule.create(StringTerm.create("b", false))
                     )
                 )

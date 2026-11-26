@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.error.ParserCreationFailure
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parser_options.ParsingOptions
@@ -13,7 +13,7 @@ internal class VariableRepetitionTest {
     @Test
     fun parseRepetitionMinimumOnly() {
         run {
-            val p = parser("S = 'a' {2,}")
+            val p = Parsewisp.parser("S = 'a' {2,}")
             Assertions.assertTrue(p.parse("").isFailure)
             Assertions.assertTrue(p.parse("a").isFailure)
             Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
@@ -26,7 +26,7 @@ internal class VariableRepetitionTest {
     @Test
     fun parseRepetitionMaximumOnly() {
         run {
-            val p = parser("S = 'a' {,2}")
+            val p = Parsewisp.parser("S = 'a' {,2}")
             Assertions.assertEquals(PT.create("S"), p.parse(""))
             Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
             Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
@@ -35,7 +35,7 @@ internal class VariableRepetitionTest {
             Assertions.assertTrue(p.parse("aaaaa").isFailure)
         }
         run {
-            val p = parser("S = 'a' {,0}")
+            val p = Parsewisp.parser("S = 'a' {,0}")
             Assertions.assertEquals(PT.create("S"), p.parse(""))
             Assertions.assertTrue(p.parse("a").isFailure)
             Assertions.assertTrue(p.parse("aa").isFailure)
@@ -48,7 +48,7 @@ internal class VariableRepetitionTest {
     @Test
     fun parseRepetitionMinMax() {
         run {
-            val p = parser("S = 'a' {2,4}")
+            val p = Parsewisp.parser("S = 'a' {2,4}")
             Assertions.assertTrue(p.parse("").isFailure)
             Assertions.assertTrue(p.parse("a").isFailure)
             Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
@@ -57,7 +57,7 @@ internal class VariableRepetitionTest {
             Assertions.assertTrue(p.parse("aaaaa").isFailure)
         }
         run {
-            val p = parser("S = 'a' {0,0}")
+            val p = Parsewisp.parser("S = 'a' {0,0}")
             Assertions.assertEquals(PT.create("S"), p.parse(""))
             Assertions.assertTrue(p.parse("a").isFailure)
             Assertions.assertTrue(p.parse("aa").isFailure)
@@ -69,7 +69,7 @@ internal class VariableRepetitionTest {
 
     @Test
     fun parseRepetitionExact() {
-        val p = parser("S = 'a' {2}")
+        val p = Parsewisp.parser("S = 'a' {2}")
         Assertions.assertTrue(p.parse("").isFailure)
         Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
@@ -91,7 +91,7 @@ internal class VariableRepetitionTest {
         val partialOpts = ParsingOptions.default.withPartial(true)
 
         val creationOpts = ParserCreationOptions.default
-        val repeated_a = parser(
+        val repeated_a = Parsewisp.parser(
             """
                         S = 'a' 'a' {0,6}
                         
@@ -115,7 +115,7 @@ internal class VariableRepetitionTest {
         val partialOpts = ParsingOptions.default.withPartial(true)
 
         val creationOpts = ParserCreationOptions.default
-        val repeated_a = parser(
+        val repeated_a = Parsewisp.parser(
             """
                         S = 'a' {1,6}
                         
@@ -130,23 +130,23 @@ internal class VariableRepetitionTest {
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = -1*2") })
+            { Parsewisp.parser("S = -1*2") })
         // Negative maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = *-1") })
+            { Parsewisp.parser("S = *-1") })
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = -1*") })
+            { Parsewisp.parser("S = -1*") })
         // Negative exact
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = -1") })
+            { Parsewisp.parser("S = -1") })
         // Minimum greater than maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = 4*2") })
+            { Parsewisp.parser("S = 4*2") })
     }
 
     @Test
@@ -154,22 +154,22 @@ internal class VariableRepetitionTest {
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = -1*2 'a'") })
+            { Parsewisp.parser("S = -1*2 'a'") })
         // Negative maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = *-1 'a'") })
+            { Parsewisp.parser("S = *-1 'a'") })
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = -1* 'a'") })
+            { Parsewisp.parser("S = -1* 'a'") })
         // Negative exact
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = -1 'a'") })
+            { Parsewisp.parser("S = -1 'a'") })
         // Minimum greater than maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            { parser("S = 4*2 'a'") })
+            { Parsewisp.parser("S = 4*2 'a'") })
     }
 }

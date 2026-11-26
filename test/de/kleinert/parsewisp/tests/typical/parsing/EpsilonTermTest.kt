@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
@@ -21,14 +21,14 @@ internal class EpsilonTermTest {
 
     @Test
     fun parse() {
-        val p1 = parser(
+        val p1 = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.createDirect(listOf(EpsilonTerm.default, string_a()))
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), p1.parse("a"))
 
-        val p2 = parser(
+        val p2 = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.createDirect(listOf(EpsilonTerm.default, EpsilonTerm.default))
             )
@@ -40,20 +40,20 @@ internal class EpsilonTermTest {
     // @Test void parseError() {}
     @Test
     fun fullParseSingle() {
-        val p = parser(Gr.grammar("S", EpsilonTerm.default))
+        val p = Parsewisp.parser(Gr.grammar("S", EpsilonTerm.default))
         Assertions.assertEquals(PT.create("S"), p.parse(""))
     }
 
     @Test
     fun fullParseConcat() {
-        val pE = parser(
+        val pE = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.createDirect(listOf(EpsilonTerm.default, EpsilonTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), pE.parse(""))
 
-        val pA = parser(
+        val pA = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.createDirect(listOf(string_a(), EpsilonTerm.default))
             )
@@ -63,7 +63,7 @@ internal class EpsilonTermTest {
 
     @Test
     fun fullParseError() {
-        val p = parser(Gr.grammar("S", EpsilonTerm.default))
+        val p = Parsewisp.parser(Gr.grammar("S", EpsilonTerm.default))
         Assertions.assertTrue(p.parse("a").isFailure)
     }
 
@@ -94,15 +94,15 @@ internal class EpsilonTermTest {
     @Test
     fun withHideTagParse() {
         // By default, not hidden in output, but this type adds nothing to the tree
-        val pDefault = parser(Gr.grammar("S", EpsilonTerm.default))
+        val pDefault = Parsewisp.parser(Gr.grammar("S", EpsilonTerm.default))
         Assertions.assertEquals(PT.create("S"), pDefault.parse(""))
 
         // With explicit show, also not hidden, but this type adds nothing to the tree
-        val pShow = parser(Gr.grammar("S", EpsilonTerm.default.withHideTag(false)))
+        val pShow = Parsewisp.parser(Gr.grammar("S", EpsilonTerm.default.withHideTag(false)))
         Assertions.assertEquals(PT.create("S"), pShow.parse(""))
 
         // With explicit hide
-        val pHide = parser(Gr.grammar("S", EpsilonTerm.default.withHideTag(true)))
+        val pHide = Parsewisp.parser(Gr.grammar("S", EpsilonTerm.default.withHideTag(true)))
         Assertions.assertEquals(PT.create("S"), pHide.parse(""))
     }
 
@@ -115,10 +115,10 @@ internal class EpsilonTermTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", EpsilonTerm.default
             )
         )
@@ -128,10 +128,10 @@ internal class EpsilonTermTest {
     @Test
     fun withReductionMergeUp() {
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", EpsilonTerm.default.withReduction(ReductionType.merging())
             )
         )
@@ -141,20 +141,20 @@ internal class EpsilonTermTest {
     @Test
     fun withReductionTaggedTree() {
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", EpsilonTerm.default.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", EpsilonTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", EpsilonTerm.default.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", EpsilonTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -163,13 +163,13 @@ internal class EpsilonTermTest {
     @Test
     fun withReductionNotDirectRhs() {
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        EpsilonTerm.default.withReduction(ReductionType.taggedTree(sym("B"))),
+                        EpsilonTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         EpsilonTerm.default
                     )
                 )

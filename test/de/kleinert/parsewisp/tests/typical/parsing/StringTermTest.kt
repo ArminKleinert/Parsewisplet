@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.StringTerm
@@ -127,12 +127,12 @@ internal class StringTermTest {
 
         // Case-sensitive.
         // Will use parse(...) for "a" and fullParse(...) for "b"
-        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a, simple_b))))
+        val p = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a, simple_b))))
         Assertions.assertEquals(PT.create("S", "a", "b"), p.parse("ab"))
 
         // Case-insensitive.
         // Will use parse(...) for "a" and fullParse(...) for "b"
-        val pCI = parser(
+        val pCI = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf(
@@ -154,7 +154,7 @@ internal class StringTermTest {
         val simple_b = StringTerm.createDirect("b", false)
 
         // Will use parse(...) for "a" and fullParse(...) for "b"
-        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a, simple_b))))
+        val p = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(simple_a, simple_b))))
         Assertions.assertTrue(p.parse("b").isFailure)
     }
 
@@ -163,11 +163,11 @@ internal class StringTermTest {
         val simple_a = StringTerm.createDirect("a", false)
 
         // Case-sensitive.
-        val p = parser(Gr.grammar("S", simple_a))
+        val p = Parsewisp.parser(Gr.grammar("S", simple_a))
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
 
         // Case-insensitive.
-        val pCI = parser(Gr.grammar("S", StringTerm.createDirect("a", true)))
+        val pCI = Parsewisp.parser(Gr.grammar("S", StringTerm.createDirect("a", true)))
         Assertions.assertEquals(PT.create("S", "a"), pCI.parse("a"))
         Assertions.assertEquals(PT.create("S", "a"), pCI.parse("A"))
     }
@@ -177,7 +177,7 @@ internal class StringTermTest {
         val simple_a = StringTerm.createDirect("a", false)
         val simple_b = StringTerm.createDirect("b", false)
 
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(listOf(simple_a, simple_b))
             )
@@ -189,7 +189,7 @@ internal class StringTermTest {
     fun fullParseError() {
         val simple_a = StringTerm.createDirect("a", false)
 
-        val p = parser(Gr.grammar("S", simple_a)) // Will use parse(...) for "a" and fullParse(...) for "b"
+        val p = Parsewisp.parser(Gr.grammar("S", simple_a)) // Will use parse(...) for "a" and fullParse(...) for "b"
         Assertions.assertTrue(p.parse("").isFailure)
     }
 
@@ -240,19 +240,19 @@ internal class StringTermTest {
         val simple_a = StringTerm.createDirect("a", false)
 
         // By default, not hidden in output
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar("S", simple_a)
         )
         Assertions.assertEquals(PT.create("S", "a"), pDefault.parse("a"))
 
         // With explicit show, also not hidden
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar("S", simple_a.withHideTag(false))
         )
         Assertions.assertEquals(PT.create("S", "a"), pShow.parse("a"))
 
         // With explicit hide
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar("S", simple_a.withHideTag(true))
         )
         Assertions.assertEquals(PT.create("S"), pHide.parse("a"))
@@ -270,10 +270,10 @@ internal class StringTermTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", simple_a
             )
         )
@@ -285,10 +285,10 @@ internal class StringTermTest {
         val simple_a = StringTerm.createDirect("a", false)
 
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", simple_a.withReduction(ReductionType.merging())
             )
         )
@@ -300,20 +300,20 @@ internal class StringTermTest {
         val simple_a = StringTerm.createDirect("a", false)
 
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simple_a.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", simple_a.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", simple_a.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", simple_a.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
@@ -324,13 +324,13 @@ internal class StringTermTest {
         val simple_a = StringTerm.createDirect("a", false)
 
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simple_a.withReduction(ReductionType.taggedTree(sym("B"))),
+                        simple_a.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         StringTerm.createDirect("b", false)
                     )
                 )

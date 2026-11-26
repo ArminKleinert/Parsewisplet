@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 internal class OrderedChoiceRuleTest {
     @Test
     fun orderWhenEverythingIsEps() {
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                 S = A / B / C / D / E
                 A = ε

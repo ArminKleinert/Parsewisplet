@@ -1,14 +1,13 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.error.IllegalGrammarException
 import de.kleinert.parsewisp.error.ParserCreationFailure
 import de.kleinert.parsewisp.grammar.GrammarPrinter
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.function.Executable
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
@@ -16,8 +15,8 @@ import java.nio.file.Files
 internal class ParsewispParserCreationTest {
     @Test
     fun parserFromString() {
-        val p = parser("S = '1'")
-        val p2 = parser("S = '1'")
+        val p = Parsewisp.parser("S = '1'")
+        val p2 = Parsewisp.parser("S = '1'")
         Assertions.assertEquals(p.grammar, p2.grammar)
     }
 
@@ -26,15 +25,15 @@ internal class ParsewispParserCreationTest {
         try {
             val text = "aaaaabbbaaaabb"
             val grammarFile = File("testres/grammars/as_and_bs.grammar")
-            val p = parser(Files.readString(grammarFile.toPath()))
+            val p = Parsewisp.parser(Files.readString(grammarFile.toPath()))
             val grammarText = Files.readString(grammarFile.toPath())
 
             Assertions.assertEquals(
-                parser(grammarText).parse(text),
+                Parsewisp.parser(grammarText).parse(text),
                 p.parse(text)
             )
             Assertions.assertEquals(
-                parser(grammarText).grammar,
+                Parsewisp.parser(grammarText).grammar,
                 p.grammar
             )
         } catch (e: IOException) {
@@ -43,10 +42,10 @@ internal class ParsewispParserCreationTest {
 
         try {
             val grammarFile = File("testres/grammars/as_and_bs.grammar")
-            val p = parser(Files.readString(grammarFile.toPath()))
+            val p = Parsewisp.parser(Files.readString(grammarFile.toPath()))
             Assertions.assertEquals(
                 p.grammar,
-                parser(Files.readString(grammarFile.toPath())).grammar
+                Parsewisp.parser(Files.readString(grammarFile.toPath())).grammar
             )
         } catch (e: IOException) {
             throw RuntimeException(e)
@@ -54,11 +53,11 @@ internal class ParsewispParserCreationTest {
 
         try {
             val grammarFile = File("testres/grammars/c99.grammar")
-            val pFromString = parser(
+            val pFromString = Parsewisp.parser(
                 Files.readString(grammarFile.toPath()),
                 ParserCreationOptions.newWithStandardWhitespace()
             )
-            val pFromFile = parser(
+            val pFromFile = Parsewisp.parser(
                 Files.readString(grammarFile.toPath()),
                 ParserCreationOptions.newWithStandardWhitespace()
             )
@@ -88,7 +87,7 @@ internal class ParsewispParserCreationTest {
         val grammar = "S := A"
         Assertions.assertThrows<IllegalGrammarException?>(
             IllegalGrammarException::class.java,
-            Executable { parser(grammar) })
+            { Parsewisp.parser(grammar) })
     }
 
     @Test
@@ -97,7 +96,7 @@ internal class ParsewispParserCreationTest {
         val grammar = "S := S"
         Assertions.assertThrows<IllegalGrammarException?>(
             IllegalGrammarException::class.java,
-            Executable { parser(grammar) })
+            { Parsewisp.parser(grammar) })
     }
 
     @Test
@@ -105,13 +104,13 @@ internal class ParsewispParserCreationTest {
         // Error: Starting symbol not in grammar
         val grammar = "S = 'abc'"
         val options = ParserCreationOptions.create(
-            null, sym("C"),
+            null, Sym.sym("C"),
             null,
             true,
             GrammarPrinter.default
         )
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser(grammar, options) })
+            { Parsewisp.parser(grammar, options) })
     }
 }

@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.StringTerm
@@ -15,10 +15,10 @@ internal class ReductionTypeTest {
     @Test
     fun standardIntermediateReduction() {
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", StringTerm.createDirect("a", false)
                     .withReduction(ReductionType.merging())
             )
@@ -29,20 +29,20 @@ internal class ReductionTypeTest {
     @Test
     fun standardInitialReduction() {
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", StringTerm.createDirect("a", false)
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("A", "a")), pDefault.parse("a"))
 
         // Same as default, but explicit
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", StringTerm.createDirect("a", false)
                     .withReduction(ReductionType.initial())
             )
@@ -53,35 +53,35 @@ internal class ReductionTypeTest {
     @Test
     fun taggedTreeReduction() {
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
                 "S", StringTerm.createDirect("a", false)
-                    .withReduction(ReductionType.taggedTree(sym("B")))
+                    .withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", StringTerm.createDirect("a", false)
-                    .withReduction(ReductionType.taggedTree(sym("B")))
+                    .withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
 
         // Create a parse tree which wouldn't be obvious from the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
                         StringTerm.createDirect("a", false)
-                            .withReduction(ReductionType.taggedTree(sym("B"))),
+                            .withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         StringTerm.createDirect("b", false)
                     )
                 )

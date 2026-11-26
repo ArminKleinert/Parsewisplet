@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
@@ -43,15 +43,15 @@ internal class OptionalRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(Gr.grammar("S", ConcatRule.create(listOf(a_or_nay(), string_a()))))
+        val p = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(a_or_nay(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
 
-        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), a_or_nay(), string_a()))))
+        val pN = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), a_or_nay(), string_a()))))
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
 
-        val pM = parser(
+        val pM = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -73,19 +73,19 @@ internal class OptionalRuleTest {
     // @Test void parseError() {}
     @Test
     fun fullParseSingle() {
-        val p = parser(Gr.grammar("S", a_or_nay()))
+        val p = Parsewisp.parser(Gr.grammar("S", a_or_nay()))
         Assertions.assertEquals(PT.create("S"), p.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
     }
 
     @Test
     fun fullParseConcat() {
-        val pN = parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), a_or_nay(), a_or_nay()))))
+        val pN = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(string_a(), a_or_nay(), a_or_nay()))))
         Assertions.assertEquals(PT.create("S", "a"), pN.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), pN.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pN.parse("aaa"))
 
-        val pM = parser(Gr.grammar("S", ConcatRule.create(listOf(a_or_nay(), a_or_nay(), a_or_nay()))))
+        val pM = Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(a_or_nay(), a_or_nay(), a_or_nay()))))
         Assertions.assertEquals(PT.create("S", "a"), pM.parse("a"))
         Assertions.assertEquals(PT.create("S", "a", "a"), pM.parse("aa"))
         Assertions.assertEquals(PT.create("S", "a", "a", "a"), pM.parse("aaa"))
@@ -93,7 +93,7 @@ internal class OptionalRuleTest {
 
     @Test
     fun fullParseError() {
-        val p = parser(Gr.grammar("S", a_or_nay()))
+        val p = Parsewisp.parser(Gr.grammar("S", a_or_nay()))
         Assertions.assertTrue(p.parse("b").isFailure)
     }
 
@@ -109,7 +109,7 @@ internal class OptionalRuleTest {
         val r = OptionalRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(sym("A"))) as OptionalRule
+            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as OptionalRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -129,7 +129,7 @@ internal class OptionalRuleTest {
         val r = OptionalRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(sym("A"))) as OptionalRule
+            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as OptionalRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -169,21 +169,21 @@ internal class OptionalRuleTest {
     @Test
     fun withHideTagParse() {
         // By default, not hidden in output
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar("S", a_or_nay())
         )
         Assertions.assertEquals(PT.create("S"), pDefault.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), pDefault.parse("a"))
 
         // With explicit show, also not hidden
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar("S", a_or_nay().withHideTag(false))
         )
         Assertions.assertEquals(PT.create("S"), pShow.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), pShow.parse("a"))
 
         // With explicit hide
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar("S", a_or_nay().withHideTag(true))
         )
         Assertions.assertEquals(PT.create("S"), pHide.parse(""))
@@ -199,10 +199,10 @@ internal class OptionalRuleTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", a_or_nay()
             )
         )
@@ -213,10 +213,10 @@ internal class OptionalRuleTest {
     @Test
     fun withReductionMergeUp() {
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", a_or_nay().withReduction(ReductionType.merging())
             )
         )
@@ -227,21 +227,21 @@ internal class OptionalRuleTest {
     @Test
     fun withReductionTaggedTree() {
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", a_or_nay().withReduction(ReductionType.taggedTree(sym("B")))
+                "S", a_or_nay().withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", a_or_nay().withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", a_or_nay().withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -251,13 +251,13 @@ internal class OptionalRuleTest {
     @Test
     fun withReductionNotDirectRhs() {
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        a_or_nay().withReduction(ReductionType.taggedTree(sym("B"))),
+                        a_or_nay().withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         OptionalRule.create(StringTerm.create("b", false))
                     )
                 )

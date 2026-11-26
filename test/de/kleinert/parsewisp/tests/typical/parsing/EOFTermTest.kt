@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
@@ -17,14 +17,14 @@ internal class EOFTermTest {
 
     @Test
     fun parse() {
-        val p2 = parser(
+        val p2 = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.createDirect(listOf(EOFTerm.default, EOFTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), p2.parse(""))
 
-        val p3 = parser(
+        val p3 = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.createDirect(
@@ -41,7 +41,7 @@ internal class EOFTermTest {
 
     @Test
     fun parseError() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.createDirect(listOf(EOFTerm.default, StringTerm.create("a", false)))
             )
@@ -51,20 +51,20 @@ internal class EOFTermTest {
 
     @Test
     fun fullParseSingle() {
-        val p = parser(Gr.grammar("S", EOFTerm.default))
+        val p = Parsewisp.parser(Gr.grammar("S", EOFTerm.default))
         Assertions.assertEquals(PT.create("S"), p.parse(""))
     }
 
     @Test
     fun fullParseConcat() {
-        val pE = parser(
+        val pE = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.createDirect(listOf(EOFTerm.default, EOFTerm.default))
             )
         )
         Assertions.assertEquals(PT.create("S"), pE.parse(""))
 
-        val pA = parser(
+        val pA = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.createDirect(listOf(StringTerm.create("a", false), EOFTerm.default))
             )
@@ -74,7 +74,7 @@ internal class EOFTermTest {
 
     @Test
     fun fullParseError() {
-        val p = parser(Gr.grammar("S", EOFTerm.default))
+        val p = Parsewisp.parser(Gr.grammar("S", EOFTerm.default))
         Assertions.assertTrue(p.parse("a").isFailure)
     }
 
@@ -102,15 +102,15 @@ internal class EOFTermTest {
         Assertions.assertEquals(EOFTerm.default.withHideTag(true), EOFTerm.default.hideInResult())
 
         // By default, not hidden in output, but this type adds nothing to the tree
-        val pDefault = parser(Gr.grammar("S", EOFTerm.default))
+        val pDefault = Parsewisp.parser(Gr.grammar("S", EOFTerm.default))
         Assertions.assertEquals(PT.create("S"), pDefault.parse(""))
 
         // With explicit show, also not hidden, but this type adds nothing to the tree
-        val pShow = parser(Gr.grammar("S", EOFTerm.default.withHideTag(false)))
+        val pShow = Parsewisp.parser(Gr.grammar("S", EOFTerm.default.withHideTag(false)))
         Assertions.assertEquals(PT.create("S"), pShow.parse(""))
 
         // With explicit hide
-        val pHide = parser(Gr.grammar("S", EOFTerm.default.withHideTag(true)))
+        val pHide = Parsewisp.parser(Gr.grammar("S", EOFTerm.default.withHideTag(true)))
         Assertions.assertEquals(PT.create("S"), pHide.parse(""))
     }
 
@@ -123,10 +123,10 @@ internal class EOFTermTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", EOFTerm.default
             )
         )
@@ -136,10 +136,10 @@ internal class EOFTermTest {
     @Test
     fun withReductionMergeUp() {
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", EOFTerm.default.withReduction(ReductionType.merging())
             )
         )
@@ -149,20 +149,20 @@ internal class EOFTermTest {
     @Test
     fun withReductionTaggedTree() {
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", EOFTerm.default.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", EOFTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", EOFTerm.default.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", EOFTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -171,13 +171,13 @@ internal class EOFTermTest {
     @Test
     fun withReductionNotDirectRhs() {
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        EOFTerm.default.withReduction(ReductionType.taggedTree(sym("B"))),
+                        EOFTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         EOFTerm.default
                     )
                 )

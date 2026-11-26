@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.grammar.Grammar
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 internal class MultipleLookaheadsTest {
     @Test
     fun contradictoryLookaheads() {
-        val p = parser("S := &'a' &'b' ('a' | 'b' | 'c')+")
+        val p = Parsewisp.parser("S := &'a' &'b' ('a' | 'b' | 'c')+")
         Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertTrue(p.parse("b").isFailure)
         Assertions.assertTrue(p.parse("c").isFailure)
@@ -28,7 +28,7 @@ internal class MultipleLookaheadsTest {
                 RegexTerm.create(Regex("[abc]"))
             )
         )
-        val p = parser(
+        val p = Parsewisp.parser(
             Grammar(
                 sym("S"),
                 grammarAsMap
@@ -41,14 +41,14 @@ internal class MultipleLookaheadsTest {
 
     @Test
     fun doubledLookahead() {
-        val p = parser("S = &'a' &'a' ('a' | 'b' | 'c')+")
+        val p = Parsewisp.parser("S = &'a' &'a' ('a' | 'b' | 'c')+")
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
         Assertions.assertTrue(p.parse("b").isFailure)
     }
 
     @Test
     fun doubledNegativeLookahead() {
-        val p = parser("S = !'a' !'a' ('a' | 'b' | 'c')+")
+        val p = Parsewisp.parser("S = !'a' !'a' ('a' | 'b' | 'c')+")
         Assertions.assertEquals(PT.create("S", "b"), p.parse("b"))
         Assertions.assertEquals(PT.create("S", "c"), p.parse("c"))
         Assertions.assertTrue(p.parse("a").isFailure)
@@ -56,7 +56,7 @@ internal class MultipleLookaheadsTest {
 
     @Test
     fun doubledNegativeLookahead1() {
-        val p = parser("S = !'a' !'b' ('a' | 'b' | 'c')+")
+        val p = Parsewisp.parser("S = !'a' !'b' ('a' | 'b' | 'c')+")
         Assertions.assertEquals(PT.create("S", "c"), p.parse("c"))
         Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertTrue(p.parse("b").isFailure)

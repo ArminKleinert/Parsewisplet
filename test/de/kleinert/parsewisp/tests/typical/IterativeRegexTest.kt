@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 internal class IterativeRegexTest {
     @Test
     fun testCheckByPartials() {
-        val p = parser("S = #'A+'")
+        val p = Parsewisp.parser("S = #'A+'")
         val parses = p.parses(
             "AAAA",
             ParsingOptions.default
@@ -29,7 +29,7 @@ internal class IterativeRegexTest {
 
     @Test
     fun testRegexString() {
-        val p = parser("S = #'A+' 'A' | #'A+' 'AA' | #'A+' 'AAA' | #'A+' 'AAAA'")
+        val p = Parsewisp.parser("S = #'A+' 'A' | #'A+' 'AA' | #'A+' 'AAA' | #'A+' 'AAAA'")
 
         Assertions.assertTrue(p.parses("").isEmpty())
         Assertions.assertTrue(p.parses("ABA").isEmpty())
@@ -50,7 +50,7 @@ internal class IterativeRegexTest {
 
     @Test
     fun testStringRegex() {
-        val p = parser("S = 'A' #'A+' | 'AA' #'A+' | 'AAA' #'A+' | 'AAAA' #'A+'")
+        val p = Parsewisp.parser("S = 'A' #'A+' | 'AA' #'A+' | 'AAA' #'A+' | 'AAAA' #'A+'")
 
         Assertions.assertTrue(p.parses("").isEmpty())
         Assertions.assertTrue(p.parses("ABA").isEmpty())
@@ -71,7 +71,7 @@ internal class IterativeRegexTest {
 
     @Test
     fun testRegexRegex() {
-        val p = parser("S = #'A+' #'A+'")
+        val p = Parsewisp.parser("S = #'A+' #'A+'")
 
         Assertions.assertTrue(p.parses("").isEmpty())
         Assertions.assertTrue(p.parses("ABA").isEmpty())
@@ -92,7 +92,7 @@ internal class IterativeRegexTest {
 
     @Test
     fun defaultTest() {
-        val p = parser("S = #'A+' 'A'")
+        val p = Parsewisp.parser("S = #'A+' 'A'")
         val opts = ParsingOptions.default.withIterativeDeepening(true)
         Assertions.assertEquals(
             PT.create("S", "AA", "A"),

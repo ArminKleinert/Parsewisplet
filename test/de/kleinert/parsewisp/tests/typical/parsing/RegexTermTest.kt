@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
@@ -17,7 +17,7 @@ internal class RegexTermTest {
     fun testUnicodeSequence() {
         // This used to cause a bug where "\\u" consumed one character too far.
         // E.g. "\\u0041-" would consume the minus as if it was part of the number sequence.
-        val p = parser("S = #'[\\u0041-\\u005A]+'")
+        val p = Parsewisp.parser("S = #'[\\u0041-\\u005A]+'")
         Assertions.assertEquals(PT.create("S", "ABC"), p.parse("ABC"))
     }
 
@@ -48,25 +48,25 @@ internal class RegexTermTest {
     @Test
     fun parse() {
         val gD = Gr.grammar("S", ConcatRule.create(listOf(digit(), digit())))
-        val pD = parser(gD)
+        val pD = Parsewisp.parser(gD)
         Assertions.assertEquals(PT.create("S", "1", "2"), pD.parse("12"))
 
         val gN = Gr.grammar("S", ConcatRule.create(listOf(digit(), number())))
-        val pN = parser(gN)
+        val pN = Parsewisp.parser(gN)
         Assertions.assertEquals(PT.create("S", "1", "234"), pN.parse("1234"))
     }
 
     @Test
     fun parseEager() {
         val gN = Gr.grammar("S", ConcatRule.create(listOf(number(), digit())))
-        val pN = parser(gN)
+        val pN = Parsewisp.parser(gN)
         Assertions.assertTrue(pN.parse("1234").isFailure)
     }
 
     @Test
     fun parseIncremental() {
         val gN = Gr.grammar("S", ConcatRule.create(listOf(number(), digit())))
-        val pN = parser(gN)
+        val pN = Parsewisp.parser(gN)
         Assertions.assertEquals(
             PT.create("S", "123", "4"),
             pN.parse("1234", ParsingOptions.default.withIterativeDeepening(true))
@@ -76,7 +76,7 @@ internal class RegexTermTest {
     @Test
     fun parseError() {
         val g = Gr.grammar("S", ConcatRule.create(listOf(digit(), digit())))
-        val p = parser(g)
+        val p = Parsewisp.parser(g)
         Assertions.assertTrue(p.parse("-1").isFailure)
         Assertions.assertTrue(p.parse("1").isFailure)
         Assertions.assertTrue(p.parse("b").isFailure)
@@ -85,7 +85,7 @@ internal class RegexTermTest {
     @Test
     fun fullParseSingle() {
         val g = Gr.grammar("S", number())
-        val p = parser(g)
+        val p = Parsewisp.parser(g)
         Assertions.assertEquals(PT.create("S", "1"), p.parse("1"))
         Assertions.assertEquals(PT.create("S", "123"), p.parse("123"))
         Assertions.assertEquals(PT.create("S", "+123"), p.parse("+123"))
@@ -95,18 +95,18 @@ internal class RegexTermTest {
     @Test
     fun fullParseConcat() {
         val gD = Gr.grammar("S", ConcatRule.create(listOf(digit(), digit())))
-        val pD = parser(gD)
+        val pD = Parsewisp.parser(gD)
         Assertions.assertEquals(PT.create("S", "1", "2"), pD.parse("12"))
 
         val gN = Gr.grammar("S", ConcatRule.create(listOf(digit(), number())))
-        val pN = parser(gN)
+        val pN = Parsewisp.parser(gN)
         Assertions.assertEquals(PT.create("S", "1", "234"), pN.parse("1234"))
     }
 
     @Test
     fun fullParseError() {
         val g = Gr.grammar("S", number())
-        val p = parser(g)
+        val p = Parsewisp.parser(g)
         Assertions.assertTrue(p.parse("").isFailure)
         Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertTrue(p.parse("&1").isFailure)
@@ -149,19 +149,19 @@ internal class RegexTermTest {
     @Test
     fun withHideTagParse() {
         // By default, not hidden in output
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar("S", digit())
         )
         Assertions.assertEquals(PT.create("S", "1"), pDefault.parse("1"))
 
         // With explicit show, also not hidden
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar("S", digit().withHideTag(false))
         )
         Assertions.assertEquals(PT.create("S", "1"), pShow.parse("1"))
 
         // With explicit hide, also not hidden
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar("S", digit().withHideTag(true))
         )
         Assertions.assertEquals(PT.create("S"), pHide.parse("1"))
@@ -176,10 +176,10 @@ internal class RegexTermTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", digit()
             )
         )
@@ -189,10 +189,10 @@ internal class RegexTermTest {
     @Test
     fun withReductionMergeUp() {
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", digit().withReduction(ReductionType.merging())
             )
         )
@@ -202,20 +202,20 @@ internal class RegexTermTest {
     @Test
     fun withReductionTaggedTree() {
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", digit().withReduction(ReductionType.taggedTree(sym("B")))
+                "S", digit().withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "1"), pMerge2.parse("1"))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", digit().withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", digit().withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "1")), pMerge3.parse("1"))
@@ -224,13 +224,13 @@ internal class RegexTermTest {
     @Test
     fun withReductionNotDirectRhs() {
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        digit().withReduction(ReductionType.taggedTree(sym("B"))),
+                        digit().withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         digit()
                     )
                 )

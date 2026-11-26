@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical
 
 import de.kleinert.parsewisp.Parsewisp.getPredefinedWhitespaceParser
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parser_options.ParsingOptions
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 internal class ParsewispCoreTest {
     @Test
     fun testAsAndBs() {
-        val as_and_bs = parser(
+        val as_and_bs = Parsewisp.parser(
             """
                         S = AB*
                         AB = A B
@@ -44,7 +44,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testAsAndBsRegex() {
-        val as_and_bs_regex = parser(
+        val as_and_bs_regex = Parsewisp.parser(
             """
                         S = AB*
                         AB = A B
@@ -73,7 +73,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testAsAndBsHiccup() {
-        val as_and_bs = parser(
+        val as_and_bs = Parsewisp.parser(
             """
                         S = AB*
                         AB = A B
@@ -110,7 +110,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testAsAndBsVariation1() {
-        val as_and_bs_variation1 = parser(
+        val as_and_bs_variation1 = Parsewisp.parser(
             """
                         S = AB*
                         AB = 'a'+ 'b'+
@@ -133,7 +133,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testAsAndBsVariation2() {
-        val as_and_bs_variation2 = parser(
+        val as_and_bs_variation2 = Parsewisp.parser(
             """
                         S = ('a'+ 'b'+)*
                         
@@ -162,7 +162,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testParenAb() {
-        val paren_ab = parser(
+        val paren_ab = Parsewisp.parser(
             """
                         paren-wrapped = '(' seq-of-A-or-B ')'
                         seq-of-A-or-B = ('a' | 'b')*
@@ -184,7 +184,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testParenAbHideParens() {
-        val paren_ab_hide_parens = parser(
+        val paren_ab_hide_parens = Parsewisp.parser(
             """
                         paren-wrapped = <'('> seq-of-A-or-B <')'>
                         seq-of-A-or-B = ('a' | 'b')*
@@ -206,7 +206,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testParenAbManuallyFlattened() {
-        val paren_ab_manually_flattened = parser(
+        val paren_ab_manually_flattened = Parsewisp.parser(
             """
                         paren-wrapped = <'('> ('a' | 'b')* <')'>
                         
@@ -224,7 +224,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testParenAbHideTag() {
-        val paren_ab_hide_tag = parser(
+        val paren_ab_hide_tag = Parsewisp.parser(
             """
                         paren-wrapped = <'('> seq-of-A-or-B <')'>
                         <seq-of-A-or-B> = ('a' | 'b')*
@@ -243,7 +243,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testParenAbHideBothTags() {
-        val paren_ab_hide_both_tags = parser(
+        val paren_ab_hide_both_tags = Parsewisp.parser(
             """
                         <paren-wrapped> = <'('> seq-of-A-or-B <')'>
                         <seq-of-A-or-B> = ('a' | 'b')*
@@ -274,7 +274,7 @@ internal class ParsewispCoreTest {
         val tree =
             PT.create("S", "a", PT.create("S", "a", PT.create("S", "a", PT.create("S", "a"))))
 
-        Assertions.assertEquals(tree, parser(grammar).parse(text))
+        Assertions.assertEquals(tree, Parsewisp.parser(grammar).parse(text))
     }
 
     @Test
@@ -296,12 +296,12 @@ internal class ParsewispCoreTest {
                 ), "a"
             )
 
-        Assertions.assertEquals(tree, parser(grammar).parse(text))
+        Assertions.assertEquals(tree, Parsewisp.parser(grammar).parse(text))
     }
 
     @Test
     fun testAmbiguousParses() {
-        val ambiguous = parser(
+        val ambiguous = Parsewisp.parser(
             """
                         S = A A
                         A = 'a'*
@@ -326,7 +326,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testUnambiguousParses() {
-        val not_ambiguous = parser(
+        val not_ambiguous = Parsewisp.parser(
             """
                         S = A A
                         A = #'a*'
@@ -345,7 +345,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testLookaheadExample() {
-        val lookahead_example = parser(
+        val lookahead_example = Parsewisp.parser(
             """
                         S = &'ab' ('a' | 'b')+
                         
@@ -359,7 +359,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testLookaheadExampleFailure() {
-        val lookahead_example = parser(
+        val lookahead_example = Parsewisp.parser(
             """
                         S = &'ab' ('a' | 'b')+
                         
@@ -373,7 +373,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testNegativeLookaheadExample() {
-        val negative_lookahead_example = parser(
+        val negative_lookahead_example = Parsewisp.parser(
             """
                         S = !'ab' ('a' | 'b')+
                         
@@ -387,7 +387,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testNegativeLookaheadExampleFailure() {
-        val negative_lookahead_example = parser(
+        val negative_lookahead_example = Parsewisp.parser(
             """
                         S = !'ab' ('a' | 'b')+
                         
@@ -401,7 +401,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testCharRangeExampleFailure() {
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                 Regex = (CharNonRange | Range) +
                 Range = Char <'-'> Char
@@ -432,7 +432,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testAmbiguousTokenizer() {
-        val ambiguous_tokenizer = parser(
+        val ambiguous_tokenizer = Parsewisp.parser(
             """
                         sentence = token (<whitespace> token)*
                         <token> = keyword | identifier
@@ -476,7 +476,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testUnambiguousTokenizer() {
-        val unambiguous_tokenizer = parser(
+        val unambiguous_tokenizer = Parsewisp.parser(
             """
                         sentence = token (<whitespace> token)*
                         <token> = keyword | !keyword identifier
@@ -501,7 +501,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testPreferentialTokenizer() {
-        val preferential_tokenizer = parser(
+        val preferential_tokenizer = Parsewisp.parser(
             """
                         sentence = token (<whitespace> token)*
                         <token> = keyword / identifier
@@ -548,7 +548,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testRepeatedA() {
-        val repeated_a = parser(
+        val repeated_a = Parsewisp.parser(
             """
                 S = 'a'+
                 
@@ -577,7 +577,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testWordsAndNumbersOneCharacterAtATime() {
-        val words_and_numbers_one_character_at_a_time = parser(
+        val words_and_numbers_one_character_at_a_time = Parsewisp.parser(
             """
                         sentence = token (<whitespace> token)*
                         <token> = word | number
@@ -605,7 +605,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testArithmeticGrammar() {
-        val arithmetic = parser(
+        val arithmetic = Parsewisp.parser(
             """
                         expr = add-sub
                         <add-sub> = mul-div | add | sub
@@ -650,7 +650,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testTrickyEbnfBuild() {
-        val tricky_ebnf_build = parser(
+        val tricky_ebnf_build = Parsewisp.parser(
             """
                         S = A | B
                         <A> = '='*
@@ -672,17 +672,17 @@ internal class ParsewispCoreTest {
     fun testFail() {
         Assertions.assertEquals(
             PT.create("S", "a"),
-            parser("S = A\n<A> = 'a'").parse("a")
+            Parsewisp.parser("S = A\n<A> = 'a'").parse("a")
         )
         Assertions.assertEquals(
             PT.create("S", PT.create("A")),
-            parser("S = A\nA = <'a'>").parse("a")
+            Parsewisp.parser("S = A\nA = <'a'>").parse("a")
         )
     }
 
     @Test
     fun testOptionalRepeat() {
-        val parser = parser("S = ('a'?)+")
+        val parser = Parsewisp.parser("S = ('a'?)+")
         val tree = PT.create("S")
 
         Assertions.assertEquals(tree, parser.parse(""))
@@ -690,7 +690,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testDot() {
-        val parser = parser(
+        val parser = Parsewisp.parser(
             """
                 a = b c .
                 b = 'b' .
@@ -726,7 +726,7 @@ internal class ParsewispCoreTest {
             ),
             ")"
         )
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                         paren-wrapped = <'('> seq-of-A-or-B <')'>
                         seq-of-A-or-B = ('a' | 'b')*
@@ -751,7 +751,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testUnhide2() {
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                         paren-wrapped = <'('> seq-of-A-or-B <')'>
                         <seq-of-A-or-B> = ('a' | 'b')*
@@ -792,23 +792,23 @@ internal class ParsewispCoreTest {
         val opts = ParserCreationOptions.default
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = eps", opts).parse("")
+            Parsewisp.parser("S = eps", opts).parse("")
         )
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = epsilon", opts).parse("")
+            Parsewisp.parser("S = epsilon", opts).parse("")
         )
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = Epsilon", opts).parse("")
+            Parsewisp.parser("S = Epsilon", opts).parse("")
         )
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = EPSILON", opts).parse("")
+            Parsewisp.parser("S = EPSILON", opts).parse("")
         )
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = ε", opts).parse("")
+            Parsewisp.parser("S = ε", opts).parse("")
         )
     }
 
@@ -816,27 +816,27 @@ internal class ParsewispCoreTest {
     fun testEpsFail() {
         val opts = ParserCreationOptions.default
         Assertions.assertTrue(
-            parser("S = eps", opts)
+            Parsewisp.parser("S = eps", opts)
                 .parse("a")
                 .isFailure
         )
         Assertions.assertTrue(
-            parser("S = epsilon", opts)
+            Parsewisp.parser("S = epsilon", opts)
                 .parse("a")
                 .isFailure
         )
         Assertions.assertTrue(
-            parser("S = Epsilon", opts)
+            Parsewisp.parser("S = Epsilon", opts)
                 .parse("a")
                 .isFailure
         )
         Assertions.assertTrue(
-            parser("S = EPSILON", opts)
+            Parsewisp.parser("S = EPSILON", opts)
                 .parse("a")
                 .isFailure
         )
         Assertions.assertTrue(
-            parser("S = ε", opts)
+            Parsewisp.parser("S = ε", opts)
                 .parse("a")
                 .isFailure
         )
@@ -844,7 +844,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testWordsAndNumbers() {
-        val words_and_numbers = parser(
+        val words_and_numbers = Parsewisp.parser(
             """
                         sentence = token (<whitespace> token)*
                         <token> = word | number
@@ -879,7 +879,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testWordsAndNumbersAutoWhitespace() {
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                         sentence = token+
                         <token> = word | number
@@ -887,9 +887,9 @@ internal class ParsewispCoreTest {
                         number = #'[0-9]+'
                         
                         """.trimIndent(),
-            ParserCreationOptions.default.withWhitespaceParser(parser("whitespace = #'\\s+'"))
+            ParserCreationOptions.default.withWhitespaceParser(Parsewisp.parser("whitespace = #'\\s+'"))
         )
-        val p2 = parser(
+        val p2 = Parsewisp.parser(
             """
                         sentence = token+
                         <token> = word | number
@@ -917,7 +917,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testWordsAndNumbersAutoWhitespaceAndComments() {
-        val ws = parser(
+        val ws = Parsewisp.parser(
             """
                         ws-or-comments = #'\s+' | comments
                         comments = comment+
@@ -925,9 +925,9 @@ internal class ParsewispCoreTest {
                         inside-comment =  !'*)' !'(*' #'.' | comment
                         
                         """.trimIndent(),
-            ParserCreationOptions.default.withWhitespaceParser(parser("whitespace = #'\\s+'"))
+            ParserCreationOptions.default.withWhitespaceParser(Parsewisp.parser("whitespace = #'\\s+'"))
         )
-        val words_and_numbers_auto_whitespace_and_comments = parser(
+        val words_and_numbers_auto_whitespace_and_comments = Parsewisp.parser(
             """
                         sentence = token+
                         <token> = word | number
@@ -958,7 +958,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testEatA() {
-        val p = parser(
+        val p = Parsewisp.parser(
             "Aeater = #'[a]'+",
             ParserCreationOptions.default
         )
@@ -975,7 +975,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testIntOrDouble() {
-        val int_or_double = parser(
+        val int_or_double = Parsewisp.parser(
             """
                         ws = #'\s+';
                         Int = #'[0-9]+';
@@ -1000,13 +1000,13 @@ internal class ParsewispCoreTest {
     @Test
     fun testGreedyRegex() {
         run {
-            val p = parser("S = #'\\s*'")
+            val p = Parsewisp.parser("S = #'\\s*'")
             val text = "     "
             val tree = PT.create("S", text)
             Assertions.assertEquals(tree, p.parse(text))
         }
         run {
-            val p = parser("S = #'a+'")
+            val p = Parsewisp.parser("S = #'a+'")
             val text = "aaaaaa"
             val tree = PT.create("S", text)
             Assertions.assertEquals(tree, p.parse(text))
@@ -1015,7 +1015,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testSimpleOrderedChoice() {
-        val p = parser("S = 'a' / ε")
+        val p = Parsewisp.parser("S = 'a' / ε")
 
         Assertions.assertEquals(PT.create("S"), p.parse(""))
         Assertions.assertEquals(PT.create("S", "a"), p.parse("a"))
@@ -1023,7 +1023,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testStarRepetitionFailures() {
-        val p = parser("S = 'a'*")
+        val p = Parsewisp.parser("S = 'a'*")
 
         Assertions.assertTrue(p.parse("AaaAaa").isFailure)
         Assertions.assertTrue(p.parse("").isSuccess)
@@ -1031,7 +1031,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testStarRepetitionFailuresTotal() {
-        val p = parser("S = 'a'*")
+        val p = Parsewisp.parser("S = 'a'*")
         val opts = ParsingOptions.default.withEmbedFailureInParseTree(true)
 
         Assertions.assertEquals(
@@ -1051,7 +1051,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testPlusRepetitionFailures() {
-        val p = parser("S = 'a'+")
+        val p = Parsewisp.parser("S = 'a'+")
 
         Assertions.assertTrue(p.parse("AaaAaa").isFailure)
         Assertions.assertTrue(p.parse("").isFailure)
@@ -1059,7 +1059,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testPlusRepetitionFailuresTotal() {
-        val p = parser("S = 'a'+")
+        val p = Parsewisp.parser("S = 'a'+")
         val opts = ParsingOptions.default.withEmbedFailureInParseTree(true)
 
         Assertions.assertEquals(
@@ -1091,24 +1091,24 @@ internal class ParsewispCoreTest {
     fun testStringVsStringCi() {
         val text = "AaaAaa"
 
-        val pStandard1 = parser("S = %s'a'+")
+        val pStandard1 = Parsewisp.parser("S = %s'a'+")
         Assertions.assertTrue(pStandard1.parse(text).isFailure)
 
         val tree = PT.create("S", "a", "a", "a", "a", "a", "a")
-        val pCaseInsensitive = parser("S = %i'a'+")
+        val pCaseInsensitive = Parsewisp.parser("S = %i'a'+")
         Assertions.assertEquals(tree, pCaseInsensitive.parse(text))
     }
 
     @Test
     fun testAutoWhitespaceExamples() {
-        val auto_whitespace_example = parser(
+        val auto_whitespace_example = Parsewisp.parser(
             """
                         S = A B
                         <A> = 'foo'
                         <B> = #'\d+'
                         
                         """.trimIndent(),
-            ParserCreationOptions.default.withWhitespaceParser(parser("whitespace = #'\\s+'"))
+            ParserCreationOptions.default.withWhitespaceParser(Parsewisp.parser("whitespace = #'\\s+'"))
         )
         val tree = PT.create("S", "foo", "123")
         val text = "foo 123"
@@ -1118,7 +1118,7 @@ internal class ParsewispCoreTest {
 
     @Test
     fun testAutoWhitespaceExample2() {
-        val auto_whitespace_example2 = parser(
+        val auto_whitespace_example2 = Parsewisp.parser(
             """
                         S = A B
                         <A> = 'foo'
@@ -1138,19 +1138,19 @@ internal class ParsewispCoreTest {
     @Test
     fun testRegexFail() {
         Assertions.assertTrue(
-            parser("f = #'asdf'").parse("asdf").isSuccess
+            Parsewisp.parser("f = #'asdf'").parse("asdf").isSuccess
         )
         Assertions.assertTrue(
-            parser("f = #'asdf'").parse("").isFailure
+            Parsewisp.parser("f = #'asdf'").parse("").isFailure
         )
         Assertions.assertFalse(
-            parser("f = #'asdf'").parse("").isSuccess
+            Parsewisp.parser("f = #'asdf'").parse("").isSuccess
         )
     }
 
     @Test
     fun testCaseInsensitiveRegex() {
-        val case_insensitive_regexp = parser(
+        val case_insensitive_regexp = Parsewisp.parser(
             """
                         S = #'(?i)a+'
                         
@@ -1173,7 +1173,7 @@ internal class ParsewispCoreTest {
     @Test
     fun testOptionFailureIfEmpty() {
         val opts = ParsingOptions.default.withFailureIfEmpty(true)
-        val p = parser("S = 'a'")
+        val p = Parsewisp.parser("S = 'a'")
         Assertions.assertTrue(p.parses("b").isEmpty())
         Assertions.assertFalse(p.parses("b", opts).isSuccess)
     }

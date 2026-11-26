@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parsing.EOFTerm
 import de.kleinert.parsewisp.testutil.PT
@@ -14,17 +14,17 @@ internal class EofTest {
 
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = " + EOFTerm.text(), opts).parse("")
+            Parsewisp.parser("S = " + EOFTerm.text(), opts).parse("")
         )
 
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = <' '>" + EOFTerm.text(), opts).parse(" ")
+            Parsewisp.parser("S = <' '>" + EOFTerm.text(), opts).parse(" ")
         )
 
         Assertions.assertEquals(
             PT.create("S", "a"),
-            parser("S = 'a' " + EOFTerm.text(), opts).parse("a")
+            Parsewisp.parser("S = 'a' " + EOFTerm.text(), opts).parse("a")
         )
     }
 
@@ -34,12 +34,12 @@ internal class EofTest {
 
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = " + EOFTerm.text(), opts).parse("")
+            Parsewisp.parser("S = " + EOFTerm.text(), opts).parse("")
         )
 
         Assertions.assertEquals(
             PT.create("S"),
-            parser("S = " + EOFTerm.text(), opts).parse(" ")
+            Parsewisp.parser("S = " + EOFTerm.text(), opts).parse(" ")
         )
     }
 }

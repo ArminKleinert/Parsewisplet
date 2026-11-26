@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 internal class GrammarTest {
     @Test
     fun grammarCollect() {
-        val g = parser("S = '1' | '2' S").grammar
+        val g = Parsewisp.parser("S = '1' | '2' S").grammar
         val ga = g.analyze()
 
         Assertions.assertTrue(ga.isValid)
@@ -28,7 +28,7 @@ internal class GrammarTest {
 
     @Test
     fun grammarAnalysisDoesNotRateStartSymAsUnused() {
-        val ga = parser(
+        val ga = Parsewisp.parser(
             """
                 S = A | "a"
                 A = A epsilon | epsilon
@@ -39,13 +39,13 @@ internal class GrammarTest {
         ).grammar.analyze()
         Assertions.assertFalse(ga.unusedNTs.contains(sym("S")))
 
-        val ga2 = parser("S = 'a'").grammar.analyze()
+        val ga2 = Parsewisp.parser("S = 'a'").grammar.analyze()
         Assertions.assertFalse(ga2.unusedNTs.contains(sym("S")))
     }
 
     @Test
     fun grammarAnalysis() {
-        val ga = parser(
+        val ga = Parsewisp.parser(
             """
                 S = A | "a"
                 A = A epsilon | epsilon
@@ -72,7 +72,7 @@ internal class GrammarTest {
 
     @Test
     fun grammarSubsetFullTest() {
-        val ga = parser(
+        val ga = Parsewisp.parser(
             """
                 S = A | "a"
                 A = A B | epsilon
@@ -88,7 +88,7 @@ internal class GrammarTest {
 
     @Test
     fun grammarSubsetPartialTest() {
-        val ga = parser(
+        val ga = Parsewisp.parser(
             """
                 S = A | "a"
                 A = A | C
@@ -109,7 +109,7 @@ internal class GrammarTest {
 
     @Test
     fun grammarSubsetPartialTest1() {
-        val p1 = parser(
+        val p1 = Parsewisp.parser(
             """
                 S = A | "a"
                 A = A | C
@@ -117,7 +117,7 @@ internal class GrammarTest {
                 
                 """.trimIndent()
         )
-        val p2 = parser(
+        val p2 = Parsewisp.parser(
             """
                 S = A | "a"
                 A = A | C
@@ -135,22 +135,22 @@ internal class GrammarTest {
     @Test
     fun grammarIsProductiveTest() {
         val noCheckOpts = ParserCreationOptions.default.withCorrectnessCheck(false)
-        Assertions.assertFalse(parser("S = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
-        Assertions.assertTrue(parser("S = S | epsilon", noCheckOpts).grammar.analyze().isProductive(sym("S")))
+        Assertions.assertFalse(Parsewisp.parser("S = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
+        Assertions.assertTrue(Parsewisp.parser("S = S | epsilon", noCheckOpts).grammar.analyze().isProductive(sym("S")))
 
-        Assertions.assertTrue(parser("S = A | epsilon; A = A", noCheckOpts).grammar.analyze().isProductive(sym("S")))
-        Assertions.assertFalse(parser("S = A | epsilon; A = A", noCheckOpts).grammar.analyze().isProductive(sym("A")))
-        Assertions.assertTrue(parser("S = A | epsilon; A = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
+        Assertions.assertTrue(Parsewisp.parser("S = A | epsilon; A = A", noCheckOpts).grammar.analyze().isProductive(sym("S")))
+        Assertions.assertFalse(Parsewisp.parser("S = A | epsilon; A = A", noCheckOpts).grammar.analyze().isProductive(sym("A")))
+        Assertions.assertTrue(Parsewisp.parser("S = A | epsilon; A = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
 
         Assertions.assertTrue(
-            parser("S = A B | epsilon; A = 'a'; B = 'b'", noCheckOpts).grammar.analyze().isProductive(sym("S"))
+            Parsewisp.parser("S = A B | epsilon; A = 'a'; B = 'b'", noCheckOpts).grammar.analyze().isProductive(sym("S"))
         )
         Assertions.assertTrue(
-            parser("S = A B | epsilon; A = 'a'; B = S", noCheckOpts).grammar.analyze().isProductive(sym("S"))
+            Parsewisp.parser("S = A B | epsilon; A = 'a'; B = S", noCheckOpts).grammar.analyze().isProductive(sym("S"))
         )
-        Assertions.assertFalse(parser("S = A B; A = 'a'; B = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
+        Assertions.assertFalse(Parsewisp.parser("S = A B; A = 'a'; B = S", noCheckOpts).grammar.analyze().isProductive(sym("S")))
         Assertions.assertFalse(
-            parser("S = A B; A = 'a'; B = C; C = B", noCheckOpts).grammar.analyze().isProductive(sym("S"))
+            Parsewisp.parser("S = A B; A = 'a'; B = C; C = B", noCheckOpts).grammar.analyze().isProductive(sym("S"))
         )
     }
 }

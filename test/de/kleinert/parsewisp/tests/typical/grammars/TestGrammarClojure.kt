@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical.grammars
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser.Parser
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -12,7 +12,7 @@ import java.nio.file.Path
 internal class TestGrammarClojure {
     private fun parser(): Parser {
         try {
-            return parser(
+            return Parsewisp.parser(
                 Files.readString(Path.of("testres/grammars/clojure.grammar"))
             )
         } catch (e: IOException) {
@@ -129,7 +129,7 @@ internal class TestGrammarClojure {
 //                    .filter(it -> it.toFile().isFile())
 //                    .filter(it -> it.toString().endsWith(".clj") || it.toString().endsWith(".cljs") || it.toString().endsWith(".cljc"))
 //                    .toList();
-//            var p = parser();
+//            var p = Parsewisp.parser1();
 ////            var start = System.nanoTime();
 //            for (Path file : files) {
 //                var s = Files.readString(file);

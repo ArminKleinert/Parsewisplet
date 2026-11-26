@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
@@ -32,8 +32,8 @@ internal class ConcatRuleTest {
         )
 
         Assertions.assertEquals(
-            parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
-            parser(Gr.grammar("S", ConcatRule.create(listOf()))).parse("")
+            Parsewisp.parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
+            Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf()))).parse("")
         )
     }
 
@@ -84,8 +84,8 @@ internal class ConcatRuleTest {
         Assertions.assertTrue(r.rules.size <= 5) // At max all five rules.
 
         Assertions.assertEquals(
-            parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
-            parser(
+            Parsewisp.parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
+            Parsewisp.parser(
                 Gr.grammar(
                     "S",
                     ConcatRule.create(listOf(EpsilonTerm.default, EpsilonTerm.default))
@@ -109,8 +109,8 @@ internal class ConcatRuleTest {
                     string_a() == ConcatRule.create(listOf(string_a()))
         )
         Assertions.assertEquals(
-            parser(Gr.grammar("S", string_a())).parse(""),
-            parser(Gr.grammar("S", ConcatRule.create(listOf(string_a())))).parse("")
+            Parsewisp.parser(Gr.grammar("S", string_a())).parse(""),
+            Parsewisp.parser(Gr.grammar("S", ConcatRule.create(listOf(string_a())))).parse("")
         )
     }
 
@@ -140,16 +140,16 @@ internal class ConcatRuleTest {
             )
         )
         Assertions.assertEquals(
-            parser(Gr.grammar("S", flat)).parse("aaaa"),
-            parser(Gr.grammar("S", nest1)).parse("aaaa")
+            Parsewisp.parser(Gr.grammar("S", flat)).parse("aaaa"),
+            Parsewisp.parser(Gr.grammar("S", nest1)).parse("aaaa")
         )
         Assertions.assertEquals(
-            parser(Gr.grammar("S", flat)).parse("aaaa"),
-            parser(Gr.grammar("S", nest2)).parse("aaaa")
+            Parsewisp.parser(Gr.grammar("S", flat)).parse("aaaa"),
+            Parsewisp.parser(Gr.grammar("S", nest2)).parse("aaaa")
         )
         Assertions.assertEquals(
-            parser(Gr.grammar("S", flat)).parse("aaaa"),
-            parser(Gr.grammar("S", nest3)).parse("aaaa")
+            Parsewisp.parser(Gr.grammar("S", flat)).parse("aaaa"),
+            Parsewisp.parser(Gr.grammar("S", nest3)).parse("aaaa")
         )
     }
 
@@ -218,9 +218,9 @@ internal class ConcatRuleTest {
         val c1 = ConcatRule.create(listOf(string_a(), string_a()))
             .withHideTag(true) // different hide-tag
         val c2 = ConcatRule.create(listOf(string_a(), string_a()))
-            .withReduction(ReductionType.taggedTree(sym("A"))) // reduction has changed
+            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) // reduction has changed
         val c3 = ConcatRule.create(listOf(string_a(), string_a()))
-            .withReduction(ReductionType.taggedTree(sym("B"))).withHideTag(true) // different reduction and hide-tag
+            .withReduction(ReductionType.taggedTree(Sym.sym("B"))).withHideTag(true) // different reduction and hide-tag
 
         val cc = ConcatRule.create(listOf(c1, c2, c3))
         Assertions.assertEquals(
@@ -228,7 +228,7 @@ internal class ConcatRuleTest {
             cc
         )
 
-        val p = parser(Gr.grammar("S", cc))
+        val p = Parsewisp.parser(Gr.grammar("S", cc))
         Assertions.assertEquals(
             PT.create(
                 "S",  /*hidden,*/
@@ -243,13 +243,13 @@ internal class ConcatRuleTest {
     // this is only possible though using alternations or nonterms.
     @Test
     fun parse() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammarS(
                 "S",
                 "S",
                 ConcatRule.create(
                     listOf(
-                        NonTerminal.create(sym("A")),
+                        NonTerminal.create(Sym.sym("A")),
                         string_a()
                     )
                 ),  // Rule#fullParse for this concat.
@@ -265,13 +265,13 @@ internal class ConcatRuleTest {
 
     @Test
     fun parseError() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammarS(
                 "S",
                 "S",
                 ConcatRule.create(
                     listOf(
-                        NonTerminal.create(sym("A")),
+                        NonTerminal.create(Sym.sym("A")),
                         string_a()
                     )
                 ),  // Rule#fullParse for this concat.
@@ -310,25 +310,25 @@ internal class ConcatRuleTest {
         )
         Assertions.assertEquals(
             PT.create("S", "a", "a", "a", "a"),
-            parser(Gr.grammar("S", flat)).parse("aaaa")
+            Parsewisp.parser(Gr.grammar("S", flat)).parse("aaaa")
         )
         Assertions.assertEquals(
-            parser(Gr.grammar("S", flat)).parse("aaaa"),
-            parser(Gr.grammar("S", nest1)).parse("aaaa")
+            Parsewisp.parser(Gr.grammar("S", flat)).parse("aaaa"),
+            Parsewisp.parser(Gr.grammar("S", nest1)).parse("aaaa")
         )
         Assertions.assertEquals(
-            parser(Gr.grammar("S", flat)).parse("aaaa"),
-            parser(Gr.grammar("S", nest2)).parse("aaaa")
+            Parsewisp.parser(Gr.grammar("S", flat)).parse("aaaa"),
+            Parsewisp.parser(Gr.grammar("S", nest2)).parse("aaaa")
         )
         Assertions.assertEquals(
-            parser(Gr.grammar("S", flat)).parse("aaaa"),
-            parser(Gr.grammar("S", nest3)).parse("aaaa")
+            Parsewisp.parser(Gr.grammar("S", flat)).parse("aaaa"),
+            Parsewisp.parser(Gr.grammar("S", nest3)).parse("aaaa")
         )
     }
 
     @Test
     fun fullParseError() {
-        val p = parser(Gr.grammar("S", string_a())) // Will use parse(...) for "a" and fullParse(...) for "b"
+        val p = Parsewisp.parser(Gr.grammar("S", string_a())) // Will use parse(...) for "a" and fullParse(...) for "b"
         Assertions.assertTrue(p.parse("").isFailure)
     }
 
@@ -405,7 +405,7 @@ internal class ConcatRuleTest {
         val r = ConcatRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(sym("A"))) as ConcatRule
+            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as ConcatRule
 
         // Expected
         Assertions.assertEquals(i, r.rules)
@@ -449,19 +449,19 @@ internal class ConcatRuleTest {
         val simpleRuleForTests = ConcatRule.createDirect(listOf(string_a(), string_a()))
 
         // By default, not hidden in output
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests)
         )
         Assertions.assertEquals(PT.create("S", "a", "a"), pDefault.parse("aa"))
 
         // With explicit show, also not hidden
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests.withHideTag(false))
         )
         Assertions.assertEquals(PT.create("S", "a", "a"), pShow.parse("aa"))
 
         // With explicit hide
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests.withHideTag(true))
         )
         Assertions.assertEquals(PT.create("S"), pHide.parse("aa"))
@@ -478,52 +478,52 @@ internal class ConcatRuleTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", simpleRuleForTests
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("A", "a", "a")), pDefault.parse("aa"))
 
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", simpleRuleForTests.withReduction(ReductionType.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "a", "a"), pMerge.parse("aa"))
 
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a", "a"), pMerge2.parse("aa"))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a", "a")), pMerge3.parse("aa"))
 
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B"))),
+                        simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         StringTerm.create("b", false)
                     )
                 )

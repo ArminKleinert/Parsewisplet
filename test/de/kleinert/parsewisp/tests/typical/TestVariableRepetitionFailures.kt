@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.error.ParserCreationFailure
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parser_options.ParsingOptions
@@ -23,7 +23,7 @@ internal class TestVariableRepetitionFailures {
         )
         val partialOpts = ParsingOptions.default.withPartial(true)
         val creationOpts = ParserCreationOptions.default
-        val repeated_a = parser(
+        val repeated_a = Parsewisp.parser(
             """
                         S = 'a'{0,6} 'a'
                         
@@ -47,7 +47,7 @@ internal class TestVariableRepetitionFailures {
         )
         val partialOpts = ParsingOptions.default.withPartial(true)
         val creationOpts = ParserCreationOptions.default
-        val repeated_a = parser(
+        val repeated_a = Parsewisp.parser(
             """
                         S = 'b' 'a'{0,6}
                         
@@ -71,7 +71,7 @@ internal class TestVariableRepetitionFailures {
         )
         val partialOpts = ParsingOptions.default.withPartial(true)
         val creationOpts = ParserCreationOptions.default
-        val repeated_a = parser(
+        val repeated_a = Parsewisp.parser(
             """
                         S = 'a'{1,6}
                         
@@ -84,7 +84,7 @@ internal class TestVariableRepetitionFailures {
 
     @Test
     fun parseRepetitionMinMax() {
-        val p = parser("S = 'a' {2,4}")
+        val p = Parsewisp.parser("S = 'a' {2,4}")
         Assertions.assertTrue(p.parse("").isFailure)
         Assertions.assertTrue(p.parse("a").isFailure)
         Assertions.assertEquals(PT.create("S", "a", "a"), p.parse("aa"))
@@ -98,22 +98,22 @@ internal class TestVariableRepetitionFailures {
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = 'a' {-1,6}") })
+            Executable { Parsewisp.parser("S = 'a' {-1,6}") })
         // Negative maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = 'a' {,-1}") })
+             { Parsewisp.parser("S = 'a' {,-1}") })
         // Negative minimum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = 'a' {-1,}") })
+             { Parsewisp.parser("S = 'a' {-1,}") })
         // Negative exact
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = 'a' {-1}") })
+            { Parsewisp.parser("S = 'a' {-1}") })
         // Minimum greater than maximum
         Assertions.assertThrows<ParserCreationFailure?>(
             ParserCreationFailure::class.java,
-            Executable { parser("S = 'a' {4,2}") })
+             { Parsewisp.parser("S = 'a' {4,2}") })
     }
 }

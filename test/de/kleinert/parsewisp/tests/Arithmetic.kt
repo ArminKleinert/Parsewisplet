@@ -75,7 +75,7 @@ object Arithmetic {
      *
      * Add explicit options to the parser's construction like so:
      * <pre>
-     * `var options = ParserCreationOptions                 .getDefault()                 .withWhitespaceParser(Parsewisp.parser("whitespace = ' ' | '\\t' | '\\n'")); `
+     * `var options = ParserCreationOptions                 .getDefault()                 .withWhitespaceParser(Parsewisp.parser1("whitespace = ' ' | '\\t' | '\\n'")); `
     </pre> *
      * Since this pattern came up so often, a shorter alternative is provided:
      * <pre>

@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical.grammars
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser.Parser
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import org.junit.jupiter.api.Test
@@ -17,7 +17,7 @@ import java.nio.file.Path
 internal class TestGrammarLyra {
     private fun parser(): Parser {
         try {
-            return parser(
+            return Parsewisp.parser(
                 Files.readString(Path.of("testres/grammars/lyra.grammar")),
                 ParserCreationOptions.newWithStandardWhitespace()
             )

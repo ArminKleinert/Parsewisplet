@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.grammar.Grammar
@@ -14,12 +14,12 @@ import org.junit.jupiter.api.Test
 internal class GrammarBuilderTest {
     @Test
     fun equivalentToStringGrammar() {
-        val gFromString = parser(
+        val gFromString = Parsewisp.parser(
             """
-                                S = NUMBER NUMBER*
-                                NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
-                                
-                                """.trimIndent()
+            S = NUMBER NUMBER*
+            NUMBER = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+            
+            """.trimIndent()
         )
             .grammar
         val gFromGB = object : GrammarBuilder() {
@@ -38,8 +38,8 @@ internal class GrammarBuilderTest {
 
         Assertions.assertEquals(gFromString, gFromGB)
 
-        val pFromString = parser(gFromString, ParserCreationOptions.default.withStartProduction(sym("S")))
-        val pFromGB = parser(gFromGB, ParserCreationOptions.default.withStartProduction(sym("S")))
+        val pFromString = Parsewisp.parser(gFromString, ParserCreationOptions.default.withStartProduction(sym("S")))
+        val pFromGB = Parsewisp.parser(gFromGB, ParserCreationOptions.default.withStartProduction(sym("S")))
         val text = "0123456789"
         Assertions.assertEquals(pFromString.parse(text), pFromGB.parse(text))
     }
@@ -57,7 +57,7 @@ internal class GrammarBuilderTest {
             listOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")
                 .map { it: String? -> StringTerm.create(it!!, true) }
         )
-        val pFromGrammar = parser(
+        val pFromGrammar = Parsewisp.parser(
             Grammar(sym("S"), pGrammarList),
             ParserCreationOptions.default.withStartProduction(sym("S"))
         )
@@ -102,21 +102,27 @@ internal class GrammarBuilderTest {
                 addProduction(
                     "G", onceOrMore(
                         altUnsafe(
-                            (('0'..'9') + '_'                            )
+                            (('0'..'9') + '_')
                                 .map { i -> i.toString() }
-                                .map { s -> StringTerm.create(s, false) }.toList())))
+                                .map { s -> StringTerm.create(s, false) }.toList()
+                        )
+                    )
+                )
                 addProduction(
                     "H", onceOrMore(
                         altUnsafe(
-                            (('0'..'9') + '_'                            )
+                            (('0'..'9') + '_')
                                 .map { i -> i.toString() }
-                                .map { s -> StringTerm.create(s, false) }.toList())))
+                                .map { s -> StringTerm.create(s, false) }.toList()
+                        )
+                    )
+                )
                 addProduction("I", cat(regex("[0-9_]"), opt(onceOrMore(regex("[0-9_]")))))
                 addProduction("J", onceOrMore(oneOf("0123456789")))
                 addProduction("K", onceOrMore(oneOf("0123456789abcdefABCDEF")))
             }
         }.build()
-        val p = parser(gFromGB, ParserCreationOptions.default)
+        val p = Parsewisp.parser(gFromGB, ParserCreationOptions.default)
 
         Assertions.assertEquals(
             listOf(
@@ -132,7 +138,7 @@ internal class GrammarBuilderTest {
                 PT.create("S", PT.create("J", "9", "9")),
                 PT.create("S", PT.create("K", "9", "9"))
             ),
-            parser(gFromGB, ParserCreationOptions.default).parses("99")
+            Parsewisp.parser(gFromGB, ParserCreationOptions.default).parses("99")
         )
         Assertions.assertEquals(listOf(PT.create("S")), p.parses(""))
     }
@@ -153,7 +159,7 @@ internal class GrammarBuilderTest {
             }
         }.build()
 
-        val p = parser(gFromGB, ParserCreationOptions.default.withStartProduction(sym("S")))
+        val p = Parsewisp.parser(gFromGB, ParserCreationOptions.default.withStartProduction(sym("S")))
         val text = "123 456 789"
         Assertions.assertEquals(
             PT.create("S", 123L, 456L, 789L),

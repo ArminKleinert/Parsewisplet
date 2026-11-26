@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.parser_options.ParsingOptions
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test
 internal class ParserAsFunctionTest {
     @Test
     fun asMapper() {
-        val p = parser("S = #'[A-Z]'")
+        val p = Parsewisp.parser("S = #'[A-Z]'")
         val strings =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray().map { it.toString() }
         Assertions.assertEquals(
@@ -30,7 +30,7 @@ internal class ParserAsFunctionTest {
                     .first()
             }
         )
-        val p = parser("S = #'[A-Z]'")
+        val p = Parsewisp.parser("S = #'[A-Z]'")
         val strings =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray().map { it.toString() }
         val ints = strings.map { s -> s[0].code }

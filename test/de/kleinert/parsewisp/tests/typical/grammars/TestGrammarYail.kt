@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical.grammars
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser.Parser
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parser_options.ParsingOptions
@@ -14,7 +14,7 @@ internal class TestGrammarYail {
     private fun parser(): Parser {
         try {
             val opts = ParserCreationOptions.default
-            return parser(
+            return Parsewisp.parser(
                 Files.readString(Path.of("testres/grammars/yail.grammar")),
                 opts
             )

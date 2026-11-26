@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.Rule
@@ -14,34 +14,34 @@ import org.junit.jupiter.api.Test
 
 internal class NonTerminalTest {
     private fun nt(name: String): NonTerminal {
-        return NonTerminal.create(sym(name))
+        return NonTerminal.create(Sym.sym(name))
     }
 
     private fun simpleRuleForTests(): NonTerminal {
-        return NonTerminal.create(sym("A"))
+        return NonTerminal.create(Sym.sym("A"))
     }
 
     @Test
     fun create() {
         Assertions.assertEquals(
-            NonTerminal.create(sym("S")), NonTerminal.create(sym("S"))
+            NonTerminal.create(Sym.sym("S")), NonTerminal.create(Sym.sym("S"))
         )
         Assertions.assertNotEquals(
-            NonTerminal.create(sym("S1")), NonTerminal.create(sym("S2"))
+            NonTerminal.create(Sym.sym("S1")), NonTerminal.create(Sym.sym("S2"))
         )
     }
 
     @Test
     fun getKeyword() {
         Assertions.assertEquals(
-            sym("S"),
-            NonTerminal.create(sym("S")).keyword
+            Sym.sym("S"),
+            NonTerminal.create(Sym.sym("S")).keyword
         )
     }
 
     @Test
     fun parse() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -65,7 +65,7 @@ internal class NonTerminalTest {
     @Test
     fun parseError() {
         // A NonTerminal can't really fail. Only its related rules can.
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -86,7 +86,7 @@ internal class NonTerminalTest {
 
     @Test
     fun fullParseSingle() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A"),
                 "A", StringTerm.create("ab", false)
@@ -100,7 +100,7 @@ internal class NonTerminalTest {
 
     @Test
     fun fullParseConcat() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -124,7 +124,7 @@ internal class NonTerminalTest {
     @Test
     fun fullParseError() {
         // A NonTerminal can't really fail. Only its related rules can.
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -167,7 +167,7 @@ internal class NonTerminalTest {
     @Test
     fun withHideTagParse() {
         // By default, not hidden in output
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A"),
                 "A", StringTerm.create("a", false)
@@ -179,7 +179,7 @@ internal class NonTerminalTest {
         )
 
         // With explicit show, also not hidden
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A").withHideTag(false),
                 "A", StringTerm.create("a", false)
@@ -191,7 +191,7 @@ internal class NonTerminalTest {
         )
 
         // With explicit hide
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A").withHideTag(true),
                 "A", StringTerm.create("a", false)
@@ -209,7 +209,7 @@ internal class NonTerminalTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A"),
                 "A", nt("B"),
@@ -224,7 +224,7 @@ internal class NonTerminalTest {
 
     @Test
     fun withReductionMergeUp() {
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A"),
                 "A", nt("B"),
@@ -239,10 +239,10 @@ internal class NonTerminalTest {
 
     @Test
     fun withReductionTaggedTree() {
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A"),
-                "A", nt("B").withReduction(ReductionType.taggedTree(sym("C"))),
+                "A", nt("B").withReduction(ReductionType.taggedTree(Sym.sym("C"))),
                 "B", StringTerm.create("a", false)
             )
         )
@@ -254,12 +254,12 @@ internal class NonTerminalTest {
 
     @Test
     fun withReductionNotDirectRhs() {
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A"),
                 "A", ConcatRule.create(
                     listOf(
-                        nt("B").withReduction(ReductionType.taggedTree(sym("C"))),
+                        nt("B").withReduction(ReductionType.taggedTree(Sym.sym("C"))),
                         StringTerm.create("b", false)
                     )
                 ),

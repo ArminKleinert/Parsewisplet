@@ -30,10 +30,6 @@ object Parsewisp {
         return parser(g, options)
     }
 
-    fun parser(grammar: Grammar): Parser {
-        return parser(grammar, null)
-    }
-
     /**
      * Creates a parser from a grammar. See [.parser] for what the options do.
      *
@@ -45,7 +41,7 @@ object Parsewisp {
      */
     fun parser(
         grammar: Grammar,
-        options: ParserCreationOptions?
+        options: ParserCreationOptions? = null
     ): Parser {
         var options = options
         if (options == null) options = ParserCreationOptions.default
@@ -96,8 +92,8 @@ object Parsewisp {
         }
         if (predefinedWsParsers == null) {
             predefinedWsParsers = mapOf(
-                "standard" to parser("whitespace = #'\\s+'", ParserCreationOptions.default),
-                "comma" to parser("whitespace = #'[,\\s]+'", ParserCreationOptions.default)
+                "standard" to Parsewisp.parser("whitespace = #'\\s+'", ParserCreationOptions.default),
+                "comma" to Parsewisp.parser("whitespace = #'[,\\s]+'", ParserCreationOptions.default)
             )
         }
         return predefinedWsParsers!![wsParserName]

@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parsing.EOFTerm
 import de.kleinert.parsewisp.testutil.PT
@@ -12,9 +12,9 @@ internal class StrangeNonTerminalNamesTest {
     fun nonTerminalStartsWithEpsilonName() {
         val opts = ParserCreationOptions.default
 
-        Assertions.assertDoesNotThrow({ parser("S = EpsNT\nEpsNT = \"1\"", opts) })
+        Assertions.assertDoesNotThrow({ Parsewisp.parser("S = EpsNT\nEpsNT = \"1\"", opts) })
 
-        val p = parser("S = EpsNT\nEpsNT = \"1\"", opts)
+        val p = Parsewisp.parser("S = EpsNT\nEpsNT = \"1\"", opts)
         Assertions.assertEquals(
             PT.create("S", PT.create("EpsNT", "1")),
             p.parse("1")
@@ -26,13 +26,13 @@ internal class StrangeNonTerminalNamesTest {
         val opts = ParserCreationOptions.default
 
         Assertions.assertDoesNotThrow({
-            parser(
+            Parsewisp.parser(
                 "S = " + EOFTerm.text() + "NT\n" + EOFTerm.text() + "NT = \"1\"",
                 opts
             )
         })
 
-        val p = parser("S = EpsNT\nEpsNT = \"1\"", opts)
+        val p = Parsewisp.parser("S = EpsNT\nEpsNT = \"1\"", opts)
         Assertions.assertEquals(
             PT.create("S", PT.create("EpsNT", "1")),
             p.parse("1")

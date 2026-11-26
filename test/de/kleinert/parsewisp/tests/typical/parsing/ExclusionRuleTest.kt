@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
@@ -50,7 +50,7 @@ internal class ExclusionRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf(
@@ -68,7 +68,7 @@ internal class ExclusionRuleTest {
 
     @Test
     fun parseError() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf(
@@ -84,7 +84,7 @@ internal class ExclusionRuleTest {
 
     @Test
     fun fullParseSingle() {
-        val p = parser(Gr.grammar("S", wordButNotKeyword()))
+        val p = Parsewisp.parser(Gr.grammar("S", wordButNotKeyword()))
         Assertions.assertEquals(
             PT.create("S", "anyword"),
             p.parse("anyword")
@@ -93,7 +93,7 @@ internal class ExclusionRuleTest {
 
     @Test
     fun fullParseConcat() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf(
@@ -111,7 +111,7 @@ internal class ExclusionRuleTest {
 
     @Test
     fun fullParseError() {
-        val p = parser(Gr.grammar("S", wordButNotKeyword()))
+        val p = Parsewisp.parser(Gr.grammar("S", wordButNotKeyword()))
         Assertions.assertTrue(p.parse("int").isFailure) // Matched by exclusion
         Assertions.assertTrue(p.parse("...").isFailure) // Invalid for inclusion
     }
@@ -192,7 +192,7 @@ internal class ExclusionRuleTest {
         val r = ExclusionRule
             .create(word(), keywords())
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(sym("A"))) as ExclusionRule
+            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as ExclusionRule
 
         // Expected
         Assertions.assertEquals(i, r.rules)
@@ -236,19 +236,19 @@ internal class ExclusionRuleTest {
         val simpleRuleForTests = ExclusionRule.create(word(), keywords()) as ExclusionRule
 
         // By default, not hidden in output
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests)
         )
         Assertions.assertEquals(PT.create("S", "a"), pDefault.parse("a"))
 
         // With explicit show, also not hidden
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests.withHideTag(false))
         )
         Assertions.assertEquals(PT.create("S", "a"), pShow.parse("a"))
 
         // With explicit hide
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests.withHideTag(true))
         )
         Assertions.assertEquals(PT.create("S"), pHide.parse("a"))
@@ -265,10 +265,10 @@ internal class ExclusionRuleTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", simpleRuleForTests
             )
         )
@@ -280,10 +280,10 @@ internal class ExclusionRuleTest {
         val simpleRuleForTests = ExclusionRule.create(word(), keywords()) as ExclusionRule
 
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", simpleRuleForTests.withReduction(ReductionType.merging())
             )
         )
@@ -295,20 +295,20 @@ internal class ExclusionRuleTest {
         val simpleRuleForTests = ExclusionRule.create(word(), keywords()) as ExclusionRule
 
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
@@ -319,13 +319,13 @@ internal class ExclusionRuleTest {
         val simpleRuleForTests = ExclusionRule.create(word(), keywords()) as ExclusionRule
 
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B"))),
+                        simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         StringTerm.create(";", false)
                     )
                 )

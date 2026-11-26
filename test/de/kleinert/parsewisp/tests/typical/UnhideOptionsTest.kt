@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.parser_options.UnhideOptions
 import de.kleinert.parsewisp.testutil.PT
@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class UnhideOptionsTest {
     @Test
     fun testUnhide1() {
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                 S   = A <B>
                 <A> = 'a'

@@ -1,8 +1,7 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.testutil.PT
 import de.kleinert.parsewisp.util.Transform
 import org.junit.jupiter.api.Assertions
@@ -13,7 +12,7 @@ internal class TransformTest {
     fun testAdd1() {
         val tree = PT.create("S", "1", "2", "3")
         val transformFn: (List<Any?>) -> Any? = { o -> o.sumOf { (it as String).toInt() } }
-        val transformMap = mapOf(sym("S") to transformFn)
+        val transformMap = mapOf(Sym.sym("S") to transformFn)
 
         Assertions.assertEquals(
             6,
@@ -31,7 +30,7 @@ internal class TransformTest {
 
     @Test
     fun testAdd2() {
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                 S     = NUM (<'+'> NUM)*
                 <NUM> = #'\d+'
@@ -40,7 +39,7 @@ internal class TransformTest {
         )
         val tree = p.parse("1+2+3").castToParseSuccess()
         val transformFn: (List<Any?>) -> Any? = { o -> o.sumOf { it: Any? -> (it as String?)!!.toInt() } }
-        val transformMap = mapOf(sym("S") to transformFn)
+        val transformMap = mapOf(Sym.sym("S") to transformFn)
 
         Assertions.assertEquals(
             6,
@@ -58,7 +57,7 @@ internal class TransformTest {
 
     @Test
     fun testAdd3() {
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                 S   = NUM ('+' NUM)*
                 NUM = #'\d+'
@@ -67,12 +66,12 @@ internal class TransformTest {
         )
         val tree = p.parse("1+2+3").castToParseSuccess()
         val transformMap: Map<Sym, (List<Any?>) -> Any?> = mapOf(
-            sym("S") to { o ->
+            Sym.sym("S") to { o ->
                 o.filter { it != "+" }
                     .map { it as String }
                     .sumOf { s -> s.toInt() } as Any?
             },
-            sym("NUM") to { o -> o[0] }
+            Sym.sym("NUM") to { o -> o[0] }
         )
 
         Assertions.assertEquals(
@@ -91,7 +90,7 @@ internal class TransformTest {
 
     @Test
     fun testAdd4() {
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                 S   = A
                 A   = NUM ('+' NUM)*
@@ -101,21 +100,21 @@ internal class TransformTest {
         )
         val tree = p.parse("1+2+3").castToParseSuccess()
         val transformMap: Map<Sym, (List<Any?>) -> Any?> = mapOf(
-            sym("A") to { o ->
+            Sym.sym("A") to { o ->
                 o.filter { it != "+" }
                     .map { it as String }
                     .sumOf { s -> s.toInt() }
                     .toString()
             },
-            sym("NUM") to { o -> o[0] }
+            Sym.sym("NUM") to { o -> o[0] }
         )
 
         Assertions.assertEquals(
-            listOf(sym("S"), "6"),
+            listOf(Sym.sym("S"), "6"),
             Transform.transform(tree, transformMap)
         )
         Assertions.assertEquals(
-            listOf(sym("S"), "6"),
+            listOf(Sym.sym("S"), "6"),
             Transform.transform(tree, transformMap, { o: Any? -> o as MutableList<*>? })
         )
     }

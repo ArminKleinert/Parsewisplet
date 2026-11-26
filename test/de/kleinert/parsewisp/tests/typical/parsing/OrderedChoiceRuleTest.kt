@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
@@ -35,8 +35,8 @@ internal class OrderedChoiceRuleTest {
         )
 
         Assertions.assertEquals(
-            parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
-            parser(Gr.grammar("S", OrderedChoiceRule.create(listOf()))).parse("")
+            Parsewisp.parser(Gr.grammar("S", EpsilonTerm.default)).parse(""),
+            Parsewisp.parser(Gr.grammar("S", OrderedChoiceRule.create(listOf()))).parse("")
         )
     }
 
@@ -50,8 +50,8 @@ internal class OrderedChoiceRuleTest {
         )
 
         Assertions.assertEquals(
-            parser(Gr.grammar("S", string_a())).parse("a"),
-            parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a())))).parse("a")
+            Parsewisp.parser(Gr.grammar("S", string_a())).parse("a"),
+            Parsewisp.parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a())))).parse("a")
         )
     }
 
@@ -75,14 +75,14 @@ internal class OrderedChoiceRuleTest {
         )
 
         Assertions.assertEquals(
-            parser(Gr.grammar("S", OrderedChoiceRule.create(lDistinct))).parses("a"),
-            parser(Gr.grammar("S", OrderedChoiceRule.create(l))).parses("a")
+            Parsewisp.parser(Gr.grammar("S", OrderedChoiceRule.create(lDistinct))).parses("a"),
+            Parsewisp.parser(Gr.grammar("S", OrderedChoiceRule.create(l))).parses("a")
         )
     }
 
     @Test
     fun parse() {
-        val p_ab = parser(
+        val p_ab = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -100,7 +100,7 @@ internal class OrderedChoiceRuleTest {
     @Test
     fun parseRepeatedCasesDoNotMakeDuplicateTrees() {
         // Tests the grammar `S = "a" | "a" | "a"` on input "a". The expectation is that it creates exactly one tree, not three different ones.
-        val p_a = parser(
+        val p_a = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -124,7 +124,7 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun parseError() {
-        val p_ab = parser(
+        val p_ab = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -140,14 +140,14 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun fullParseSingle() {
-        val p_ab = parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_b()))))
+        val p_ab = Parsewisp.parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_b()))))
         Assertions.assertEquals(PT.create("S", "a"), p_ab.parse("a"))
         Assertions.assertEquals(PT.create("S", "b"), p_ab.parse("b"))
     }
 
     @Test
     fun fullParseConcat() {
-        val p_ab = parser(
+        val p_ab = Parsewisp.parser(
             Gr.grammar(
                 "S",
                 ConcatRule.create(
@@ -165,7 +165,7 @@ internal class OrderedChoiceRuleTest {
     @Test
     fun fullParseRepeatedCasesDoNotMakeDuplicateTrees() {
         // Tests the grammar `S = "a" | "a" | "a"` on input "a". The expectation is that it creates exactly one tree, not three different ones.
-        val p_a = parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_a(), string_a()))))
+        val p_a = Parsewisp.parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_a(), string_a()))))
         Assertions.assertEquals(
             listOf(PT.create("S", "a")),
             p_a.parses("a")
@@ -174,7 +174,7 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun fullParseError() {
-        val p_ab = parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_b()))))
+        val p_ab = Parsewisp.parser(Gr.grammar("S", OrderedChoiceRule.create(listOf(string_a(), string_b()))))
         Assertions.assertTrue(p_ab.parse("c").isFailure)
     }
 
@@ -208,7 +208,7 @@ internal class OrderedChoiceRuleTest {
         val r = OrderedChoiceRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(sym("A"))) as OrderedChoiceRule
+            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as OrderedChoiceRule
 
         // As expected.
         Assertions.assertEquals(i, r.rules)
@@ -252,19 +252,19 @@ internal class OrderedChoiceRuleTest {
         val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
 
         // By default, not hidden in output
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests)
         )
         Assertions.assertEquals(PT.create("S", "a"), pDefault.parse("a"))
 
         // With explicit show, also not hidden
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests.withHideTag(false))
         )
         Assertions.assertEquals(PT.create("S", "a"), pShow.parse("a"))
 
         // With explicit hide
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar("S", simpleRuleForTests.withHideTag(true))
         )
         Assertions.assertEquals(PT.create("S"), pHide.parse("a"))
@@ -281,10 +281,10 @@ internal class OrderedChoiceRuleTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", simpleRuleForTests
             )
         )
@@ -295,10 +295,10 @@ internal class OrderedChoiceRuleTest {
     fun withReductionMergeUp() {
         val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", simpleRuleForTests.withReduction(ReductionType.merging())
             )
         )
@@ -309,20 +309,20 @@ internal class OrderedChoiceRuleTest {
     fun withReductionTaggedTree() {
         val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
-                "A", simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B")))
+                "S", NonTerminal.create(Sym.sym("A")),
+                "A", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
@@ -332,13 +332,13 @@ internal class OrderedChoiceRuleTest {
     fun withReductionNotDirectRhs() {
         // Add parse tree from a rule which doesn't appear in the grammar.
         val simpleRuleForTests = OrderedChoiceRule.create(listOf(string_a(), string_b())) as OrderedChoiceRule
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simpleRuleForTests.withReduction(ReductionType.taggedTree(sym("B"))),
+                        simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         StringTerm.create("b", false)
                     )
                 )
@@ -352,15 +352,15 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun multipleParsesTest1() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", OrderedChoiceRule.create(
                     listOf(
-                        NonTerminal.create(sym("A")),
-                        NonTerminal.create(sym("B")),
-                        NonTerminal.create(sym("C")),
-                        NonTerminal.create(sym("D")),
-                        NonTerminal.create(sym("E"))
+                        NonTerminal.create(Sym.sym("A")),
+                        NonTerminal.create(Sym.sym("B")),
+                        NonTerminal.create(Sym.sym("C")),
+                        NonTerminal.create(Sym.sym("D")),
+                        NonTerminal.create(Sym.sym("E"))
                     )
                 ),
                 "A", EpsilonTerm.default,
@@ -385,14 +385,14 @@ internal class OrderedChoiceRuleTest {
 
     @Test
     fun recursiveParsesTest1() {
-        // Tests the following grammar: `S = "a" S "a" | "a"
-        val p = parser(
+        // Tests the following grammar: `S = "a" S "a" / "a"
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", OrderedChoiceRule.create(
                     listOf(
                         ConcatRule.create(
                             listOf(
-                                string_a(), NonTerminal.create(sym("S")), string_a()
+                                string_a(), NonTerminal.create(Sym.sym("S")), string_a()
                             )
                         ),
                         string_a()
@@ -422,14 +422,14 @@ internal class OrderedChoiceRuleTest {
     @Test
     fun recursiveMultipleParsesTest() {
         // Tests the following grammar: `S = "a" | S S
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", OrderedChoiceRule.create(
                     listOf(
                         string_a(),
                         ConcatRule.create(
                             listOf(
-                                NonTerminal.create(sym("S")), NonTerminal.create(sym("S"))
+                                NonTerminal.create(Sym.sym("S")), NonTerminal.create(Sym.sym("S"))
                             )
                         )
                     )

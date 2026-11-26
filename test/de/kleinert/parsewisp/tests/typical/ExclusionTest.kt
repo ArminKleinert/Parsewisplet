@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -12,7 +12,7 @@ internal class ExclusionTest {
         val opts = ParserCreationOptions.default
 
         // Allow any number ([0-9]+) except those with two digits ([0-9][0-9]).
-        val p = parser("S = #\"[0-9]+\" - #\"[0-9][0-9]\"", opts)
+        val p = Parsewisp.parser("S = #\"[0-9]+\" - #\"[0-9][0-9]\"", opts)
 
         Assertions.assertEquals(PT.create("S", "1"), p.parse("1"))
         Assertions.assertTrue(p.parse("11").isFailure)
@@ -24,7 +24,7 @@ internal class ExclusionTest {
         val opts = ParserCreationOptions.default
 
         // Allow any number ([0-9]+) except 11.
-        val p = parser("S = #\"[0-9]+\" - \"11\"", opts)
+        val p = Parsewisp.parser("S = #\"[0-9]+\" - \"11\"", opts)
 
         Assertions.assertEquals(PT.create("S", "1"), p.parse("1"))
         Assertions.assertTrue(p.parse("11").isFailure)
@@ -37,7 +37,7 @@ internal class ExclusionTest {
         val opts = ParserCreationOptions.default
 
         // Allow any number ([0-9]+) except 11. The number is followed by a single "a".
-        val p = parser("S = #\"[0-9]+\" - \"11\" \"a\"", opts)
+        val p = Parsewisp.parser("S = #\"[0-9]+\" - \"11\" \"a\"", opts)
 
         Assertions.assertEquals(PT.create("S", "1", "a"), p.parse("1a"))
         Assertions.assertTrue(p.parse("11a").isFailure)
@@ -51,7 +51,7 @@ internal class ExclusionTest {
         val opts = ParserCreationOptions.default
 
         // Allow 1, 11 and 111, but not 11.
-        val p = parser("S = (\"1\" | \"11\" | \"111\") - \"11\"", opts)
+        val p = Parsewisp.parser("S = (\"1\" | \"11\" | \"111\") - \"11\"", opts)
 
         Assertions.assertEquals(PT.create("S", "1"), p.parse("1"))
         Assertions.assertTrue(p.parse("11").isFailure)
@@ -63,7 +63,7 @@ internal class ExclusionTest {
         val opts = ParserCreationOptions.default
 
         // Allow 1, 11 and 111, but not 11. The number is followed by a single "a".
-        val p = parser("S = (\"1\" | \"11\" | \"111\") - \"11\" \"a\"", opts)
+        val p = Parsewisp.parser("S = (\"1\" | \"11\" | \"111\") - \"11\" \"a\"", opts)
 
         Assertions.assertEquals(PT.create("S", "1", "a"), p.parse("1a"))
         Assertions.assertTrue(p.parse("11a").isFailure)
@@ -75,7 +75,7 @@ internal class ExclusionTest {
         val opts = ParserCreationOptions.default
 
         // Allow 1, 11 and 111, but not 11. The number is followed by a single "a".
-        val p = parser(
+        val p = Parsewisp.parser(
             """
                 S = Identifier - Keyword
                 Identifier = #"_*[a-zA-Z][a-zA-Z0-9_]*"
@@ -96,7 +96,7 @@ internal class ExclusionTest {
         val opts = ParserCreationOptions.default
 
         // Any number. But any sequence of "1"s, except "11", is not allowed.
-        val p = parser("S = #'[0-9]+' - (#'[1]+' - '11')", opts)
+        val p = Parsewisp.parser("S = #'[0-9]+' - (#'[1]+' - '11')", opts)
         Assertions.assertTrue(p.parse("1").isFailure)
         Assertions.assertEquals(PT.create("S", "12"), p.parse("12"))
         Assertions.assertEquals(PT.create("S", "11"), p.parse("11"))
@@ -109,7 +109,7 @@ internal class ExclusionTest {
         val opts = ParserCreationOptions.default
 
         // Any number except sequences of "1"s. "11" is also not allowed.
-        val p = parser("S = (#'[0-9]+' - #'[1]+') - '11'", opts)
+        val p = Parsewisp.parser("S = (#'[0-9]+' - #'[1]+') - '11'", opts)
         Assertions.assertTrue(p.parse("1").isFailure)
         Assertions.assertEquals(PT.create("S", "12"), p.parse("12"))
         Assertions.assertTrue(p.parse("11").isFailure)

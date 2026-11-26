@@ -1,14 +1,13 @@
 package de.kleinert.parsewisp.tests.typical.parsing
 
-import de.kleinert.parsewisp.Parsewisp.parser
-import de.kleinert.parsewisp.Sym.Companion.sym
+import de.kleinert.parsewisp.Parsewisp
+import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
 import de.kleinert.parsewisp.reduction.ReductionType
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
-import java.util.regex.Pattern
 
 internal class LookaheadRuleTest {
     @Test
@@ -24,10 +23,10 @@ internal class LookaheadRuleTest {
 
     @Test
     fun parse() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
-                    listOf<Rule>(
+                    listOf(
                         LookaheadRule.create(RegexTerm.create(Regex("[a-zA-Z]"))),  // Look for any letter
                         LookaheadRule.create(RegexTerm.create(Regex("[a-fA-F0-9]"))),  // Look for any hex digit
                         RegexTerm.create(Regex("[\\x00-\\xFF]+")) // Any 8-bit ascii
@@ -48,7 +47,7 @@ internal class LookaheadRuleTest {
     @Test
     fun parseDoubledLook() {
         // This parser includes a doubled lookahead for the terminal "a".
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf(
@@ -65,7 +64,7 @@ internal class LookaheadRuleTest {
 
     @Test
     fun parseError() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf(
@@ -81,7 +80,7 @@ internal class LookaheadRuleTest {
     @Test
     fun parseContradictoryLookahead() {
         // This parser has lookaheads for two rules that can not be there simultaneously. It looks for both "a" and "b".
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf(
@@ -101,7 +100,7 @@ internal class LookaheadRuleTest {
     fun fullParseSingle() {
         Assertions.assertEquals(
             PT.create("S"),
-            parser(
+            Parsewisp.parser(
                 Gr.grammar(
                     "S", LookaheadRule.create(EpsilonTerm.default)
                 )
@@ -109,7 +108,7 @@ internal class LookaheadRuleTest {
         )
         Assertions.assertEquals(
             PT.create("S"),
-            parser(
+            Parsewisp.parser(
                 Gr.grammar(
                     "S", LookaheadRule.create(EOFTerm.default)
                 )
@@ -119,7 +118,7 @@ internal class LookaheadRuleTest {
 
     @Test
     fun fullParseConcat() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf<Rule>(
@@ -134,7 +133,7 @@ internal class LookaheadRuleTest {
 
     @Test
     fun fullParseError() {
-        val p = parser(
+        val p = Parsewisp.parser(
             Gr.grammar(
                 "S", LookaheadRule.create(StringTerm.create("a", false))
             )
@@ -175,7 +174,7 @@ internal class LookaheadRuleTest {
         val r = LookaheadRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(sym("A"))) as LookaheadRule
+            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as LookaheadRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -219,7 +218,7 @@ internal class LookaheadRuleTest {
         val r = LookaheadRule.create(StringTerm.create("a", false)) as LookaheadRule
 
         // By default, not hidden in output, but this type adds nothing to the tree
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf<Rule>(
@@ -232,7 +231,7 @@ internal class LookaheadRuleTest {
         Assertions.assertEquals(PT.create("S", "a"), pDefault.parse("a"))
 
         // With explicit show, also not hidden, but this type adds nothing to the tree
-        val pShow = parser(
+        val pShow = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf<Rule>(
@@ -245,7 +244,7 @@ internal class LookaheadRuleTest {
         Assertions.assertEquals(PT.create("S", "a"), pShow.parse("a"))
 
         // With explicit hide
-        val pHide = parser(
+        val pHide = Parsewisp.parser(
             Gr.grammar(
                 "S", ConcatRule.create(
                     listOf<Rule>(
@@ -269,10 +268,10 @@ internal class LookaheadRuleTest {
         )
 
         // Default: Don't merge up
-        val pDefault = parser(
+        val pDefault = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf<Rule>(
                         r,
@@ -288,10 +287,10 @@ internal class LookaheadRuleTest {
     @Test
     fun withReductionMergeUp() {
         // Merge upwards
-        val pMerge = parser(
+        val pMerge = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", LookaheadRule.create(EpsilonTerm.default)
                     .withReduction(ReductionType.merging())
             )
@@ -302,22 +301,22 @@ internal class LookaheadRuleTest {
     @Test
     fun withReductionTaggedTree() {
         // Add to parse tree with potentially different name (Top-level)
-        val pMerge2 = parser(
+        val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
                 "S", LookaheadRule.create(EpsilonTerm.default)
-                    .withReduction(ReductionType.taggedTree(sym("B")))
+                    .withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
 
         // Add to parse tree with potentially different name (Nested)
-        val pMerge3 = parser(
+        val pMerge3 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", LookaheadRule.create(EpsilonTerm.default)
-                    .withReduction(ReductionType.taggedTree(sym("B")))
+                    .withReduction(ReductionType.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -328,13 +327,13 @@ internal class LookaheadRuleTest {
         val r = LookaheadRule.create(StringTerm.create("a", false)) as LookaheadRule
 
         // Add parse tree from a rule which doesn't appear in the grammar.
-        val pMerge4 = parser(
+        val pMerge4 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", NonTerminal.create(sym("A")),
+                "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
-                    listOf<Rule>(
-                        r.withReduction(ReductionType.taggedTree(sym("B"))),
+                    listOf(
+                        r.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
                         RegexTerm.create(Regex("[a-z]"))
                     )
                 )

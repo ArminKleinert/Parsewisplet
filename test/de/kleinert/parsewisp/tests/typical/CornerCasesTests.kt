@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests.typical
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.result.ParseTree
 import de.kleinert.parsewisp.testutil.PT
@@ -17,29 +17,29 @@ internal class CornerCasesTests {
     fun repetitionsDoNotSwallowEmptyProductions() {
         Assertions.assertEquals(
             PT.create("S", "a", PT.create("E"), "b"),
-            parser("S = 'a' E+ 'b'\nE = eps").parse("ab")
+            Parsewisp.parser("S = 'a' E+ 'b'\nE = eps").parse("ab")
         )
         Assertions.assertEquals(
             PT.create("S", "a", PT.create("E")),
-            parser("S = 'a' E+\nE = eps").parse("a")
+            Parsewisp.parser("S = 'a' E+\nE = eps").parse("a")
         )
 
         Assertions.assertEquals(
             PT.create("S", PT.create("E"), PT.create("E")),
-            parser("S = E+ E+\nE = eps").parse("")
+            Parsewisp.parser("S = E+ E+\nE = eps").parse("")
         )
         Assertions.assertEquals(
             PT.create("S", PT.create("E")),
-            parser("S = E+\nE = eps").parse("")
+            Parsewisp.parser("S = E+\nE = eps").parse("")
         )
 
         Assertions.assertEquals(
             PT.create("S", "a", PT.create("E"), "b"),
-            parser("S = 'a' E {1,3} 'b'\nE = eps").parse("ab")
+            Parsewisp.parser("S = 'a' E {1,3} 'b'\nE = eps").parse("ab")
         )
         Assertions.assertEquals(
             PT.create("S", "a", PT.create("E"), PT.create("E"), "b"),
-            parser("S = 'a' E {2,3} 'b'\nE = eps").parse("ab")
+            Parsewisp.parser("S = 'a' E {2,3} 'b'\nE = eps").parse("ab")
         )
     }
 
@@ -52,7 +52,7 @@ internal class CornerCasesTests {
                 PT.create("S", "a", PT.create("E"), PT.create("E"), PT.create("E"), "b")
             ),
             HashSet<ParseTree?>(
-                parser("S = 'a' E {1,3} 'b'\nE = eps").parses(
+                Parsewisp.parser("S = 'a' E {1,3} 'b'\nE = eps").parses(
                     "ab",
                     ParsingOptions.default.withStopEarlyOnEmptyRepetition(false)
                 )

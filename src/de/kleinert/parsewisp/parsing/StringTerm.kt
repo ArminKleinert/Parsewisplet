@@ -53,23 +53,23 @@ class StringTerm private constructor(
     }
 
     override fun withHideTag(hide: Boolean): StringTerm {
-        return if (isHiddenInResult1() == hide) this else StringTerm(hide, red, string, this.isCaseInsensitive)
+        return if (isHiddenInResult == hide) this else StringTerm(hide, reduction, string, this.isCaseInsensitive)
     }
 
     override fun withReduction(red: ReductionType): StringTerm {
-        return if (getReduction1() === red) this else StringTerm(hide, red, string, this.isCaseInsensitive)
+        return if (reduction === red) this else StringTerm(isHiddenInResult, red, string, this.isCaseInsensitive)
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is StringTerm) return false
         if (this === other) return true
-        return hide == other.hide && red == other.red
+        return isHiddenInResult == other.isHiddenInResult && reduction == other.reduction
                 && string == other.string
                 && (string.isEmpty() || this.isCaseInsensitive == other.isCaseInsensitive)
     }
 
     override fun hashCode(): Int {
-        return hash(hide, red, string, this.isCaseInsensitive)
+        return hash(isHiddenInResult, reduction, string, this.isCaseInsensitive)
     }
 
     companion object {

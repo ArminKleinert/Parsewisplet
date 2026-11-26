@@ -21,21 +21,21 @@ private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
     }
 
     override fun withHideTag(hide: Boolean): EpsilonTerm {
-        return if (isHiddenInResult == hide) this else EpsilonTerm(hide, red)
+        return if (isHiddenInResult == hide) this else EpsilonTerm(hide, reduction)
     }
 
     override fun withReduction(red: ReductionType): EpsilonTerm {
-        return if (reduction === red) this else EpsilonTerm(hide, red)
+        return if (reduction === red) this else EpsilonTerm(isHiddenInResult, red)
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is EpsilonTerm) return false
         if (this === other) return true
-        return hide == other.hide && red == other.red
+        return isHiddenInResult == other.isHiddenInResult && reduction == other.reduction
     }
 
     override fun hashCode(): Int {
-        return hash(hide, red)
+        return hash(isHiddenInResult, reduction)
     }
 
     companion object {

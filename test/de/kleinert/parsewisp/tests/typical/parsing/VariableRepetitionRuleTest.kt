@@ -202,8 +202,8 @@ internal class VariableRepetitionRuleTest {
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
         Assertions.assertEquals(ni, nr.rule)
-        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
-        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
+        Assertions.assertEquals(r.isHiddenInResult, nr.isHiddenInResult)
+        Assertions.assertEquals(r.reduction, nr.reduction)
 
         // Original left untouched.
         Assertions.assertEquals(i, r.rule)
@@ -220,10 +220,10 @@ internal class VariableRepetitionRuleTest {
         Assertions.assertEquals(rep_a14().withHideTag(true), rep_a14().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(rep_a14().withHideTag(false).isHiddenInResult1())
-        Assertions.assertFalse(rep_a14().includeInResult().isHiddenInResult1())
-        Assertions.assertTrue(rep_a14().withHideTag(true).isHiddenInResult1())
-        Assertions.assertTrue(rep_a14().hideInResult().isHiddenInResult1())
+        Assertions.assertFalse(rep_a14().withHideTag(false).isHiddenInResult)
+        Assertions.assertFalse(rep_a14().includeInResult().isHiddenInResult)
+        Assertions.assertTrue(rep_a14().withHideTag(true).isHiddenInResult)
+        Assertions.assertTrue(rep_a14().hideInResult().isHiddenInResult)
 
         // Alternative names give equivalent output
         Assertions.assertEquals(rep_a14().withHideTag(false), rep_a14().includeInResult())

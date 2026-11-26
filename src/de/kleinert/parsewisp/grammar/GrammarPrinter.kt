@@ -173,7 +173,7 @@ interface GrammarPrinter {
     fun ruleToString(rule: Rule): String {
         val sb = StringBuilder()
 
-        if (rule.isHiddenInResult1()) sb.append('<')
+        if (rule.isHiddenInResult) sb.append('<')
 
         val s: String = when (rule) {
             is AlternationRule -> altToString(rule)
@@ -199,7 +199,7 @@ interface GrammarPrinter {
 
         sb.append(s)
 
-        if (rule.isHiddenInResult1()) sb.append('>')
+        if (rule.isHiddenInResult) sb.append('>')
 
         return sb.toString()
     }

@@ -30,15 +30,15 @@ class OnceOrMoreRule private constructor(
     }
 
     override fun withRule(rule: Rule): OnceOrMoreRule {
-        return OnceOrMoreRule(hide, red, rule)
+        return OnceOrMoreRule(isHiddenInResult, reduction, rule)
     }
 
     override fun withHideTag(hide: Boolean): OnceOrMoreRule {
-        return if (isHiddenInResult1() == hide) this else OnceOrMoreRule(hide, red, rule)
+        return if (isHiddenInResult == hide) this else OnceOrMoreRule(hide, reduction, rule)
     }
 
     override fun withReduction(red: ReductionType): OnceOrMoreRule {
-        return if (getReduction1() === red) this else OnceOrMoreRule(hide, red, rule)
+        return if (reduction === red) this else OnceOrMoreRule(isHiddenInResult, red, rule)
     }
 
     companion object {

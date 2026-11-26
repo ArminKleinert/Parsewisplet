@@ -44,15 +44,15 @@ class TransformRule private constructor(
     }
 
     override fun withRule(rule: Rule): TransformRule {
-        return TransformRule(hide, red, rule, transformer)
+        return TransformRule(isHiddenInResult, reduction, rule, transformer)
     }
 
     override fun withHideTag(hide: Boolean): TransformRule {
-        return if (isHiddenInResult1() == hide) this else TransformRule(hide, red, rule, transformer)
+        return if (isHiddenInResult == hide) this else TransformRule(hide, reduction, rule, transformer)
     }
 
     override fun withReduction(red: ReductionType): TransformRule {
-        return if (getReduction1() === red) this else TransformRule(hide, red, rule, transformer)
+        return if (reduction === red) this else TransformRule(isHiddenInResult, red, rule, transformer)
     }
 
     override fun equals(other: Any?): Boolean {

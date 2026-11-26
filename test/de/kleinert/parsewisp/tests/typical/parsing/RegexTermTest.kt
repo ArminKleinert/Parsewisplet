@@ -136,10 +136,10 @@ internal class RegexTermTest {
         Assertions.assertEquals(digit().withHideTag(true), digit().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(digit().withHideTag(false).isHiddenInResult1())
-        Assertions.assertFalse(digit().includeInResult().isHiddenInResult1())
-        Assertions.assertTrue(digit().withHideTag(true).isHiddenInResult1())
-        Assertions.assertTrue(digit().hideInResult().isHiddenInResult1())
+        Assertions.assertFalse(digit().withHideTag(false).isHiddenInResult)
+        Assertions.assertFalse(digit().includeInResult().isHiddenInResult)
+        Assertions.assertTrue(digit().withHideTag(true).isHiddenInResult)
+        Assertions.assertTrue(digit().hideInResult().isHiddenInResult)
 
         // Alternative names give equivalent output
         Assertions.assertEquals(digit().withHideTag(false), digit().includeInResult())

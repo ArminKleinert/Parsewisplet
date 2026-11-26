@@ -62,11 +62,7 @@ class Tramp(
      */
     var success: ParseMessage? = null
 
-    private var failure: ParseFailure?
-
-    init {
-        this.failure = null
-    }
+    var failure: ParseFailure? = null
 
     /**
      * Adds a new listener at the key's index.
@@ -86,15 +82,6 @@ class Tramp(
         } else {
             present.add(negativeListener)
         }
-    }
-
-    /**
-     * If parsing failed, a failure is set.
-     *
-     * @return If parsing failed, a failure is set.
-     */
-    fun getFailure(): ParseFailure? {
-        return failure
     }
 
     /**
@@ -151,15 +138,6 @@ class Tramp(
      */
     fun addToMsgCache(key: MsgCacheKey, defaultVal: Int) {
         msgCache[key] = defaultVal
-    }
-
-    /**
-     * This function is used when the parser detects a failure. Parsing will be terminated when a failure is set.
-     *
-     * @param failure The failure.
-     */
-    fun setFailure(failure: ParseFailure) {
-        this.failure = failure
     }
 
     /**

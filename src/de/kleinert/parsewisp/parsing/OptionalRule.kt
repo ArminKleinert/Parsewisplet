@@ -32,15 +32,15 @@ class OptionalRule private constructor(
     }
 
     override fun withRule(rule: Rule): OptionalRule {
-        return OptionalRule(hide, red, rule)
+        return OptionalRule(isHiddenInResult, reduction, rule)
     }
 
     override fun withHideTag(hide: Boolean): OptionalRule {
-        return if (isHiddenInResult1() == hide) this else OptionalRule(hide, red, rule)
+        return if (isHiddenInResult == hide) this else OptionalRule(hide, reduction, rule)
     }
 
     override fun withReduction(red: ReductionType): OptionalRule {
-        return if (getReduction1() === red) this else OptionalRule(hide, red, rule)
+        return if (reduction === red) this else OptionalRule(isHiddenInResult, red, rule)
     }
 
     companion object {

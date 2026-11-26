@@ -18,14 +18,6 @@ protected constructor(
      */
     val reduction: ReductionType
 ) {
-    fun getReduction1() = reduction
-    fun isHiddenInResult1() = isHiddenInResult
-
-    val red: ReductionType
-        get()= reduction
-
-    val hide: Boolean
-        get() = isHiddenInResult
 
     /**
      * Runs the rule from the provided index. The text is in the arguments.
@@ -118,7 +110,7 @@ protected constructor(
 
     companion object {
         /**
-         * Default value for [isHiddenInResult1].
+         * Default value for [isHiddenInResult].
          */
         protected const val defaultHidden: Boolean = false
 
@@ -127,6 +119,6 @@ protected constructor(
 }
 
 /**
- * Default value for [Rule.getReduction1].
+ * Default value for [Rule.reduction].
  */
 internal val defaultReductionType: ReductionType = ReductionType.initial()

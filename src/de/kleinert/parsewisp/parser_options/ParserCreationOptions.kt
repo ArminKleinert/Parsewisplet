@@ -35,7 +35,6 @@ data class ParserCreationOptions(
         printer: GrammarPrinter?
     ) = this.copy(printer = printer ?: GrammarPrinter.default)
 
-
     companion object {
         private const val defaultCheckCorrectness = true
 

@@ -303,10 +303,10 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
     }
 
     /**
-     * Create a copy of the input for which [Rule.isHiddenInResult1] returns true.
+     * Create a copy of the input for which [Rule.isHiddenInResult] returns true.
      *
      * @param o The input.
-     * @return A copy of the input for which [Rule.isHiddenInResult1] returns true.
+     * @return A copy of the input for which [Rule.isHiddenInResult] returns true.
      */
     protected fun hide(o: Rule): Rule {
         return o.hideInResult()
@@ -604,7 +604,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
             val rules = mutableListOf<Rule>()
             rules.add(whitespaceRule)
             val result: Rule
-            if (!originalRule.reduction.isHiddenOrRaw1()) {
+            if (!originalRule.reduction.isHiddenOrRaw) {
                 // Hide the terminal in the output.
                 // It still appears in the tree, but is flattened into the concatenation.
                 rules.add(

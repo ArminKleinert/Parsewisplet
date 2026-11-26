@@ -20,21 +20,21 @@ class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(
     }
 
     override fun withHideTag(hide: Boolean): EOFTerm {
-        return if (isHiddenInResult == hide) this else EOFTerm(hide, red)
+        return if (isHiddenInResult == hide) this else EOFTerm(hide, reduction)
     }
 
     override fun withReduction(red: ReductionType): EOFTerm {
-        return if (reduction === red) this else EOFTerm(hide, red)
+        return if (reduction === red) this else EOFTerm(isHiddenInResult, red)
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is EOFTerm) return false
         if (this === other) return true
-        return hide == other.hide && red == other.red
+        return isHiddenInResult == other.isHiddenInResult && reduction == other.reduction
     }
 
     override fun hashCode(): Int {
-        return hash(hide, red)
+        return hash(isHiddenInResult, reduction)
     }
 
     companion object {

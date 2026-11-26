@@ -28,10 +28,6 @@ class ReductionType private constructor(
      */
     val isHiddenOrRaw: Boolean
 ) {
-    fun getReductionType1() = reductionType
-    fun getKey1() = key
-    fun isHiddenOrRaw1() = isHiddenOrRaw
-
     /**
      * The available types. They mark whether the parse operation is an intermediate operation or for the final output.
      */
@@ -78,7 +74,7 @@ class ReductionType private constructor(
          *
          *  * The NULL_TAG (see [ParseTree.NULL_TAG]) as its tag.
          *  * The type is [Type.MERGE].
-         *  * [isHiddenOrRaw1] returns true.
+         *  * [isHiddenOrRaw] returns true.
          *
          * @return Default output format for intermediate operations.
          */
@@ -93,7 +89,7 @@ class ReductionType private constructor(
          *
          *  * The NULL_TAG (see [ParseTree.NULL_TAG]) as its tag.
          *  * The type is [Type.INITIAL].
-         *  * [isHiddenOrRaw1] returns true.
+         *  * [isHiddenOrRaw] returns true.
          *
          * @return Default output format for new instances of [Rule].
          */
@@ -124,7 +120,7 @@ class ReductionType private constructor(
             for (prod in productions.entries) {
                 val key = prod.key
                 var value = prod.value
-                if (value.getReduction1().reductionType == Type.INITIAL) {
+                if (value.reduction.reductionType == Type.INITIAL) {
                     value = value.withReduction(taggedTree(key))
                 }
                 prod.setValue(value)

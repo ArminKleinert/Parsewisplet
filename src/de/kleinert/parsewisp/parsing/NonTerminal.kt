@@ -35,21 +35,21 @@ class NonTerminal private constructor(
     }
 
     override fun withHideTag(hide: Boolean): NonTerminal {
-        return if (isHiddenInResult1() == hide) this else NonTerminal(hide, red, keyword)
+        return if (isHiddenInResult == hide) this else NonTerminal(hide, reduction, keyword)
     }
 
     override fun withReduction(red: ReductionType): NonTerminal {
-        return if (getReduction1() === red) this else NonTerminal(hide, red, keyword)
+        return if (reduction === red) this else NonTerminal(isHiddenInResult, red, keyword)
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is NonTerminal) return false
         if (this === other) return true
-        return hide == other.hide && red == other.red && keyword == other.keyword
+        return isHiddenInResult == other.isHiddenInResult && reduction == other.reduction && keyword == other.keyword
     }
 
     override fun hashCode(): Int {
-        return hash(hide, red, keyword)
+        return hash(isHiddenInResult, reduction, keyword)
     }
 
     companion object {

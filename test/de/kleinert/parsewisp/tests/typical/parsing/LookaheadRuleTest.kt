@@ -183,8 +183,8 @@ internal class LookaheadRuleTest {
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
         Assertions.assertEquals(ni, nr.rule)
-        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
-        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
+        Assertions.assertEquals(r.isHiddenInResult, nr.isHiddenInResult)
+        Assertions.assertEquals(r.reduction, nr.reduction)
 
         // Original left untouched.
         Assertions.assertEquals(i, r.rule)
@@ -203,10 +203,10 @@ internal class LookaheadRuleTest {
         Assertions.assertEquals(r.withHideTag(true), r.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(r.withHideTag(false).isHiddenInResult1())
-        Assertions.assertFalse(r.includeInResult().isHiddenInResult1())
-        Assertions.assertTrue(r.withHideTag(true).isHiddenInResult1())
-        Assertions.assertTrue(r.hideInResult().isHiddenInResult1())
+        Assertions.assertFalse(r.withHideTag(false).isHiddenInResult)
+        Assertions.assertFalse(r.includeInResult().isHiddenInResult)
+        Assertions.assertTrue(r.withHideTag(true).isHiddenInResult)
+        Assertions.assertTrue(r.hideInResult().isHiddenInResult)
 
         // Alternative names give equivalent output
         Assertions.assertEquals(r.withHideTag(false), r.includeInResult())

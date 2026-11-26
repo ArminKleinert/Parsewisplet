@@ -51,22 +51,22 @@ class SpecialSequenceRule private constructor(
     }
 
     override fun withHideTag(hide: Boolean): SpecialSequenceRule {
-        return if (isHiddenInResult1() == hide) this else SpecialSequenceRule(hide, red, description, function)
+        return if (isHiddenInResult == hide) this else SpecialSequenceRule(hide, reduction, description, function)
     }
 
     override fun withReduction(red: ReductionType): SpecialSequenceRule {
-        return if (getReduction1() === red) this else SpecialSequenceRule(hide, red, description, function)
+        return if (reduction === red) this else SpecialSequenceRule(isHiddenInResult, red, description, function)
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is SpecialSequenceRule) return false
         if (this === other) return true
-        return hide == other.hide && red == other.red
+        return isHiddenInResult == other.isHiddenInResult && reduction == other.reduction
                 && function == other.function
     }
 
     override fun hashCode(): Int {
-        return hash(hide, red, function)
+        return hash(isHiddenInResult, reduction, function)
     }
 
     override fun toString(): String {

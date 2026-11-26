@@ -138,8 +138,8 @@ internal class OptionalRuleTest {
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
         Assertions.assertEquals(ni, nr.rule)
-        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
-        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
+        Assertions.assertEquals(r.isHiddenInResult, nr.isHiddenInResult)
+        Assertions.assertEquals(r.reduction, nr.reduction)
 
         // Original left untouched.
         Assertions.assertEquals(i, r.rule)
@@ -156,10 +156,10 @@ internal class OptionalRuleTest {
         Assertions.assertEquals(a_or_nay().withHideTag(true), a_or_nay().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(a_or_nay().withHideTag(false).isHiddenInResult1())
-        Assertions.assertFalse(a_or_nay().includeInResult().isHiddenInResult1())
-        Assertions.assertTrue(a_or_nay().withHideTag(true).isHiddenInResult1())
-        Assertions.assertTrue(a_or_nay().hideInResult().isHiddenInResult1())
+        Assertions.assertFalse(a_or_nay().withHideTag(false).isHiddenInResult)
+        Assertions.assertFalse(a_or_nay().includeInResult().isHiddenInResult)
+        Assertions.assertTrue(a_or_nay().withHideTag(true).isHiddenInResult)
+        Assertions.assertTrue(a_or_nay().hideInResult().isHiddenInResult)
 
         // Alternative names give equivalent output
         Assertions.assertEquals(a_or_nay().withHideTag(false), a_or_nay().includeInResult())

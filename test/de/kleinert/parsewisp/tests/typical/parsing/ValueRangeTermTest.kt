@@ -116,10 +116,10 @@ internal class ValueRangeTermTest {
         Assertions.assertEquals(simpleRuleForTests.withHideTag(true), simpleRuleForTests.withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult1())
-        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult1())
-        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult1())
-        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult1())
+        Assertions.assertFalse(simpleRuleForTests.withHideTag(false).isHiddenInResult)
+        Assertions.assertFalse(simpleRuleForTests.includeInResult().isHiddenInResult)
+        Assertions.assertTrue(simpleRuleForTests.withHideTag(true).isHiddenInResult)
+        Assertions.assertTrue(simpleRuleForTests.hideInResult().isHiddenInResult)
 
         // Alternative names give equivalent output
         Assertions.assertEquals(simpleRuleForTests.withHideTag(false), simpleRuleForTests.includeInResult())

@@ -60,22 +60,22 @@ class ValueRangeTerm private constructor(
     }
 
     override fun withHideTag(hide: Boolean): ValueRangeTerm {
-        return if (isHiddenInResult1() == hide) this else ValueRangeTerm(hide, red, lo, hi)
+        return if (isHiddenInResult == hide) this else ValueRangeTerm(hide, reduction, lo, hi)
     }
 
     override fun withReduction(red: ReductionType): ValueRangeTerm {
-        return if (getReduction1() === red) this else ValueRangeTerm(hide, red, lo, hi)
+        return if (reduction === red) this else ValueRangeTerm(isHiddenInResult, red, lo, hi)
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is ValueRangeTerm) return false
         if (this === other) return true
-        return hide == other.hide && red == other.red
+        return isHiddenInResult == other.isHiddenInResult && reduction == other.reduction
                 && lo == other.lo && hi == other.hi
     }
 
     override fun hashCode(): Int {
-        return hash(hide, red, lo, hi)
+        return hash(isHiddenInResult, reduction, lo, hi)
     }
 
     companion object {

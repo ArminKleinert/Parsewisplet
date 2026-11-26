@@ -137,28 +137,28 @@ class VariableRepetitionRule private constructor(
     }
 
     override fun withRule(rule: Rule): VariableRepetitionRule {
-        return VariableRepetitionRule(hide, red, rule, min, max)
+        return VariableRepetitionRule(isHiddenInResult, reduction, rule, min, max)
     }
 
     override fun withHideTag(hide: Boolean): VariableRepetitionRule {
-        return if (isHiddenInResult1() == hide) this else VariableRepetitionRule(hide, red, rule, min, max)
+        return if (isHiddenInResult == hide) this else VariableRepetitionRule(hide, reduction, rule, min, max)
     }
 
     override fun withReduction(red: ReductionType): VariableRepetitionRule {
-        return if (getReduction1() === red) this else VariableRepetitionRule(hide, red, rule, min, max)
+        return if (reduction === red) this else VariableRepetitionRule(isHiddenInResult, red, rule, min, max)
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is VariableRepetitionRule) return false
         if (this === other) return true
-        return hide == other.hide && red == other.red
+        return isHiddenInResult == other.isHiddenInResult && reduction == other.reduction
                 && rule == other.rule
                 && min == other.min
                 && max == other.max
     }
 
     override fun hashCode(): Int {
-        return min * 31 + max * 31 + hash(hide, red, rule)
+        return min * 31 + max * 31 + hash(isHiddenInResult, reduction, rule)
     }
 
     companion object {

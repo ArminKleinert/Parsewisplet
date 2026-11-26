@@ -130,8 +130,8 @@ internal class ZeroOrMoreRuleTest {
         val ni = StringTerm.create("b", false)
         val nr = r.withRule(ni)
         Assertions.assertEquals(ni, nr.rule)
-        Assertions.assertEquals(r.isHiddenInResult1(), nr.isHiddenInResult1())
-        Assertions.assertEquals(r.getReduction1(), nr.getReduction1())
+        Assertions.assertEquals(r.isHiddenInResult, nr.isHiddenInResult)
+        Assertions.assertEquals(r.reduction, nr.reduction)
 
         // Original left untouched.
         Assertions.assertEquals(i, r.rule)
@@ -148,10 +148,10 @@ internal class ZeroOrMoreRuleTest {
         Assertions.assertEquals(rep_a().withHideTag(true), rep_a().withHideTag(true))
 
         // Alternative names give same output for isHiddenInResult()
-        Assertions.assertFalse(rep_a().withHideTag(false).isHiddenInResult1())
-        Assertions.assertFalse(rep_a().includeInResult().isHiddenInResult1())
-        Assertions.assertTrue(rep_a().withHideTag(true).isHiddenInResult1())
-        Assertions.assertTrue(rep_a().hideInResult().isHiddenInResult1())
+        Assertions.assertFalse(rep_a().withHideTag(false).isHiddenInResult)
+        Assertions.assertFalse(rep_a().includeInResult().isHiddenInResult)
+        Assertions.assertTrue(rep_a().withHideTag(true).isHiddenInResult)
+        Assertions.assertTrue(rep_a().hideInResult().isHiddenInResult)
 
         // Alternative names give equivalent output
         Assertions.assertEquals(rep_a().withHideTag(false), rep_a().includeInResult())

@@ -80,22 +80,22 @@ class RegexTerm private constructor(
     }
 
     override fun withHideTag(hide: Boolean): RegexTerm {
-        return if (isHiddenInResult1() == hide) this else RegexTerm(hide, red, regexp)
+        return if (isHiddenInResult == hide) this else RegexTerm(hide, reduction, regexp)
     }
 
     override fun withReduction(red: ReductionType): RegexTerm {
-        return if (getReduction1() === red) this else RegexTerm(hide, red, regexp)
+        return if (reduction === red) this else RegexTerm(isHiddenInResult, red, regexp)
     }
 
     override fun equals(other: Any?): Boolean {
         if (other !is RegexTerm) return false
         if (this === other) return true
-        return hide == other.hide && red == other.red
+        return isHiddenInResult == other.isHiddenInResult && reduction == other.reduction
                 && regexp.pattern == other.regexp.pattern
     }
 
     override fun hashCode(): Int {
-        return hash(hide, red, regexp.pattern)
+        return hash(isHiddenInResult, reduction, regexp.pattern)
     }
 
     companion object {

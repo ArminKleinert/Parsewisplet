@@ -108,7 +108,7 @@ class ConcatRule private constructor(
             val compressedResult = mutableListOf<Rule>()
 
             for (rule in rules) {
-                if (rule is ConcatRule && !rule.isHiddenInResult1() && rule.red == defaultReductionType) {
+                if (rule is ConcatRule && !rule.isHiddenInResult && rule.reduction == defaultReductionType) {
                     compressedResult.addAll(rule.rules)
                 } else {
                     compressedResult.add(rule)

@@ -98,7 +98,7 @@ class Gll private constructor(
     private fun run(
         maxResults: Int
     ): LazyResultList {
-        val foundResult = BooleanArray(1){false}
+        val foundResult = BooleanArray(1) { false }
         return LazyResultList({ run(foundResult) }, maxResults)
     }
 
@@ -137,7 +137,7 @@ class Gll private constructor(
 
             if (foundResult[0]) {
                 tramp.nextGeneration()
-                foundResult[0]=false
+                foundResult[0] = false
                 continue  // Take it to the top.
             }
             return null // Fail
@@ -194,9 +194,9 @@ class Gll private constructor(
         if (rule.isHiddenInResult) {
             result = result.reset()
         }
-        if (rule.reduction.getReductionType1() != ReductionType.Type.INITIAL) {
+        if (rule.reduction.reductionType != ReductionType.Type.INITIAL) {
             val tree = ParseTree.create(
-                rule.reduction.getKey1(), result.result,
+                rule.reduction.key, result.result,
                 nodeKey.index, result.index()
             )
             result = ParseMessage.create(result.index(), tree)
@@ -283,13 +283,13 @@ class Gll private constructor(
         rule: Rule,
         untilEnd: Boolean
     ) {
-        tramp.setFailure(
+        tramp.failure =
             FailureUtil.modifyFailureByIndex(
-                tramp.getFailure(),
+                tramp.failure,
                 ParseFailureReason.creatureFailReason(rule, untilEnd, this.grammarPrinter),
                 index
             )
-        )
+
         if (index == tramp.failIndex) {
             val subSeq = tramp.text.substring(index)
             val textLen = tramp.text.length
@@ -371,8 +371,8 @@ class Gll private constructor(
             gll.startParser(tramp, parser, partial)
             val allParses = gll.run(resultLimit)
             if (errorIfEmpty && allParses.isEmpty()) {
-                checkNotNull(tramp.getFailure()) { "Parsing failed. Perhaps the grammar was non-productive?" }
-                val apf = FailureUtil.augmentFailure(tramp.getFailure()!!, text)
+                checkNotNull(tramp.failure) { "Parsing failed. Perhaps the grammar was non-productive?" }
+                val apf = FailureUtil.augmentFailure(tramp.failure!!, text)
                 return ParsesResult.make(apf)
             }
             return ParsesResult.make(allParses)
@@ -408,8 +408,8 @@ class Gll private constructor(
             gll.startParser(tramp, parser, partial)
             val allParses = gll.run(1)
             if (allParses.isEmpty()) {
-                checkNotNull(tramp.getFailure()) { "Parsing failed. Perhaps the grammar was non-productive?" }
-                return ParseResult.make(FailureUtil.augmentFailure(tramp.getFailure()!!, text))
+                checkNotNull(tramp.failure) { "Parsing failed. Perhaps the grammar was non-productive?" }
+                return ParseResult.make(FailureUtil.augmentFailure(tramp.failure!!, text))
             }
             return ParseResult.make(allParses.first())
         }

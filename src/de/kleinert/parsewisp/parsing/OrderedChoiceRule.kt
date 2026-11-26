@@ -49,15 +49,15 @@ class OrderedChoiceRule private constructor(
     }
 
     override fun withHideTag(hide: Boolean): OrderedChoiceRule {
-        return if (isHiddenInResult1() == hide) this else OrderedChoiceRule(hide, this.getReduction1(), rule1, rule2)
+        return if (isHiddenInResult == hide) this else OrderedChoiceRule(hide, this.reduction, rule1, rule2)
     }
 
     override fun withReduction(red: ReductionType): OrderedChoiceRule {
-        return if (getReduction1() === red) this else OrderedChoiceRule(isHiddenInResult1(), red, rule1, rule2)
+        return if (reduction === red) this else OrderedChoiceRule(isHiddenInResult, red, rule1, rule2)
     }
 
     override fun withRules(rules: List<Rule>): OrderedChoiceRule {
-        return OrderedChoiceRule(rules, isHiddenInResult1(), getReduction1())
+        return OrderedChoiceRule(rules, isHiddenInResult, reduction)
     }
 
     companion object {

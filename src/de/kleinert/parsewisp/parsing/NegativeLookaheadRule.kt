@@ -52,15 +52,15 @@ class NegativeLookaheadRule private constructor(
     }
 
     override fun withRule(rule: Rule): NegativeLookaheadRule {
-        return NegativeLookaheadRule(hide, red, rule)
+        return NegativeLookaheadRule(isHiddenInResult, reduction, rule)
     }
 
     override fun withHideTag(hide: Boolean): NegativeLookaheadRule {
-        return if (isHiddenInResult1() == hide) this else NegativeLookaheadRule(hide, red, rule)
+        return if (isHiddenInResult == hide) this else NegativeLookaheadRule(hide, reduction, rule)
     }
 
     override fun withReduction(red: ReductionType): NegativeLookaheadRule {
-        return if (getReduction1() === red) this else NegativeLookaheadRule(hide, red, rule)
+        return if (reduction === red) this else NegativeLookaheadRule(isHiddenInResult, red, rule)
     }
 
     companion object {

@@ -30,15 +30,15 @@ class LookaheadRule private constructor(
     }
 
     override fun withHideTag(hide: Boolean): LookaheadRule {
-        return if (isHiddenInResult1() == hide) this else LookaheadRule(hide, red, rule)
+        return if (isHiddenInResult == hide) this else LookaheadRule(hide, reduction, rule)
     }
 
     override fun withReduction(red: ReductionType): LookaheadRule {
-        return if (getReduction1() === red) this else LookaheadRule(hide, red, rule)
+        return if (reduction === red) this else LookaheadRule(isHiddenInResult, red, rule)
     }
 
     override fun withRule(rule: Rule): LookaheadRule {
-        return LookaheadRule(hide, red, rule)
+        return LookaheadRule(isHiddenInResult, reduction, rule)
     }
 
     companion object {

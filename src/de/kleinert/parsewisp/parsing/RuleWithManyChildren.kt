@@ -39,14 +39,14 @@ abstract class RuleWithManyChildren
         if (javaClass != other?.javaClass) return false
         if (hashCode() != other.hashCode()) return false
         val that = other as RuleWithManyChildren
-        if (isHiddenInResult1() != that.isHiddenInResult1()) return false
-        if (getReduction1() != that.getReduction1()) return false
+        if (isHiddenInResult != that.isHiddenInResult) return false
+        if (reduction != that.reduction) return false
         return this.rules == that.rules
     }
 
     override fun hashCode(): Int {
         if (bufferedHashCode == Long.MIN_VALUE) bufferedHashCode =
-            hash(javaClass, getReduction1(), isHiddenInResult1(), this.rules).toLong()
+            hash(javaClass, reduction, isHiddenInResult, this.rules).toLong()
         return bufferedHashCode.toInt()
     }
 }

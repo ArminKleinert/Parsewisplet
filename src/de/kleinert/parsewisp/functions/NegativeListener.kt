@@ -11,5 +11,5 @@ fun interface NegativeListener {
      *
      * @since 0.9.7
      */
-    fun execute()
+    operator fun invoke()
 }

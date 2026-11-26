@@ -1,16 +1,7 @@
 package de.kleinert.parsewisp
 
-import java.lang.ref.Reference
-import java.lang.ref.ReferenceQueue
-import java.lang.ref.WeakReference
-import java.util.concurrent.ConcurrentHashMap
-
 /**
- * A class for string-alternatives that are slightly slower to create than strings, but provide guaranteed
- * interning and O(1) comparisons via the build-in `==` operator.
- *
- *
- * `Sym k1 = Sym.sym(str);     Sym k2 = Sym.sym(str);     k1 == k2 // Guarantied to be true. `
+ * A class that simply wraps a String to differentiate instances from actual Strings. Unlike Parsewisp, instances are (currently) not interned.
  *
  * @since 0.9.7
  */
@@ -34,13 +25,10 @@ class Sym private constructor(private val name: String) {
     }
 
     override fun equals(other: Any?): Boolean {
-        return this === other
+        return this === other || (other is Sym && other.name == name)
     }
 
     companion object {
-        private val table: MutableMap<String, Reference<Sym?>> = ConcurrentHashMap<String, Reference<Sym?>>()
-        private val rq = ReferenceQueue<Sym?>()
-
         /**
          * Creates a new symbol or returns an existing one.
          *
@@ -49,36 +37,7 @@ class Sym private constructor(private val name: String) {
          * @since 0.9.7
          */
         fun sym(sym: String): Sym {
-            var k: Sym? = null
-            var existingRef: Reference<Sym?>? = table[sym]
-            if (existingRef == null) {
-                if (rq.poll() != null) {
-                    var o: Any? = rq.poll()
-                    while (o != null) {
-                        o = rq.poll()
-                    }
-
-                    for ((key, v) in table) {
-                        if (v.get() == null) {
-                            table.remove(key, v)
-                        }
-                    }
-                }
-
-                k = Sym(sym)
-                existingRef = table.putIfAbsent(sym, WeakReference(k, rq))
-            }
-
-            if (existingRef == null) {
-                return k!!
-            } else {
-                val existing = existingRef.get()
-                if (existing != null) {
-                    return existing
-                }
-                table.remove(sym, existingRef)
-                return sym(sym)
-            }
+            return Sym(sym)
         }
     }
 }

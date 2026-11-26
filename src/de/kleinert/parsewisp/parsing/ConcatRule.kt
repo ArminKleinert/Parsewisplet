@@ -40,7 +40,7 @@ class ConcatRule private constructor(
         nodeKey: ListenerKey,
         runner: Gll
     ): Listener {
-        return Listener { result: ParseMessage? ->
+        return { result: ParseMessage? ->
             val continueIndex = result!!.index()
             val newResultsSoFar = resultsSoFar.appendOrConcat(result.result)
             if (parserSequence.isEmpty()) {
@@ -65,7 +65,7 @@ class ConcatRule private constructor(
         nodeKey: ListenerKey,
         runner: Gll
     ): Listener {
-        return Listener { result: ParseMessage? ->
+        return { result: ParseMessage? ->
             val continueIndex = result!!.index()
             val newResultsSoFar = resultsSoFar.appendOrConcat(result.result)
             if (parserSequence.isNotEmpty()) {

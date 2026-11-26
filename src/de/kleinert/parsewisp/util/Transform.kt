@@ -26,8 +26,7 @@ object Transform {
     ): Any {
         val tagSym = parseTree.tag.content
         val transformFn = transformMap[tagSym]
-        val transformedNodes = parseTree.content.stream()
-            .map<Any?> { node: Node? -> transform(node!!, transformMap) }.toList()
+        val transformedNodes = parseTree.content.map { node -> transform(node, transformMap) }
         return if (transformFn != null) {
             transformFn(transformedNodes)!!
         } else {
@@ -71,10 +70,7 @@ object Transform {
     ): Any {
         require(parseResult is ParseTree) { parseResult.toString() }
         val tagSym = parseResult.tag.content
-        val transformedNodes = parseResult
-            .content.stream()
-            .map<Any?> { node: Node? -> transform(node!!, transformMap) }
-            .toList()
+        val transformedNodes = parseResult.content.map { node -> transform(node, transformMap) }
         val transformFn = transformMap[tagSym]
         val result: Any
         if (transformFn != null) {

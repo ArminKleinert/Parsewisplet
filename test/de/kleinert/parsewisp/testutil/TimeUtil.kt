@@ -1,9 +1,6 @@
 package de.kleinert.parsewisp.testutil
 
 import de.kleinert.parsewisp.functions.Procedure
-import java.util.*
-import java.util.function.DoubleSupplier
-import java.util.stream.DoubleStream
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -21,17 +18,17 @@ object TimeUtil {
     fun measureTimeMillis(n: Int, f: Procedure): String {
         require(n >= 1)
 
-        val stream = DoubleStream.generate(DoubleSupplier {
+        val stream = generateSequence({
             val start = System.nanoTime()
-            f.execute()
+            f()
             val end = System.nanoTime()
             (end - start) / 1000000.0
-        }).limit(n.toLong()).sorted().toArray()
+        }).take(n).sorted().toList()
 
         val min = stream[0]
         val max = stream[stream.size - 1]
         val diff = max - min
-        val sum = Arrays.stream(stream).sum()
+        val sum = stream.sum()
         val avg = sum / n
         val mid = stream[stream.size / 2]
         val median = (stream[n / 4] + stream[(n / 4) * 3]) / 2
@@ -51,16 +48,16 @@ object TimeUtil {
     fun measureTimeMillisMean(n: Int, f: Procedure): Double {
         require(n >= 1)
 
-        val stream = DoubleStream.generate(DoubleSupplier {
+        val stream = generateSequence({
             val start = System.nanoTime()
-            f.execute()
+            f()
             val end = System.nanoTime()
             (end - start) / 1000000.0
-        }).limit(n.toLong()).sorted().toArray()
+        }).take(n).sorted().toList()
 
         val factor = 0.1
-        val keep = ceil((1 - factor) * stream.size).toLong()
-        return Arrays.stream(stream).skip(floor(stream.size * factor).toLong() / 2).limit(keep).sum() / keep
+        val keep = ceil((1 - factor) * stream.size).toInt()
+        return stream.drop((floor(stream.size * factor) / 2).toInt()).take(keep).sum() / keep
     }
 
     /**
@@ -77,7 +74,7 @@ object TimeUtil {
         var executions: Long = 0
 
         while ((System.nanoTime().also { last = it }) < endTime) {
-            f.execute()
+            f()
             executions++
         }
 

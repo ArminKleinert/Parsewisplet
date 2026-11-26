@@ -1,9 +1,5 @@
 package de.kleinert.parsewisp.collections
 
-import java.util.Arrays
-import java.util.stream.Stream
-import kotlin.collections.Collection
-
 /**
  * A list-like type of generic elements. It is used to differentiate from other List types.
  * Elements can be added and iterated upon. Each addition creates a new instance.
@@ -71,7 +67,7 @@ class FlatResultSeq {
      * Flattening the sequence iterates backwards.
      *
      *
-     * **Example: `frs12123.stream()` is called.**
+     * **Example: `frs12123.toList()` is called.**
      *
      *
      * First, an array is created: `new Object[frs12123.size()]`<br></br>
@@ -121,9 +117,9 @@ class FlatResultSeq {
     }
 
     /**
-     * Returns a stream for this sequence. The result may be cached.
+     * Returns a List for this sequence. The result may be cached.
      *
-     * @return A stream for this sequence.
+     * @return A list for this sequence.
      * @since 0.9.7
      */
     fun toList(): List<Any?> {

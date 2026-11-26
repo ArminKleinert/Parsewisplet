@@ -26,7 +26,7 @@ class TransformRule private constructor(
     }
 
     private fun commonListener(runner: Gll, index: Int): Listener {
-        return Listener { result: ParseMessage? ->
+        return { result: ParseMessage? ->
             var wrapped = result!!.result
             wrapped = if (wrapped is FlatResultSeq)
                 wrapped.toList()

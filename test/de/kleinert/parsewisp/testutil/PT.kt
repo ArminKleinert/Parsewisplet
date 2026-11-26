@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.testutil
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.result.ParseTree
 
 /**
@@ -37,6 +36,6 @@ object PT {
      * @return A new parse tree.
      */
     fun create(tag: String, vararg content: Any): ParseTree {
-        return create(sym(tag), content.toList())
+        return create(Sym.sym(tag), content.toList())
     }
 }

@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.error
 /**
  * [RuntimeException] which occurs if the parser could not be created.
  *
- * @see Parsewisp.parser
+ * @see de.kleinert.parsewisp.Parsewisp.parser
  * @since 0.9.7
  */
 class ParserCreationFailure : RuntimeException {
@@ -11,7 +11,7 @@ class ParserCreationFailure : RuntimeException {
      * [RuntimeException] which occurs if the parser could not be created.
      *
      * @param exception Argument.
-     * @see Parsewisp.parser
+     * @see de.kleinert.parsewisp.Parsewisp.parser
      * @since 0.9.7
      */
     constructor(exception: IllegalArgumentException) : super(exception)
@@ -20,7 +20,7 @@ class ParserCreationFailure : RuntimeException {
      * [RuntimeException] which occurs if the parser could not be created.
      *
      * @param exception Argument.
-     * @see Parsewisp.parser
+     * @see de.kleinert.parsewisp.Parsewisp.parser
      * @since 0.9.7
      */
     constructor(exception: IllegalGrammarException) : super(exception)
@@ -29,7 +29,7 @@ class ParserCreationFailure : RuntimeException {
      * [RuntimeException] which occurs if the parser could not be created.
      *
      * @param message Argument.
-     * @see Parsewisp.parser
+     * @see de.kleinert.parsewisp.Parsewisp.parser
      * @since 0.9.7
      */
     constructor(message: String?) : super(message)

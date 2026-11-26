@@ -94,11 +94,11 @@ class ExclusionRule private constructor(
                 mode = 2
             }
 
-            is AlternationRule if excluded.rules.stream().allMatch(stringOrRegexPredicate) -> {
+            is AlternationRule if excluded.rules.all(stringOrRegexPredicate) -> {
                 mode = 3
             }
 
-            is ConcatRule if excluded.rules.stream().allMatch(stringOrRegexPredicate) -> {
+            is ConcatRule if excluded.rules.all(stringOrRegexPredicate) -> {
                 mode = 4
             }
 

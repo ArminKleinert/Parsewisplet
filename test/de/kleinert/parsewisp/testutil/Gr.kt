@@ -1,7 +1,6 @@
 package de.kleinert.parsewisp.testutil
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.Sym.Companion.sym
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.parsing.Rule
 
@@ -37,7 +36,7 @@ object Gr {
     fun grammarS(startName: String, vararg g: Any?): Grammar {
         require(!(g.size == 0 || (g.size and 1) == 1))
         val lhm = LinkedHashMap<Sym, Rule>()
-        val start = sym(startName)
+        val start = Sym.sym(startName)
         val iter = g.iterator()
         do {
             val key = Sym.sym(iter.next() as String)

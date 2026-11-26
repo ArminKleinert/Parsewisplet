@@ -63,23 +63,24 @@ class OnceOrMoreRule private constructor(
             nodeKey: ListenerKey,
             runner: Gll
         ): Listener {
-            return Listener { result: ParseMessage? ->
-                val continueIndex = result!!.index()
-                val newResultsSoFar = resultsSoFar.appendOrConcat(result.result)
-                if (continueIndex == prevIndex) {
-                    if (resultsSoFar.isEmpty) {
-                        runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
+            return object : Listener {
+                override fun invoke(result: ParseMessage) {
+                    val continueIndex = result.index()
+                    val newResultsSoFar = resultsSoFar.appendOrConcat(result.result)
+                    if (continueIndex == prevIndex) {
+                        if (resultsSoFar.isEmpty) {
+                            runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
+                        }
+                        return
                     }
-                    return@Listener
+                    runner.pushListener(
+                        ListenerKey(continueIndex, rule),
+                        plusListener(newResultsSoFar, rule, continueIndex, nodeKey, runner)
+                    )
+                    runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
                 }
-                runner.pushListener(
-                    ListenerKey(continueIndex, rule),
-                    plusListener(newResultsSoFar, rule, continueIndex, nodeKey, runner)
-                )
-                runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
             }
         }
-
 
         fun plusFullListener(
             resultsSoFar: FlatResultSeq,
@@ -88,23 +89,25 @@ class OnceOrMoreRule private constructor(
             nodeKey: ListenerKey,
             runner: Gll
         ): Listener {
-            return Listener { result: ParseMessage? ->
-                val continueIndex = result!!.index()
-                val newResultsSoFar = resultsSoFar.appendOrConcat(result.result)
-                if (continueIndex == prevIndex) {
-                    if (resultsSoFar.isEmpty) {
-                        runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
-                        //runner.pushSuccessMessageWithoutValue(nodeKey, continueIndex);
+            return object : Listener {
+                override fun invoke(result: ParseMessage) {
+                    val continueIndex = result.index()
+                    val newResultsSoFar = resultsSoFar.appendOrConcat(result.result)
+                    if (continueIndex == prevIndex) {
+                        if (resultsSoFar.isEmpty) {
+                            runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
+                            //runner.pushSuccessMessageWithoutValue(nodeKey, continueIndex);
+                        }
+                        return
                     }
-                    return@Listener
-                }
-                if (continueIndex == runner.tramp().text.length) {
-                    runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
-                } else {
-                    runner.pushListener(
-                        ListenerKey(continueIndex, rule),
-                        plusFullListener(newResultsSoFar, rule, continueIndex, nodeKey, runner)
-                    )
+                    if (continueIndex == runner.tramp().text.length) {
+                        runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
+                    } else {
+                        runner.pushListener(
+                            ListenerKey(continueIndex, rule),
+                            plusFullListener(newResultsSoFar, rule, continueIndex, nodeKey, runner)
+                        )
+                    }
                 }
             }
         }

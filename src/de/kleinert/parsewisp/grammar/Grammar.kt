@@ -304,9 +304,9 @@ class Grammar(startSym: Sym, m: LinkedHashMap<out Sym, out Rule>) : LinkedHashMa
             } else if (rule is NonTerminal) {
                 return productive.getOrDefault(rule.keyword, false)!!
             } else if (rule is ConcatRule) {
-                return rule.rules.stream().allMatch { it: Rule? -> productiveRule(it!!, productive) }
+                return rule.rules.all { it: Rule? -> productiveRule(it!!, productive) }
             } else if (rule is AlternationRule || rule is OrderedChoiceRule) {
-                return rule.rules.stream().anyMatch { it: Rule? -> productiveRule(it!!, productive) }
+                return rule.rules.any { it: Rule? -> productiveRule(it!!, productive) }
             } else if (rule is OnceOrMoreRule || rule is LookaheadRule || rule is NegativeLookaheadRule) {
                 return productiveRule(rule.rule, productive)
             } else if (rule is ExclusionRule) {

@@ -34,7 +34,6 @@ internal class TestGrammarC99Scannerless {
     @Throws(IOException::class)
     fun verifySimpleProgram1() {
         val text = "int i;"
-        //System.out.println(rule().parses(text).stream().map(ParseTree::toString).collect(Collectors.joining("\n")));
         //System.out.println(rule().parses(text).size());
     }
 }

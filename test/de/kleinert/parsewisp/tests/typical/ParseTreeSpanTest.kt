@@ -19,8 +19,8 @@ internal class ParseTreeSpanTest {
         Assertions.assertEquals(4, tree.spanEndExclusive)
 
         val spannedStringInTree = tree.containedString("bAan")
-        Assertions.assertTrue(spannedStringInTree.isPresent)
-        Assertions.assertEquals("bAan", spannedStringInTree.get())
+        Assertions.assertTrue(spannedStringInTree != null)
+        Assertions.assertEquals("bAan", spannedStringInTree)
     }
 
     @Test
@@ -34,8 +34,8 @@ internal class ParseTreeSpanTest {
         Assertions.assertEquals(3, subTree.spanEndExclusive)
 
         val spannedStringInSubTree = subTree.containedString("bAan")
-        Assertions.assertTrue(spannedStringInSubTree.isPresent)
-        Assertions.assertEquals("Aa", spannedStringInSubTree.get())
+        Assertions.assertTrue(spannedStringInSubTree != null)
+        Assertions.assertEquals("Aa", spannedStringInSubTree)
     }
 
     @Test
@@ -53,7 +53,7 @@ internal class ParseTreeSpanTest {
 
         Assertions.assertTrue(tree.spanStart < 0)
         Assertions.assertTrue(tree.spanEndExclusive < 0)
-        Assertions.assertTrue(tree.containedString("abcdef").isEmpty)
+        Assertions.assertTrue(tree.containedString("abcdef")==null)
     }
 
     @Test
@@ -69,6 +69,6 @@ internal class ParseTreeSpanTest {
     fun testOtherString() {
         val p = parser("S = 'b' A 'n'\nA = 'Aa'")
         val tree = p.parse("bAan").castToParseSuccess()
-        Assertions.assertEquals("aaaa", tree.containedString("aaaaaaan").orElseThrow())
+        Assertions.assertEquals("aaaa", tree.containedString("aaaaaaan")!!)
     }
 }

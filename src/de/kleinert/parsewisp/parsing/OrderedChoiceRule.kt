@@ -20,7 +20,7 @@ class OrderedChoiceRule private constructor(
     hide: Boolean, red: ReductionType,
     private val rule1: Rule,
     private val rule2: Rule
-) : RuleWithManyChildren(hide, red, listOf<Rule>(rule1, rule2)) {
+) : RuleWithManyChildren(hide, red, listOf(rule1, rule2)) {
     private constructor(
         rules: List<Rule>,
         hide: Boolean,
@@ -84,7 +84,7 @@ class OrderedChoiceRule private constructor(
         fun create(rules: List<Rule>): Rule {
             if (rules.isEmpty()) return EpsilonTerm.default
 
-            val distinctRules = rules.stream().distinct().toList()
+            val distinctRules = rules.distinct()
 
             if (distinctRules.size == 1) return distinctRules.get(0)
             val setup: OrderedChoiceRule = setupParsers(distinctRules)

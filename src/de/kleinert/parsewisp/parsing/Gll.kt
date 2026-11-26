@@ -51,14 +51,14 @@ class Gll private constructor(
         return node
     }
 
-    private fun listenerExists_Q(
+    private fun listenerExistsQ(
         nodeKey: ListenerKey
     ): Boolean {
         val node = tramp.getNode(nodeKey) ?: return false
         return node.listeners.isNotEmpty()
     }
 
-    private fun fullListenerExists_Q(
+    private fun fullListenerExistsQ(
         nodeKey: ListenerKey
     ): Boolean {
         val node = tramp.getNode(nodeKey) ?: return false
@@ -79,7 +79,7 @@ class Gll private constructor(
         val i = result.index()
         val k = MsgCacheKey(i, listener)
         val c = tramp.getFromMsgCache(k, 0)
-        val f = Procedure { listener.execute(result) }
+        val f = { listener(result) }
         if (c > tramp.generation) {
             tramp.addToNextStack(f)
         } else {
@@ -95,7 +95,7 @@ class Gll private constructor(
     private fun step() {
         val top = tramp.stack[tramp.stack.size - 1]
         tramp.popStack()
-        top.execute()
+        top()
     }
 
     private fun run(
@@ -124,15 +124,15 @@ class Gll private constructor(
             }
 
             val negativeListeners = tramp.negativeListeners
-            if (!negativeListeners.isEmpty()) {
-                val latestIndexAndNegListeners = negativeListeners.lastEntry()
-                val latestNegListeners = latestIndexAndNegListeners.value
-                val latestListener = latestNegListeners.removeAt(latestNegListeners.size - 1)
+            if (negativeListeners.isNotEmpty()) {
+                val latestIndexAndNegListenerKey = negativeListeners.lastKey()
+                val latestNegListeners = negativeListeners[latestIndexAndNegListenerKey]
+                val latestListener = latestNegListeners!!.removeAt(latestNegListeners.size - 1)
 
-                latestListener.execute()
+                latestListener()
 
                 if (latestNegListeners.isEmpty()) {
-                    tramp.negativeListeners.remove(latestIndexAndNegListeners.key)
+                    tramp.negativeListeners.remove(latestIndexAndNegListenerKey)
                 }
 
                 continue  // Take it to the top.
@@ -151,7 +151,7 @@ class Gll private constructor(
         nodeKey: ListenerKey,
         listener: Listener
     ) {
-        val listenerAlreadyExists = listenerExists_Q(nodeKey)
+        val listenerAlreadyExists = listenerExistsQ(nodeKey)
         val node = getOrCreateListenerNode(nodeKey)
         node.listeners.add(listener)
         for (result in node.results) {
@@ -170,7 +170,7 @@ class Gll private constructor(
         listener: Listener
     ) {
         //GllParsers.pushFullListenerCallback.invoke(tramp, nodeKey, listener);
-        val fullListenerAlreadyExists = fullListenerExists_Q(nodeKey)
+        val fullListenerAlreadyExists = fullListenerExistsQ(nodeKey)
         val node = getOrCreateListenerNode(nodeKey)
         node.fullListeners.add(listener)
         for (fullResult in node.fullResults) {
@@ -316,7 +316,7 @@ class Gll private constructor(
     fun nodeListener(
         nodeKey: ListenerKey
     ): Listener {
-        return Listener { result: ParseMessage? -> pushResultHelper(nodeKey, result!!) }
+        return { result: ParseMessage? -> pushResultHelper(nodeKey, result!!) }
     }
 
     private val instanceIdForDebug: String

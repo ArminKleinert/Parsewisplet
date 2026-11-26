@@ -72,31 +72,33 @@ class VariableRepetitionRule private constructor(
         runner: Gll,
         prevIndex: Int
     ): Listener {
-        return Listener { result: ParseMessage? ->
-            val parsedResult = result!!.result
-            val continueIndex = result.index()
-            val newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult)
-            val newNResultsSoFar = nResultsSoFar + 1
+        return object : Listener {
+            override fun invoke(result: ParseMessage) {
+                val parsedResult = result.result
+                val continueIndex = result.index()
+                val newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult)
+                val newNResultsSoFar = nResultsSoFar + 1
 
-            val minReached = repRule.min <= newNResultsSoFar // Collected the minimum number of parses
+                val minReached = repRule.min <= newNResultsSoFar // Collected the minimum number of parses
 
-            if (minReached && newNResultsSoFar <= repRule.max) {
-                runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
-            }
-
-            if (runner.stopEarlyOnEmptyRepetition
-                && minReached && continueIndex == prevIndex
-            ) {
-                if (resultsSoFar.isEmpty) {
+                if (minReached && newNResultsSoFar <= repRule.max) {
                     runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
                 }
-                return@Listener
-            }
-            if (newNResultsSoFar < repRule.max) {
-                runner.pushListener(
-                    makeKey(continueIndex, repRule.rule),
-                    repListener(newResultsSoFar, newNResultsSoFar, repRule, nodeKey, runner, continueIndex)
-                )
+
+                if (runner.stopEarlyOnEmptyRepetition
+                    && minReached && continueIndex == prevIndex
+                ) {
+                    if (resultsSoFar.isEmpty) {
+                        runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
+                    }
+                    return
+                }
+                if (newNResultsSoFar < repRule.max) {
+                    runner.pushListener(
+                        makeKey(continueIndex, repRule.rule),
+                        repListener(newResultsSoFar, newNResultsSoFar, repRule, nodeKey, runner, continueIndex)
+                    )
+                }
             }
         }
     }
@@ -110,26 +112,28 @@ class VariableRepetitionRule private constructor(
         nodeKey: ListenerKey,
         runner: Gll
     ): Listener {
-        return Listener { result: ParseMessage? ->
-            val parsedResult = result!!.result
-            val continueIndex = result.index()
-            val newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult)
-            val newNResultsSoFar = nResultsSoFar + 1
-            if (continueIndex == runner.tramp().text.length) {
-                if (minimum <= newNResultsSoFar && newNResultsSoFar <= maximum) {
-                    runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
+        return object : Listener {
+            override fun invoke(result: ParseMessage) {
+                val parsedResult = result.result
+                val continueIndex = result.index()
+                val newResultsSoFar = resultsSoFar.appendOrConcat(parsedResult)
+                val newNResultsSoFar = nResultsSoFar + 1
+                if (continueIndex == runner.tramp().text.length) {
+                    if (newNResultsSoFar in minimum..maximum) {
+                        runner.pushSuccessMessage(nodeKey, newResultsSoFar, continueIndex)
+                    } else {
+                        runner.fail(nodeKey, continueIndex, this@VariableRepetitionRule, true)
+                    }
                 } else {
-                    runner.fail(nodeKey, continueIndex, this, true)
-                }
-            } else {
-                if (newNResultsSoFar < maximum) {
-                    val listener = repFullListener(
-                        newResultsSoFar, newNResultsSoFar,
-                        rule, minimum, maximum, nodeKey, runner
-                    )
-                    runner.pushListener(makeKey(continueIndex, rule), listener)
-                } else {
-                    runner.fail(nodeKey, continueIndex, this, true)
+                    if (newNResultsSoFar < maximum) {
+                        val listener = repFullListener(
+                            newResultsSoFar, newNResultsSoFar,
+                            rule, minimum, maximum, nodeKey, runner
+                        )
+                        runner.pushListener(makeKey(continueIndex, rule), listener)
+                    } else {
+                        runner.fail(nodeKey, continueIndex, this@VariableRepetitionRule, true)
+                    }
                 }
             }
         }
@@ -171,7 +175,7 @@ class VariableRepetitionRule private constructor(
          * @since 0.9.7
          */
         fun create(rule: Rule, min: Int, max: Int): Rule {
-            require(!(min < 0 || min > max)) { "Illegal repetition (min=" + min + ", max=" + max + ")" }
+            require(min in 0..max) { "Illegal repetition (min=$min, max=$max)" }
             if (min == 0 && max == 0) return EpsilonTerm.default
             if (rule is EpsilonTerm || (min == 1 && max == 1)) return rule
             if ((rule is VariableRepetitionRule) && rule.min <= 1 && min <= 1) {

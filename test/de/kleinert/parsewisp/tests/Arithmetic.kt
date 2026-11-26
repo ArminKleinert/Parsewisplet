@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.tests
 
-import de.kleinert.parsewisp.Parsewisp.parser
+import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions.Companion.newWithStandardWhitespace
 import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.result.ParseResult
@@ -23,7 +23,7 @@ object Arithmetic {
                 Digit      = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
                 
                 """.trimIndent()
-        val p = parser(g)
+        val p = Parsewisp.parser(g)
 
         // Since Parsewisp is scannerless, we can not include spaces for now.
         return p.parse("(8-9)*-20/18+1")
@@ -43,7 +43,7 @@ object Arithmetic {
                 Digit      = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
                 
                 """.trimIndent()
-        val p = parser(g)
+        val p = Parsewisp.parser(g)
 
         // Since Parsewisp is scannerless, we can not include spaces for now.
         return p.parse("(8-9)*-20/18+1")
@@ -63,7 +63,7 @@ object Arithmetic {
                 Digit      = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
                 
                 """.trimIndent()
-        val p = parser(g)
+        val p = Parsewisp.parser(g)
 
         // Since Parsewisp is scannerless, we can not include spaces for now.
         return p.parse("(8-9)*-20/18+1")
@@ -95,7 +95,7 @@ object Arithmetic {
                 
                 """.trimIndent()
         val options = newWithStandardWhitespace()
-        val p = parser(g, options)
+        val p = Parsewisp.parser(g, options)
 
         return p.parse("(8 - 9) * -20 / 18 + 1")
     }
@@ -119,7 +119,7 @@ object Arithmetic {
                 
                 """.trimIndent()
         val options = newWithStandardWhitespace()
-        val p = parser(g, options)
+        val p = Parsewisp.parser(g, options)
 
         return p.parse("(8 - 9) * -20 / 18 + 1")
     }
@@ -139,7 +139,7 @@ object Arithmetic {
                 
                 """.trimIndent()
         val options = newWithStandardWhitespace()
-        val p = parser(g, options)
+        val p = Parsewisp.parser(g, options)
 
         return p.parse("(8 - 9) * -20 / 18 + 1")
     }
@@ -160,7 +160,7 @@ object Arithmetic {
                 
                 """.trimIndent()
         val options = newWithStandardWhitespace()
-        val p = parser(g, options)
+        val p = Parsewisp.parser(g, options)
 
         return p.parse("(8 - 9) * -20 / 18 + 1")
     }
@@ -180,7 +180,7 @@ object Arithmetic {
                 
                 """.trimIndent()
         val options = newWithStandardWhitespace()
-        val p = parser(g, options)
+        val p = Parsewisp.parser(g, options)
 
         return p.parse("(8 - 9) * -20 / 18 + 1")
     }
@@ -200,7 +200,7 @@ object Arithmetic {
                 
                 """.trimIndent()
         val options = newWithStandardWhitespace()
-        val p = parser(g, options)
+        val p = Parsewisp.parser(g, options)
 
         return p.parse("(8 - 9) * -20 / 18 + 1")
     }
@@ -221,7 +221,7 @@ object Arithmetic {
                 
                 """.trimIndent()
         val options = newWithStandardWhitespace()
-        val p = parser(g, options)
+        val p = Parsewisp.parser(g, options)
 
         return p.parse("(8 - 9) * -20 / 18 + 1", ParsingOptions.default)
     }

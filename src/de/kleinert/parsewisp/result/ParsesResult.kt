@@ -48,7 +48,7 @@ interface ParsesResult : List<ParseTree> {
      */
     fun toRawList(): List<List<Any?>> {
         if (!this.isSuccess) throw ClassCastException("Cannot cast failure to success.")
-        return stream().map { obj: ParseTree -> obj.toRawList() }.toList()
+        return map { obj: ParseTree -> obj.toRawList() }
     }
 
     /**
@@ -96,7 +96,7 @@ interface ParsesResult : List<ParseTree> {
         }
 
         override fun hashCode(): Int {
-            return Objects.hash(parseFailure)
+            return parseFailure.hashCode()
         }
 
         override fun toString(): String {

@@ -5,11 +5,4 @@ package de.kleinert.parsewisp.error
  *
  * @since 0.9.7
  */
-class IllegalGrammarException
-/**
- * Exception which occurs if a grammar is invalid.
- *
- * @param message Message.
- * @since 0.9.7
- */
-    (message: String?) : RuntimeException(message)
+class IllegalGrammarException(message: String?) : RuntimeException(message)

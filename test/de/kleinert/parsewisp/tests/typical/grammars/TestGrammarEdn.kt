@@ -25,19 +25,18 @@ internal class TestGrammarEdn {
     }
 
     private fun symbolListWithNS(): List<String> {
-        return symbolList().stream().map { it: String? -> "$it/sym" }.toList()
+        return symbolList().map {  "$it/sym" }
     }
 
     private fun keywordList(): List<String> {
-        return symbolList().stream().map { it: String -> ":$it" }.toList()
+        return symbolList().map {  ":$it" }
     }
 
     private fun keywordListWithNS(): List<String> {
-        return symbolListWithNS().stream().map { it: String -> ":$it" }.toList()
+        return symbolListWithNS().map {  ":$it" }
     }
 
     @Test
-    @Throws(IOException::class)
     fun verifyWithFile() {
         val parser = parser()
         val text = Files.readString(Path.of("testres/other/edntest.edn"))

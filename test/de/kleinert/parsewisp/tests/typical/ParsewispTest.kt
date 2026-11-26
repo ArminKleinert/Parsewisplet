@@ -307,7 +307,7 @@ internal class ParsewispTest {
                     PT.create("S", PT.create("S", PT.create("S"))),
                     PT.create("S", PT.create("S", PT.create("S", PT.create("S"))))
                 ),
-                forest.stream().limit(4).toList()
+                forest.asSequence().take(4).toList()
             )
         }
     }

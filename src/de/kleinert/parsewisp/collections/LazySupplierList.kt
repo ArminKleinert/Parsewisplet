@@ -1,9 +1,5 @@
 package de.kleinert.parsewisp.collections
 
-import java.util.Spliterator
-import java.util.Spliterators
-import java.util.function.IntFunction
-
 /**
  * Takes a function and lazily executes it repeatedly when requested.
  * The results are buffered in a [List] for fast access.
@@ -13,10 +9,10 @@ import java.util.function.IntFunction
  * @param <T> The result type for the function.
  * @since 0.9.7
 </T> */
-open class LazySupplierList<T>(nextFn: IntFunction<T?>, maxResults: Int) : List<T> {
-    private val evaluatedPart: ArrayList<T>
+open class LazySupplierList<T>(nextFn: (Int)->T?, maxResults: Int) : List<T> {
+    private val evaluatedPart: ArrayList<T> = ArrayList()
     private val maxResults: Int
-    private var nextFn: IntFunction<T?>?
+    private var nextFn: ((Int)->T?)?
 
     /**
      * True if the list is fully evaluated, false otherwise.
@@ -28,7 +24,6 @@ open class LazySupplierList<T>(nextFn: IntFunction<T?>, maxResults: Int) : List<
         private set
 
     init {
-        this.evaluatedPart = ArrayList<T>()
         this.nextFn = nextFn
         this.maxResults = maxResults
     }
@@ -50,7 +45,7 @@ open class LazySupplierList<T>(nextFn: IntFunction<T?>, maxResults: Int) : List<
         checkNotNull(nextFn)
 
         // Calculate the next element.
-        val next = nextFn!!.apply(evaluatedPart.size)
+        val next = nextFn!!(evaluatedPart.size)
 
         // End reached?
         if (next == null) {
@@ -118,16 +113,6 @@ open class LazySupplierList<T>(nextFn: IntFunction<T?>, maxResults: Int) : List<
             if (t == element) return true
         }
         return false
-    }
-
-    /**
-     * Implemented to allow the use of [List.stream] operations.
-     *
-     * @return A Spliterator for this list.
-     * @since 0.9.7
-     */
-    override fun spliterator(): Spliterator<T?> {
-        return Spliterators.spliteratorUnknownSize<T?>(iterator(), Spliterator.ORDERED)
     }
 
     override fun iterator(): Iterator<T> {

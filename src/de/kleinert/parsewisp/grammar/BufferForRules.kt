@@ -5,7 +5,6 @@ import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.RegexTerm
 import de.kleinert.parsewisp.parsing.Rule
 import de.kleinert.parsewisp.parsing.StringTerm
-import java.util.regex.Pattern
 
 /**
  * As long as this buffer exists, the following is true:

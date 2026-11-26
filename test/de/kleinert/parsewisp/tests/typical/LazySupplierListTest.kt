@@ -48,6 +48,6 @@ internal class LazySupplierListTest {
 
         val lsl = LazySupplierList<Int?>({ i: Int -> i }, Int.MAX_VALUE)
 
-        Assertions.assertEquals(mutableListOf<Int?>(0, 1, 2, 3, 4), lsl.stream().limit(5).toList())
+        Assertions.assertEquals(mutableListOf<Int?>(0, 1, 2, 3, 4), lsl.asSequence().take(5).toList())
     }
 }

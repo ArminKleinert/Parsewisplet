@@ -63,7 +63,7 @@ internal class ConvTest {
 
     companion object {
         private fun toParseTreeHelper(o: List<*>): List<Any?> {
-            return o.stream().map<Any?> { it: Any? ->
+            return o.map {
                 when (it) {
                     is String, is ParseFailureNode, is ParseTree -> return@map it
                     is MutableList<*> -> return@map toParseTree(it)

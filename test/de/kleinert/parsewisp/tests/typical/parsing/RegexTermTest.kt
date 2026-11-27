@@ -6,7 +6,7 @@ import de.kleinert.parsewisp.parser_options.ParsingOptions
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.RegexTerm
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -172,7 +172,7 @@ internal class RegexTermTest {
         // Default.
         Assertions.assertEquals(
             digit(),
-            digit().withReduction(ReductionType.initial())
+            digit().withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -193,7 +193,7 @@ internal class RegexTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", digit().withReduction(ReductionType.merging())
+                "A", digit().withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "1"), pMerge.parse("1"))
@@ -205,7 +205,7 @@ internal class RegexTermTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", digit().withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", digit().withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "1"), pMerge2.parse("1"))
@@ -215,7 +215,7 @@ internal class RegexTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", digit().withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", digit().withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "1")), pMerge3.parse("1"))
@@ -230,7 +230,7 @@ internal class RegexTermTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        digit().withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        digit().withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         digit()
                     )
                 )

@@ -6,7 +6,7 @@ import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.SpecialSequenceRule
 import de.kleinert.parsewisp.parsing.StringTerm
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -140,7 +140,7 @@ internal class SpecialSequenceRuleTest {
         // Default.
         Assertions.assertEquals(
             simpleRuleForTests(),
-            simpleRuleForTests().withReduction(ReductionType.initial())
+            simpleRuleForTests().withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -161,7 +161,7 @@ internal class SpecialSequenceRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simple_a().withReduction(ReductionType.merging())
+                "A", simple_a().withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pMerge.parse("a"))
@@ -173,7 +173,7 @@ internal class SpecialSequenceRuleTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simple_a().withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", simple_a().withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
@@ -183,7 +183,7 @@ internal class SpecialSequenceRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simple_a().withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", simple_a().withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
@@ -198,7 +198,7 @@ internal class SpecialSequenceRuleTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simple_a().withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        simple_a().withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         StringTerm.createDirect("b", false)
                     )
                 )

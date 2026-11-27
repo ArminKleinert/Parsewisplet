@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.parser_options
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.parsing.Rule
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 
 /**
  * Options for unhiding parts of the output from a parse. A thorough description can be found in the description of the [ParsingOptions] class.
@@ -46,7 +46,7 @@ object Unhide {
         val res = linkedMapOf<Sym, Rule>()
         for (symRuleEntry in grammar.entries) {
             val key = symRuleEntry.key
-            val reduction: ReductionType = ReductionType.taggedTree(key)
+            val reduction: Reduction = Reduction.taggedTree(key)
             val pUnhide = symRuleEntry.value.withReduction(reduction)
             res.put(key, pUnhide)
         }
@@ -64,7 +64,7 @@ object Unhide {
         val res = linkedMapOf<Sym, Rule>()
         for (symRuleEntry in grammar.entries) {
             val key = symRuleEntry.key
-            val reduction: ReductionType = ReductionType.taggedTree(key)
+            val reduction: Reduction = Reduction.taggedTree(key)
             val p = symRuleEntry.value.includeInResult().withReduction(reduction)
             res.put(key, p)
         }

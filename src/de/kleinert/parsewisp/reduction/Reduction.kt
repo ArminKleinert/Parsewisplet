@@ -8,7 +8,7 @@ import java.util.*
 /**
  * A class for output formats. This entire class might be removed in the future and replaced by an alternative [ParseTree] variant specifically for intermediate operations.
  */
-class ReductionType private constructor(
+class Reduction private constructor(
     /**
      * The production key this output format is for.
      *
@@ -16,22 +16,16 @@ class ReductionType private constructor(
      */
     val key: Sym,
     /**
-     * The [Type] type of this reduction.
+     * The [RedType] type of this reduction.
      *
-     * @return The [Type] type of this reduction.
+     * @return The [RedType] type of this reduction.
      */
-    val reductionType: Type,
-    /**
-     * If true, the intermediate result will be hidden in the final output tree.
-     *
-     * @return If true, the intermediate result will be hidden in the final output tree.
-     */
-    val isHiddenOrRaw: Boolean
+    val type: RedType
 ) {
     /**
      * The available types. They mark whether the parse operation is an intermediate operation or for the final output.
      */
-    enum class Type {
+    enum class RedType {
         /**
          * The default type. This should not be used directly.
          */
@@ -50,53 +44,44 @@ class ReductionType private constructor(
 
     override fun equals(other: Any?): Boolean {
         if (other == null || javaClass != other.javaClass) return false
-        val that = other as ReductionType
+        val that = other as Reduction
         return key == that.key
     }
 
     override fun hashCode(): Int {
-        return Objects.hash(key, this.reductionType, this.isHiddenOrRaw)
+        return Objects.hash(key, this.type)
     }
 
     override fun toString(): String {
         return "{" +
                 "key=" + key +
-                ", type=" + this.reductionType +
+                ", type=" + this.type +
                 '}'
     }
 
     companion object {
-        private var mergeReduction: ReductionType? = null
-        private var initialReduction: ReductionType? = null
-
         /**
          * The default output format for results that are to be merged into a parent tree. It has the following properties:
          *
          *  * The NULL_TAG (see [ParseTree.NULL_TAG]) as its tag.
-         *  * The type is [Type.MERGE].
-         *  * [isHiddenOrRaw] returns true.
+         *  * The type is [RedType.MERGE].
          *
          * @return Default output format for intermediate operations.
          */
-        fun merging(): ReductionType {
-            if (mergeReduction == null) mergeReduction =
-                ReductionType(ParseTree.NULL_TAG.content, Type.MERGE, true)
-            return mergeReduction!!
+        fun merging(): Reduction {
+            return Reduction(ParseTree.NULL_TAG.content, RedType.MERGE)
         }
 
         /**
          * Default output format for new instances of [Rule]. It has the following properties:
          *
          *  * The NULL_TAG (see [ParseTree.NULL_TAG]) as its tag.
-         *  * The type is [Type.INITIAL].
-         *  * [isHiddenOrRaw] returns true.
+         *  * The type is [RedType.INITIAL].
          *
          * @return Default output format for new instances of [Rule].
          */
-        fun initial(): ReductionType {
-            if (initialReduction == null) initialReduction =
-                ReductionType(ParseTree.NULL_TAG.content, Type.INITIAL, true)
-            return initialReduction!!
+        fun initial(): Reduction {
+            return Reduction(ParseTree.NULL_TAG.content, RedType.INITIAL)
         }
 
         /**
@@ -105,12 +90,12 @@ class ReductionType private constructor(
          * @param key The production's name.
          * @return A new output descriptor.
          */
-        fun taggedTree(key: Sym): ReductionType {
-            return ReductionType(key, Type.TAGGED_PARSE_TREE, false)
+        fun taggedTree(key: Sym): Reduction {
+            return Reduction(key, RedType.TAGGED_PARSE_TREE)
         }
 
         /**
-         * Replaces all rules that have the reduction type [Type.INITIAL] (the default when created) with rules with the reduction type [Type.TAGGED_PARSE_TREE].
+         * Replaces all rules that have the reduction type [RedType.INITIAL] (the default when created) with rules with the reduction type [RedType.TAGGED_PARSE_TREE].
          *
          * @param productions The productions as a mapping of symbols to rules.
          */
@@ -120,7 +105,7 @@ class ReductionType private constructor(
             for (prod in productions.entries) {
                 val key = prod.key
                 var value = prod.value
-                if (value.reduction.reductionType == Type.INITIAL) {
+                if (value.reduction.type == RedType.INITIAL) {
                     value = value.withReduction(taggedTree(key))
                 }
                 prod.setValue(value)

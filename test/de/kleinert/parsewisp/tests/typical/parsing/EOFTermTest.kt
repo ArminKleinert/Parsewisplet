@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.tests.typical.parsing
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -119,7 +119,7 @@ internal class EOFTermTest {
         // Default.
         Assertions.assertEquals(
             EOFTerm.default,
-            EOFTerm.default.withReduction(ReductionType.initial())
+            EOFTerm.default.withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -140,7 +140,7 @@ internal class EOFTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", EOFTerm.default.withReduction(ReductionType.merging())
+                "A", EOFTerm.default.withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S"), pMerge.parse(""))
@@ -152,7 +152,7 @@ internal class EOFTermTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", EOFTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", EOFTerm.default.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
@@ -162,7 +162,7 @@ internal class EOFTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", EOFTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", EOFTerm.default.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -177,7 +177,7 @@ internal class EOFTermTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        EOFTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        EOFTerm.default.withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         EOFTerm.default
                     )
                 )

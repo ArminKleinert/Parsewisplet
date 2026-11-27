@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.tests.typical.parsing
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -174,7 +174,7 @@ internal class LookaheadRuleTest {
         val r = LookaheadRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as LookaheadRule
+            .withReduction(Reduction.taggedTree(Sym.sym("A"))) as LookaheadRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -264,7 +264,7 @@ internal class LookaheadRuleTest {
         // Default.
         Assertions.assertEquals(
             r,
-            r.withReduction(ReductionType.initial())
+            r.withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -292,7 +292,7 @@ internal class LookaheadRuleTest {
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", LookaheadRule.create(EpsilonTerm.default)
-                    .withReduction(ReductionType.merging())
+                    .withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S"), pMerge.parse(""))
@@ -305,7 +305,7 @@ internal class LookaheadRuleTest {
             Gr.grammarS(
                 "S",
                 "S", LookaheadRule.create(EpsilonTerm.default)
-                    .withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                    .withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
@@ -316,7 +316,7 @@ internal class LookaheadRuleTest {
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", LookaheadRule.create(EpsilonTerm.default)
-                    .withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                    .withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -333,7 +333,7 @@ internal class LookaheadRuleTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        r.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        r.withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         RegexTerm.create(Regex("[a-z]"))
                     )
                 )

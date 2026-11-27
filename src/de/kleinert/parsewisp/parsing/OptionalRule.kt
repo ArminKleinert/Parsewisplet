@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -9,7 +9,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class OptionalRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     rule: Rule
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
@@ -39,7 +39,7 @@ class OptionalRule private constructor(
         return if (isHiddenInResult == hide) this else OptionalRule(hide, reduction, rule)
     }
 
-    override fun withReduction(red: ReductionType): OptionalRule {
+    override fun withReduction(red: Reduction): OptionalRule {
         return if (reduction === red) this else OptionalRule(isHiddenInResult, red, rule)
     }
 
@@ -52,7 +52,7 @@ class OptionalRule private constructor(
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule
-            return OptionalRule(defaultHidden, defaultReductionType, rule)
+            return OptionalRule(defaultHidden, defaultReduction, rule)
         }
     }
 }

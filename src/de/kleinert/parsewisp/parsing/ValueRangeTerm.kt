@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -8,7 +8,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class ValueRangeTerm private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     lo: Int, hi: Int
 ) : Terminal(hide, red) {
     /**
@@ -63,7 +63,7 @@ class ValueRangeTerm private constructor(
         return if (isHiddenInResult == hide) this else ValueRangeTerm(hide, reduction, lo, hi)
     }
 
-    override fun withReduction(red: ReductionType): ValueRangeTerm {
+    override fun withReduction(red: Reduction): ValueRangeTerm {
         return if (reduction === red) this else ValueRangeTerm(isHiddenInResult, red, lo, hi)
     }
 
@@ -88,7 +88,7 @@ class ValueRangeTerm private constructor(
          * @throws IllegalArgumentException if the minimum codepoint value is greater than the maximum.
          */
         fun create(lo: Int, hi: Int): Rule {
-            return ValueRangeTerm(defaultHidden, defaultReductionType, lo, hi)
+            return ValueRangeTerm(defaultHidden, defaultReduction, lo, hi)
         }
     }
 }

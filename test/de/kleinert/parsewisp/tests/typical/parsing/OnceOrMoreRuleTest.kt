@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.tests.typical.parsing
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -121,7 +121,7 @@ internal class OnceOrMoreRuleTest {
         val r = OnceOrMoreRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as OnceOrMoreRule
+            .withReduction(Reduction.taggedTree(Sym.sym("A"))) as OnceOrMoreRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -184,7 +184,7 @@ internal class OnceOrMoreRuleTest {
         // Default.
         Assertions.assertEquals(
             rep_a(),
-            rep_a().withReduction(ReductionType.initial())
+            rep_a().withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -205,7 +205,7 @@ internal class OnceOrMoreRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", rep_a().withReduction(ReductionType.merging())
+                "A", rep_a().withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pMerge.parse("a"))
@@ -217,7 +217,7 @@ internal class OnceOrMoreRuleTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", rep_a().withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", rep_a().withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
@@ -227,7 +227,7 @@ internal class OnceOrMoreRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", rep_a().withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", rep_a().withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
@@ -242,7 +242,7 @@ internal class OnceOrMoreRuleTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        rep_a().withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        rep_a().withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         OptionalRule.create(StringTerm.create("b", false))
                     )
                 )

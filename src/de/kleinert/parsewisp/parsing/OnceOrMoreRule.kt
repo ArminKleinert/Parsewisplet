@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.parsing
 import de.kleinert.parsewisp.collections.FlatResultSeq
 import de.kleinert.parsewisp.collections.FlatResultSeq.Companion.make
 import de.kleinert.parsewisp.functions.Listener
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.result.success.ParseMessage
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
@@ -12,7 +12,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class OnceOrMoreRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     rule: Rule
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
@@ -37,7 +37,7 @@ class OnceOrMoreRule private constructor(
         return if (isHiddenInResult == hide) this else OnceOrMoreRule(hide, reduction, rule)
     }
 
-    override fun withReduction(red: ReductionType): OnceOrMoreRule {
+    override fun withReduction(red: Reduction): OnceOrMoreRule {
         return if (reduction === red) this else OnceOrMoreRule(isHiddenInResult, red, rule)
     }
 
@@ -50,7 +50,7 @@ class OnceOrMoreRule private constructor(
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule
-            return OnceOrMoreRule(defaultHidden, defaultReductionType, rule)
+            return OnceOrMoreRule(defaultHidden, defaultReduction, rule)
         }
 
         fun plusListener(

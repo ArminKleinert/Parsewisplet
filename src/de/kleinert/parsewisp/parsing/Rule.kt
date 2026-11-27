@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.grammar.GrammarPrinter
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -14,9 +14,9 @@ protected constructor(
      */
     val isHiddenInResult: Boolean,
     /**
-     * See [ReductionType].
+     * See [Reduction].
      */
-    val reduction: ReductionType
+    val reduction: Reduction
 ) {
 
     /**
@@ -55,7 +55,7 @@ protected constructor(
      * @param red The reduction type.
      * @return An instance of the same class with the reduction type set to the parameter.
      */
-    abstract fun withReduction(red: ReductionType): Rule
+    abstract fun withReduction(red: Reduction): Rule
 
     /**
      * Hide content in output.
@@ -84,7 +84,7 @@ protected constructor(
      * @return A new instance of the same class.
      */
     fun mergeToTop(): Rule {
-        return withReduction(ReductionType.merging())
+        return withReduction(Reduction.merging())
     }
 
     // Force children to override this.
@@ -121,4 +121,4 @@ protected constructor(
 /**
  * Default value for [Rule.reduction].
  */
-internal val defaultReductionType: ReductionType = ReductionType.initial()
+internal val defaultReduction: Reduction = Reduction.initial()

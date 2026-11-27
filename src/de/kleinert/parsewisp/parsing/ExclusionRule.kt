@@ -2,7 +2,7 @@ package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.grammar.Grammar
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import java.lang.ref.WeakReference
 
 /**
@@ -19,7 +19,7 @@ import java.lang.ref.WeakReference
  * See also: [ISO/IEC 14977:1996](https://www.iso.org/standard/26153.html) and [an explanation on StackOverflow](https://stackoverflow.com/a/35138946).
  */
 class ExclusionRule private constructor(
-    hide: Boolean, red: ReductionType,
+    hide: Boolean, red: Reduction,
     /**
      * The rule that is expected. E.g. in the exclusion rule `(A - B)`, it would be `A`.
      *
@@ -186,7 +186,7 @@ class ExclusionRule private constructor(
                 tempG[key] = value
             }
             tempG[startSymbol] = ConcatRule.create(listOf(excluded, EOFTerm.default))
-            ReductionType.applyStandardReductionToProductions(tempG)
+            Reduction.applyStandardReductionToProductions(tempG)
 
             grammar = Grammar(startSymbol, tempG)
 
@@ -205,7 +205,7 @@ class ExclusionRule private constructor(
         return if (isHiddenInResult == hide) this else ExclusionRule(hide, this.reduction, expected, excluded)
     }
 
-    override fun withReduction(red: ReductionType): ExclusionRule {
+    override fun withReduction(red: Reduction): ExclusionRule {
         return if (reduction === red) this else ExclusionRule(isHiddenInResult, red, expected, excluded)
     }
 
@@ -228,7 +228,7 @@ class ExclusionRule private constructor(
             ruleExcluded: Rule
         ): Rule {
             if (ruleExpected == ruleExcluded) return EpsilonTerm.default
-            return ExclusionRule(defaultHidden, defaultReductionType, ruleExpected, ruleExcluded)
+            return ExclusionRule(defaultHidden, defaultReduction, ruleExpected, ruleExcluded)
         }
     }
 }

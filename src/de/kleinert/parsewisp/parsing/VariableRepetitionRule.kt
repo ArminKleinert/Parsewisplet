@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.parsing
 import de.kleinert.parsewisp.collections.FlatResultSeq
 import de.kleinert.parsewisp.collections.FlatResultSeq.Companion.make
 import de.kleinert.parsewisp.functions.Listener
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.result.success.ParseMessage
 import de.kleinert.parsewisp.trampoline.ListenerKey
 import kotlin.math.max
@@ -20,7 +20,7 @@ import kotlin.math.min
  */
 class VariableRepetitionRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     rule: Rule,
     /**
      * Return the minimum number of repetitions.
@@ -144,7 +144,7 @@ class VariableRepetitionRule private constructor(
         return if (isHiddenInResult == hide) this else VariableRepetitionRule(hide, reduction, rule, min, max)
     }
 
-    override fun withReduction(red: ReductionType): VariableRepetitionRule {
+    override fun withReduction(red: Reduction): VariableRepetitionRule {
         return if (reduction === red) this else VariableRepetitionRule(isHiddenInResult, red, rule, min, max)
     }
 
@@ -187,7 +187,7 @@ class VariableRepetitionRule private constructor(
             }
             return VariableRepetitionRule(
                 defaultHidden,
-                defaultReductionType,
+                defaultReduction,
                 rule,
                 min,
                 max

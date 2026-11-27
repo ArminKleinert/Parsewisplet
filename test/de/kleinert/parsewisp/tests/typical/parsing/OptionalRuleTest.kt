@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.tests.typical.parsing
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -109,7 +109,7 @@ internal class OptionalRuleTest {
         val r = OptionalRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as OptionalRule
+            .withReduction(Reduction.taggedTree(Sym.sym("A"))) as OptionalRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -129,7 +129,7 @@ internal class OptionalRuleTest {
         val r = OptionalRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as OptionalRule
+            .withReduction(Reduction.taggedTree(Sym.sym("A"))) as OptionalRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -195,7 +195,7 @@ internal class OptionalRuleTest {
         // Default.
         Assertions.assertEquals(
             a_or_nay(),
-            a_or_nay().withReduction(ReductionType.initial())
+            a_or_nay().withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -217,7 +217,7 @@ internal class OptionalRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", a_or_nay().withReduction(ReductionType.merging())
+                "A", a_or_nay().withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S"), pMerge.parse(""))
@@ -230,7 +230,7 @@ internal class OptionalRuleTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", a_or_nay().withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", a_or_nay().withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
@@ -241,7 +241,7 @@ internal class OptionalRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", a_or_nay().withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", a_or_nay().withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -257,7 +257,7 @@ internal class OptionalRuleTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        a_or_nay().withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        a_or_nay().withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         OptionalRule.create(StringTerm.create("b", false))
                     )
                 )

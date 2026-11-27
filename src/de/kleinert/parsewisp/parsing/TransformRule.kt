@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.parsing
 import de.kleinert.parsewisp.collections.FlatResultSeq
 import de.kleinert.parsewisp.collections.FlatResultSeq.Companion.make
 import de.kleinert.parsewisp.functions.Listener
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.result.success.ParseMessage
 
 /**
@@ -11,7 +11,7 @@ import de.kleinert.parsewisp.result.success.ParseMessage
  */
 class TransformRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     rule: Rule,
     private val transformer: (List<Any?>, Int)-> List<Any?>
 ) : RuleWithChild(hide, red, rule) {
@@ -51,7 +51,7 @@ class TransformRule private constructor(
         return if (isHiddenInResult == hide) this else TransformRule(hide, reduction, rule, transformer)
     }
 
-    override fun withReduction(red: ReductionType): TransformRule {
+    override fun withReduction(red: Reduction): TransformRule {
         return if (reduction === red) this else TransformRule(isHiddenInResult, red, rule, transformer)
     }
 
@@ -78,7 +78,7 @@ class TransformRule private constructor(
          * @return A rule.
          */
         fun create(rule: Rule, transformer: (List<Any?>, Int) -> List<Any?>): Rule {
-            return TransformRule(defaultHidden, defaultReductionType, rule, transformer)
+            return TransformRule(defaultHidden, defaultReduction, rule, transformer)
         }
 
         private fun frs(init: List<Any?>): FlatResultSeq {

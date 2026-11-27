@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 
 /**
  * This class represents the empty parse epsilon. It can typically be written in the following ways: "Epsilon", "epsilon", "EPSILON", "eps", "ε" or as the empty string "".
@@ -9,7 +9,7 @@ import de.kleinert.parsewisp.reduction.ReductionType
  * If yes, success if the end of input has been reached, fail otherwise. If no, always success.
  */
 class EpsilonTerm  //private static final @NotNull EpsilonTerm epsilon = new EpsilonTerm(defaultHidden, defaultReductionType);
-private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
+private constructor(hide: Boolean, red: Reduction) : Terminal(hide, red) {
     override fun parse(index: Int, runner: Gll) {
         runner.pushSuccessMessageWithoutValue(makeKey(index, this), index)
     }
@@ -24,7 +24,7 @@ private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
         return if (isHiddenInResult == hide) this else EpsilonTerm(hide, reduction)
     }
 
-    override fun withReduction(red: ReductionType): EpsilonTerm {
+    override fun withReduction(red: Reduction): EpsilonTerm {
         return if (reduction === red) this else EpsilonTerm(isHiddenInResult, red)
     }
 
@@ -45,6 +45,6 @@ private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
              *
              * @return A default instance of Epsilon.
              */
-            get() = EpsilonTerm(defaultHidden, defaultReductionType)
+            get() = EpsilonTerm(defaultHidden, defaultReduction)
     }
 }

@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -8,7 +8,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class LookaheadRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     rule: Rule
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
@@ -33,7 +33,7 @@ class LookaheadRule private constructor(
         return if (isHiddenInResult == hide) this else LookaheadRule(hide, reduction, rule)
     }
 
-    override fun withReduction(red: ReductionType): LookaheadRule {
+    override fun withReduction(red: Reduction): LookaheadRule {
         return if (reduction === red) this else LookaheadRule(isHiddenInResult, red, rule)
     }
 
@@ -50,7 +50,7 @@ class LookaheadRule private constructor(
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule
-            return LookaheadRule(defaultHidden, defaultReductionType, rule)
+            return LookaheadRule(defaultHidden, defaultReduction, rule)
         }
     }
 }

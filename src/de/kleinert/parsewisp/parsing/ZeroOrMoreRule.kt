@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.collections.FlatResultSeq.Companion.make
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -12,7 +12,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class ZeroOrMoreRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     rule: Rule
 ) : RuleWithChild(hide, red, rule) {
     override fun parse(index: Int, runner: Gll) {
@@ -44,7 +44,7 @@ class ZeroOrMoreRule private constructor(
         return if (isHiddenInResult == hide) this else ZeroOrMoreRule(hide, reduction, rule)
     }
 
-    override fun withReduction(red: ReductionType): ZeroOrMoreRule {
+    override fun withReduction(red: Reduction): ZeroOrMoreRule {
         return if (reduction === red) this else ZeroOrMoreRule(isHiddenInResult, red, rule)
     }
 
@@ -57,7 +57,7 @@ class ZeroOrMoreRule private constructor(
          */
         fun create(rule: Rule): Rule {
             if (rule is EpsilonTerm) return rule
-            return ZeroOrMoreRule(defaultHidden, defaultReductionType, rule)
+            return ZeroOrMoreRule(defaultHidden, defaultReduction, rule)
         }
     }
 }

@@ -1,18 +1,18 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 
 /**
  * Abstraction of [Rule] types which wrap multiple other [Rule] instances. Examples: choices, concatenations.
  */
 abstract class RuleWithManyChildren
  protected constructor(
-    hide: Boolean,
-    red: ReductionType,
-    /**
+     hide: Boolean,
+     red: Reduction,
+     /**
      * The rules wrapped by this rule.
      */
-    /**
+     /**
      * Set the inner [Rule] list used for parsing and returns an instance of the same class.
      *
      * @return The inner [Rule] list.

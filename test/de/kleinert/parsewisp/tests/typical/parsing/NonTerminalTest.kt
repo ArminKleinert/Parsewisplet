@@ -6,7 +6,7 @@ import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.Rule
 import de.kleinert.parsewisp.parsing.StringTerm
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -205,7 +205,7 @@ internal class NonTerminalTest {
         // Default.
         Assertions.assertEquals(
             simpleRuleForTests(),
-            simpleRuleForTests().withReduction(ReductionType.initial())
+            simpleRuleForTests().withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -242,7 +242,7 @@ internal class NonTerminalTest {
         val pDefault = Parsewisp.parser(
             Gr.grammar(
                 "S", nt("A"),
-                "A", nt("B").withReduction(ReductionType.taggedTree(Sym.sym("C"))),
+                "A", nt("B").withReduction(Reduction.taggedTree(Sym.sym("C"))),
                 "B", StringTerm.create("a", false)
             )
         )
@@ -259,7 +259,7 @@ internal class NonTerminalTest {
                 "S", nt("A"),
                 "A", ConcatRule.create(
                     listOf(
-                        nt("B").withReduction(ReductionType.taggedTree(Sym.sym("C"))),
+                        nt("B").withReduction(Reduction.taggedTree(Sym.sym("C"))),
                         StringTerm.create("b", false)
                     )
                 ),

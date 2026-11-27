@@ -7,7 +7,8 @@ import de.kleinert.parsewisp.parser.Parser
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
 import de.kleinert.parsewisp.parser_options.RedefinitionOption
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
+import de.kleinert.parsewisp.reduction.Reduction.RedType
 
 /**
  * This class provides an easy way to construct grammars. To use it, it needs to be inherited and the [.make] method overridden.
@@ -79,7 +80,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
         }
 
         //compress(resultProductions);
-        ReductionType.applyStandardReductionToProductions(resultProductions)
+        Reduction.applyStandardReductionToProductions(resultProductions)
         if (wsParser != null) {
             autoWhitespace(resultProductions, start, wsParser.grammar, wsParser.startProduction)
         }
@@ -604,12 +605,13 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
             val rules = mutableListOf<Rule>()
             rules.add(whitespaceRule)
             val result: Rule
-            if (!originalRule.reduction.isHiddenOrRaw) {
+            if (originalRule.reduction.type != RedType.INITIAL
+                || originalRule.reduction.type != RedType.MERGE) {
                 // Hide the terminal in the output.
                 // It still appears in the tree, but is flattened into the concatenation.
                 rules.add(
                     originalRule.withReduction(
-                        ReductionType.merging()
+                        Reduction.merging()
                     )
                 )
                 result = cat(rules).withReduction(originalRule.reduction)
@@ -643,7 +645,7 @@ abstract class GrammarBuilder protected constructor(redefinitionOption: Redefini
         }
 
         val startWithoutReduction = (productions[start]!!
-            .withReduction(ReductionType.initial()))
+            .withReduction(Reduction.initial()))
         val newStartComb =
             cat(listOf(startWithoutReduction, wsRule))
                 .withReduction(productions[start]!!.reduction)

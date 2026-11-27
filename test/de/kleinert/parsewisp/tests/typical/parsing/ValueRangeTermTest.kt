@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.tests.typical.parsing
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -156,7 +156,7 @@ internal class ValueRangeTermTest {
         // Default.
         Assertions.assertEquals(
             simple_a,
-            simple_a.withReduction(ReductionType.initial())
+            simple_a.withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -179,7 +179,7 @@ internal class ValueRangeTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simple_a.withReduction(ReductionType.merging())
+                "A", simple_a.withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pMerge.parse("a"))
@@ -193,7 +193,7 @@ internal class ValueRangeTermTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simple_a.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", simple_a.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
@@ -203,7 +203,7 @@ internal class ValueRangeTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simple_a.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", simple_a.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
@@ -220,7 +220,7 @@ internal class ValueRangeTermTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simple_a.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        simple_a.withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         StringTerm.createDirect("b", false)
                     )
                 )

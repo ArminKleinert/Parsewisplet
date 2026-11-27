@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.parser_options.ParserCreationOptions
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 
 /**
  * A class representing a choice or alternation. That is the `(p1 | p2)` operator in EBNF (where p1 and p2 are instances of [Rule]).
@@ -23,7 +23,7 @@ import de.kleinert.parsewisp.reduction.ReductionType
  */
 class AlternationRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     rules: List<Rule>
 ) : RuleWithManyChildren(hide, red, rules) {
     override fun parse(index: Int, runner: Gll) {
@@ -48,7 +48,7 @@ class AlternationRule private constructor(
         return if (isHiddenInResult == hide) this else AlternationRule(hide, reduction, rules)
     }
 
-    override fun withReduction(red: ReductionType): AlternationRule {
+    override fun withReduction(red: Reduction): AlternationRule {
         return if (reduction === red) this else AlternationRule(isHiddenInResult, red, rules)
     }
 
@@ -79,7 +79,7 @@ class AlternationRule private constructor(
             if (compressedRules.size == 1) return rules[0]
 
             return AlternationRule(
-                defaultHidden, defaultReductionType,
+                defaultHidden, defaultReduction,
                 compressedRules
             )
         }
@@ -95,7 +95,7 @@ class AlternationRule private constructor(
         fun altUnsafe(
             rules: List<Rule>
         ): AlternationRule {
-            return AlternationRule(defaultHidden, defaultReductionType, rules)
+            return AlternationRule(defaultHidden, defaultReduction, rules)
         }
     }
 }

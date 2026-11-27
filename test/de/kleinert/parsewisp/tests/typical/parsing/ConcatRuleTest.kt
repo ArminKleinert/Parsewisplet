@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.tests.typical.parsing
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -218,9 +218,9 @@ internal class ConcatRuleTest {
         val c1 = ConcatRule.create(listOf(string_a(), string_a()))
             .withHideTag(true) // different hide-tag
         val c2 = ConcatRule.create(listOf(string_a(), string_a()))
-            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) // reduction has changed
+            .withReduction(Reduction.taggedTree(Sym.sym("A"))) // reduction has changed
         val c3 = ConcatRule.create(listOf(string_a(), string_a()))
-            .withReduction(ReductionType.taggedTree(Sym.sym("B"))).withHideTag(true) // different reduction and hide-tag
+            .withReduction(Reduction.taggedTree(Sym.sym("B"))).withHideTag(true) // different reduction and hide-tag
 
         val cc = ConcatRule.create(listOf(c1, c2, c3))
         Assertions.assertEquals(
@@ -405,7 +405,7 @@ internal class ConcatRuleTest {
         val r = ConcatRule
             .create(i)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as ConcatRule
+            .withReduction(Reduction.taggedTree(Sym.sym("A"))) as ConcatRule
 
         // Expected
         Assertions.assertEquals(i, r.rules)
@@ -474,7 +474,7 @@ internal class ConcatRuleTest {
         // Default.
         Assertions.assertEquals(
             simpleRuleForTests,
-            simpleRuleForTests.withReduction(ReductionType.initial())
+            simpleRuleForTests.withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -492,7 +492,7 @@ internal class ConcatRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simpleRuleForTests.withReduction(ReductionType.merging())
+                "A", simpleRuleForTests.withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "a", "a"), pMerge.parse("aa"))
@@ -501,7 +501,7 @@ internal class ConcatRuleTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", simpleRuleForTests.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a", "a"), pMerge2.parse("aa"))
@@ -511,7 +511,7 @@ internal class ConcatRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", simpleRuleForTests.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a", "a")), pMerge3.parse("aa"))
@@ -523,7 +523,7 @@ internal class ConcatRuleTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        simpleRuleForTests.withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         StringTerm.create("b", false)
                     )
                 )

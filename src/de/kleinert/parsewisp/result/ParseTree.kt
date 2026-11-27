@@ -243,10 +243,7 @@ class ParseTree private constructor(
             val afs = when (content) {
                 null -> listOf()
                 is FlatResultSeq -> content.toList().map { o: Any? -> Node.of(o) }
-                is String -> listOf(Node.of(content))
-                is TotalParsesFailureNode -> listOf(Node.of(content))
-                is ParseFailureNode -> listOf(Node.of(content))
-                is ParseTree -> listOf(Node.of(content))
+                is String, is TotalParsesFailureNode,is ParseFailureNode,is ParseTree -> listOf(Node.of(content))
                 is List<*> -> content.map { o: Any? -> Node.of(o) }
                 else -> listOf(Node.of(content))
             }

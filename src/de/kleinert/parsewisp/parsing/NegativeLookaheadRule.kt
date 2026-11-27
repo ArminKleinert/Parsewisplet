@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -11,7 +11,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class NegativeLookaheadRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     rule: Rule
 ) : RuleWithChild(hide, red, rule) {
     private fun resultExists_Q(
@@ -59,7 +59,7 @@ class NegativeLookaheadRule private constructor(
         return if (isHiddenInResult == hide) this else NegativeLookaheadRule(hide, reduction, rule)
     }
 
-    override fun withReduction(red: ReductionType): NegativeLookaheadRule {
+    override fun withReduction(red: Reduction): NegativeLookaheadRule {
         return if (reduction === red) this else NegativeLookaheadRule(isHiddenInResult, red, rule)
     }
 
@@ -71,7 +71,7 @@ class NegativeLookaheadRule private constructor(
          * @return A rule.
          */
         fun create(rule: Rule): Rule {
-            return NegativeLookaheadRule(defaultHidden, defaultReductionType, rule)
+            return NegativeLookaheadRule(defaultHidden, defaultReduction, rule)
         }
     }
 }

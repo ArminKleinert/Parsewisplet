@@ -1,7 +1,7 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.parser_options.ParsingOptions
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -16,7 +16,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class RegexTerm private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     /**
      * The regex/pattern.
      *
@@ -83,7 +83,7 @@ class RegexTerm private constructor(
         return if (isHiddenInResult == hide) this else RegexTerm(hide, reduction, regexp)
     }
 
-    override fun withReduction(red: ReductionType): RegexTerm {
+    override fun withReduction(red: Reduction): RegexTerm {
         return if (reduction === red) this else RegexTerm(isHiddenInResult, red, regexp)
     }
 
@@ -110,7 +110,7 @@ class RegexTerm private constructor(
             if (regexp.options.contains(RegexOption.LITERAL) && s.chars()
                     .allMatch({ codePoint: Int -> Character.isLetterOrDigit(codePoint) })
             ) return StringTerm.createDirect(s, false)
-            return RegexTerm(defaultHidden, defaultReductionType, regexp)
+            return RegexTerm(defaultHidden, defaultReduction, regexp)
         }
     }
 }

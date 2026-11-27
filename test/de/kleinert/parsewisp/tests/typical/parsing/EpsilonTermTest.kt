@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.tests.typical.parsing
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -111,7 +111,7 @@ internal class EpsilonTermTest {
         // Default.
         Assertions.assertEquals(
             EpsilonTerm.default,
-            EpsilonTerm.default.withReduction(ReductionType.initial())
+            EpsilonTerm.default.withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -132,7 +132,7 @@ internal class EpsilonTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", EpsilonTerm.default.withReduction(ReductionType.merging())
+                "A", EpsilonTerm.default.withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S"), pMerge.parse(""))
@@ -144,7 +144,7 @@ internal class EpsilonTermTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", EpsilonTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", EpsilonTerm.default.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B"), pMerge2.parse(""))
@@ -154,7 +154,7 @@ internal class EpsilonTermTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", EpsilonTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", EpsilonTerm.default.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B")), pMerge3.parse(""))
@@ -169,7 +169,7 @@ internal class EpsilonTermTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        EpsilonTerm.default.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        EpsilonTerm.default.withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         EpsilonTerm.default
                     )
                 )

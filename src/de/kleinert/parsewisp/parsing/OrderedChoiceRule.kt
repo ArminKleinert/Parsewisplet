@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -15,20 +15,20 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  * so it can be considered a worse alternative to the [AlternationRule].
  */
 class OrderedChoiceRule private constructor(
-    hide: Boolean, red: ReductionType,
+    hide: Boolean, red: Reduction,
     private val rule1: Rule,
     private val rule2: Rule
 ) : RuleWithManyChildren(hide, red, listOf(rule1, rule2)) {
     private constructor(
         rules: List<Rule>,
         hide: Boolean,
-        red: ReductionType
+        red: Reduction
     ) : this(hide, red, setupParsers(rules).rule1, setupParsers(rules).rule2)
 
     private constructor(
         rule1: Rule,
         rule2: Rule
-    ) : this(defaultHidden, ReductionType.initial(), rule1, rule2)
+    ) : this(defaultHidden, Reduction.initial(), rule1, rule2)
 
     override fun parse(index: Int, runner: Gll) {
         val nodeKeyForComb1: ListenerKey = makeKey(index, this.rule1)
@@ -52,7 +52,7 @@ class OrderedChoiceRule private constructor(
         return if (isHiddenInResult == hide) this else OrderedChoiceRule(hide, this.reduction, rule1, rule2)
     }
 
-    override fun withReduction(red: ReductionType): OrderedChoiceRule {
+    override fun withReduction(red: Reduction): OrderedChoiceRule {
         return if (reduction === red) this else OrderedChoiceRule(isHiddenInResult, red, rule1, rule2)
     }
 
@@ -87,7 +87,7 @@ class OrderedChoiceRule private constructor(
             val setup: OrderedChoiceRule = setupParsers(distinctRules)
 
             return OrderedChoiceRule(
-                defaultHidden, defaultReductionType,
+                defaultHidden, defaultReduction,
                 setup.rule1, setup.rule2
             )
         }

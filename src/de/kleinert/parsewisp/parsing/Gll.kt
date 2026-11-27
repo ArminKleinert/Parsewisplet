@@ -8,7 +8,7 @@ import de.kleinert.parsewisp.functions.Procedure
 import de.kleinert.parsewisp.grammar.Grammar
 import de.kleinert.parsewisp.grammar.GrammarPrinter
 import de.kleinert.parsewisp.parser_options.ParsingOptions
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.result.*
 import de.kleinert.parsewisp.result.ParsesResult.LazyResultList
 import de.kleinert.parsewisp.result.failure.FailureUtil
@@ -194,7 +194,7 @@ class Gll private constructor(
         if (rule.isHiddenInResult) {
             result = result.reset()
         }
-        if (rule.reduction.reductionType != ReductionType.Type.INITIAL) {
+        if (rule.reduction.type != Reduction.RedType.INITIAL) {
             val tree = ParseTree.create(
                 rule.reduction.key, result.result,
                 nodeKey.index, result.index()

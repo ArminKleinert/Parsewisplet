@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -12,7 +12,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class SpecialSequenceRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     /**
      * Returns the description of the rule.
      *
@@ -54,7 +54,7 @@ class SpecialSequenceRule private constructor(
         return if (isHiddenInResult == hide) this else SpecialSequenceRule(hide, reduction, description, function)
     }
 
-    override fun withReduction(red: ReductionType): SpecialSequenceRule {
+    override fun withReduction(red: Reduction): SpecialSequenceRule {
         return if (reduction === red) this else SpecialSequenceRule(isHiddenInResult, red, description, function)
     }
 
@@ -87,7 +87,7 @@ class SpecialSequenceRule private constructor(
         ): Rule {
             return SpecialSequenceRule(
                 defaultHidden,
-                defaultReductionType,
+                defaultReduction,
                 description,
                 function
             )

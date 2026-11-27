@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 
 /**
  * Abstraction of [Rule] types which wrap one other [Rule]. Examples: repetitions, optionals, lookahead.
@@ -8,7 +8,7 @@ import de.kleinert.parsewisp.reduction.ReductionType
 abstract class RuleWithChild
 internal constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     /**
      * The rule which is wrapped by this rule.
      */

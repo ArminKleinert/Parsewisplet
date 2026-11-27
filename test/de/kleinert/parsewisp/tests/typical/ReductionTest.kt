@@ -5,13 +5,13 @@ import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.StringTerm
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class ReductionTypeTest {
+internal class ReductionTest {
     @Test
     fun standardIntermediateReduction() {
         // Merge upwards
@@ -20,7 +20,7 @@ internal class ReductionTypeTest {
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", StringTerm.createDirect("a", false)
-                    .withReduction(ReductionType.merging())
+                    .withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pMerge.parse("a"))
@@ -44,7 +44,7 @@ internal class ReductionTypeTest {
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", StringTerm.createDirect("a", false)
-                    .withReduction(ReductionType.initial())
+                    .withReduction(Reduction.initial())
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("A", "a")), pMerge.parse("a"))
@@ -57,7 +57,7 @@ internal class ReductionTypeTest {
             Gr.grammarS(
                 "S",
                 "S", StringTerm.createDirect("a", false)
-                    .withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                    .withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
@@ -68,7 +68,7 @@ internal class ReductionTypeTest {
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", StringTerm.createDirect("a", false)
-                    .withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                    .withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
@@ -81,7 +81,7 @@ internal class ReductionTypeTest {
                 "A", ConcatRule.create(
                     listOf(
                         StringTerm.createDirect("a", false)
-                            .withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                            .withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         StringTerm.createDirect("b", false)
                     )
                 )

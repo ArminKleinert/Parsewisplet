@@ -6,7 +6,7 @@ import de.kleinert.parsewisp.parsing.ConcatRule
 import de.kleinert.parsewisp.parsing.NonTerminal
 import de.kleinert.parsewisp.parsing.StringTerm
 import de.kleinert.parsewisp.parsing.TransformRule
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -111,7 +111,7 @@ internal class TransformRuleTest {
         val i = StringTerm.create("a", false)
         val r = TransformRule.create(i, simpleF)
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as TransformRule
+            .withReduction(Reduction.taggedTree(Sym.sym("A"))) as TransformRule
 
         // As expected.
         Assertions.assertEquals(i, r.rule)
@@ -184,7 +184,7 @@ internal class TransformRuleTest {
         // Default.
         Assertions.assertEquals(
             simpleA,
-            simpleA.withReduction(ReductionType.initial())
+            simpleA.withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -209,7 +209,7 @@ internal class TransformRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simpleA.withReduction(ReductionType.merging())
+                "A", simpleA.withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "aa"), pMerge.parse("a"))
@@ -225,7 +225,7 @@ internal class TransformRuleTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simpleA.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", simpleA.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "aa"), pMerge2.parse("a"))
@@ -235,7 +235,7 @@ internal class TransformRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simpleA.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", simpleA.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "aa")), pMerge3.parse("a"))
@@ -254,7 +254,7 @@ internal class TransformRuleTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simpleA.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        simpleA.withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         StringTerm.createDirect("b", false)
                     )
                 )

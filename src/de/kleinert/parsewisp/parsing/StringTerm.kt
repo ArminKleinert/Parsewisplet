@@ -1,6 +1,6 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
 /**
@@ -9,7 +9,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class StringTerm private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     /**
      * Returns the string.
      *
@@ -56,7 +56,7 @@ class StringTerm private constructor(
         return if (isHiddenInResult == hide) this else StringTerm(hide, reduction, string, this.isCaseInsensitive)
     }
 
-    override fun withReduction(red: ReductionType): StringTerm {
+    override fun withReduction(red: Reduction): StringTerm {
         return if (reduction === red) this else StringTerm(isHiddenInResult, red, string, this.isCaseInsensitive)
     }
 
@@ -87,7 +87,7 @@ class StringTerm private constructor(
             }
             return StringTerm(
                 defaultHidden,
-                defaultReductionType,
+                defaultReduction,
                 string,
                 caseInsensitive
             )
@@ -104,7 +104,7 @@ class StringTerm private constructor(
         fun createDirect(string: String, caseInsensitive: Boolean): StringTerm {
             return StringTerm(
                 defaultHidden,
-                defaultReductionType,
+                defaultReduction,
                 string,
                 caseInsensitive
             )

@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.parsing
 import de.kleinert.parsewisp.collections.FlatResultSeq
 import de.kleinert.parsewisp.collections.FlatResultSeq.Companion.make
 import de.kleinert.parsewisp.functions.Listener
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.result.success.ParseMessage
 import de.kleinert.parsewisp.trampoline.ListenerKey
 
@@ -13,7 +13,7 @@ import de.kleinert.parsewisp.trampoline.ListenerKey
  */
 class ConcatRule private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     parsers: List<Rule>
 ) : RuleWithManyChildren(hide, red, parsers) {
     override fun parse(index: Int, runner: Gll) {
@@ -86,7 +86,7 @@ class ConcatRule private constructor(
         return if (isHiddenInResult == hide) this else ConcatRule(hide, reduction, rules)
     }
 
-    override fun withReduction(red: ReductionType): Rule {
+    override fun withReduction(red: Reduction): Rule {
         return if (reduction === red) this else ConcatRule(isHiddenInResult, red, rules)
     }
 
@@ -108,7 +108,7 @@ class ConcatRule private constructor(
             val compressedResult = mutableListOf<Rule>()
 
             for (rule in rules) {
-                if (rule is ConcatRule && !rule.isHiddenInResult && rule.reduction == defaultReductionType) {
+                if (rule is ConcatRule && !rule.isHiddenInResult && rule.reduction == defaultReduction) {
                     compressedResult.addAll(rule.rules)
                 } else {
                     compressedResult.add(rule)
@@ -116,7 +116,7 @@ class ConcatRule private constructor(
             }
 
             return ConcatRule(
-                defaultHidden, defaultReductionType,
+                defaultHidden, defaultReduction,
                 compressedResult
             )
         }
@@ -131,7 +131,7 @@ class ConcatRule private constructor(
         fun createDirect(
             rules: List<Rule>
         ): ConcatRule {
-            return ConcatRule(defaultHidden, defaultReductionType, rules)
+            return ConcatRule(defaultHidden, defaultReduction, rules)
         }
     }
 }

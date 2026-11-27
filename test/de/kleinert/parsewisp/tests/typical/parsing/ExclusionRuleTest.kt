@@ -3,7 +3,7 @@ package de.kleinert.parsewisp.tests.typical.parsing
 import de.kleinert.parsewisp.Parsewisp
 import de.kleinert.parsewisp.Sym
 import de.kleinert.parsewisp.parsing.*
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 import de.kleinert.parsewisp.testutil.Gr
 import de.kleinert.parsewisp.testutil.PT
 import org.junit.jupiter.api.Assertions
@@ -192,7 +192,7 @@ internal class ExclusionRuleTest {
         val r = ExclusionRule
             .create(word(), keywords())
             .withHideTag(true)
-            .withReduction(ReductionType.taggedTree(Sym.sym("A"))) as ExclusionRule
+            .withReduction(Reduction.taggedTree(Sym.sym("A"))) as ExclusionRule
 
         // Expected
         Assertions.assertEquals(i, r.rules)
@@ -261,7 +261,7 @@ internal class ExclusionRuleTest {
         // Default.
         Assertions.assertEquals(
             simpleRuleForTests,
-            simpleRuleForTests.withReduction(ReductionType.initial())
+            simpleRuleForTests.withReduction(Reduction.initial())
         )
 
         // Default: Don't merge up
@@ -284,7 +284,7 @@ internal class ExclusionRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simpleRuleForTests.withReduction(ReductionType.merging())
+                "A", simpleRuleForTests.withReduction(Reduction.merging())
             )
         )
         Assertions.assertEquals(PT.create("S", "a"), pMerge.parse("a"))
@@ -298,7 +298,7 @@ internal class ExclusionRuleTest {
         val pMerge2 = Parsewisp.parser(
             Gr.grammarS(
                 "S",
-                "S", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "S", simpleRuleForTests.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("B", "a"), pMerge2.parse("a"))
@@ -308,7 +308,7 @@ internal class ExclusionRuleTest {
             Gr.grammarS(
                 "S",
                 "S", NonTerminal.create(Sym.sym("A")),
-                "A", simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B")))
+                "A", simpleRuleForTests.withReduction(Reduction.taggedTree(Sym.sym("B")))
             )
         )
         Assertions.assertEquals(PT.create("S", PT.create("B", "a")), pMerge3.parse("a"))
@@ -325,7 +325,7 @@ internal class ExclusionRuleTest {
                 "S", NonTerminal.create(Sym.sym("A")),
                 "A", ConcatRule.create(
                     listOf(
-                        simpleRuleForTests.withReduction(ReductionType.taggedTree(Sym.sym("B"))),
+                        simpleRuleForTests.withReduction(Reduction.taggedTree(Sym.sym("B"))),
                         StringTerm.create(";", false)
                     )
                 )

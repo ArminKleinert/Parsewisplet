@@ -1,13 +1,13 @@
 package de.kleinert.parsewisp.parsing
 
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 
 /**
  * This class should almost never be used, but can have its uses occasionally.
  *
  * Format: `"EOF"`
  */
-class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(hide, red) {
+class EOFTerm private constructor(hide: Boolean, red: Reduction) : Terminal(hide, red) {
     override fun parse(index: Int, runner: Gll) {
         fullParse(index, runner)
     }
@@ -23,7 +23,7 @@ class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(
         return if (isHiddenInResult == hide) this else EOFTerm(hide, reduction)
     }
 
-    override fun withReduction(red: ReductionType): EOFTerm {
+    override fun withReduction(red: Reduction): EOFTerm {
         return if (reduction === red) this else EOFTerm(isHiddenInResult, red)
     }
 
@@ -53,6 +53,6 @@ class EOFTerm private constructor(hide: Boolean, red: ReductionType) : Terminal(
              *
              * @return Default EOF rule. Can be buffered.
              */
-            get() = EOFTerm(defaultHidden, defaultReductionType)
+            get() = EOFTerm(defaultHidden, defaultReduction)
     }
 }

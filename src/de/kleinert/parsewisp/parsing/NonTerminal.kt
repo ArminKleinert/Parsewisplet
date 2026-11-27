@@ -1,14 +1,14 @@
 package de.kleinert.parsewisp.parsing
 
 import de.kleinert.parsewisp.Sym
-import de.kleinert.parsewisp.reduction.ReductionType
+import de.kleinert.parsewisp.reduction.Reduction
 
 /**
  * This type represents non-terminals.
  */
 class NonTerminal private constructor(
     hide: Boolean,
-    red: ReductionType,
+    red: Reduction,
     /**
      * Returns the name of the rule.
      *
@@ -38,7 +38,7 @@ class NonTerminal private constructor(
         return if (isHiddenInResult == hide) this else NonTerminal(hide, reduction, keyword)
     }
 
-    override fun withReduction(red: ReductionType): NonTerminal {
+    override fun withReduction(red: Reduction): NonTerminal {
         return if (reduction === red) this else NonTerminal(isHiddenInResult, red, keyword)
     }
 
@@ -60,7 +60,7 @@ class NonTerminal private constructor(
          * @return A non-terminal.
          */
         fun create(keyword: Sym): NonTerminal {
-            return NonTerminal(defaultHidden, defaultReductionType, keyword)
+            return NonTerminal(defaultHidden, defaultReduction, keyword)
         }
     }
 }

@@ -12,18 +12,8 @@ import de.kleinert.parsewisp.result.success.ParseMessage
  * @param fullResults   Successes (or failures) for full listeners.
  */
 data class ListenerNode(
-    val listeners: MutableList<Listener>,
-    val fullListeners: MutableList<Listener>,
-    val results: LinkedHashSet<ParseMessage>,
-    val fullResults: LinkedHashSet<ParseMessage>
-) {
-    /**
-     * Creates a new instance.
-     */
-    constructor() : this(
-        mutableListOf(),
-        mutableListOf(),
-        LinkedHashSet(),
-        LinkedHashSet()
-    )
-}
+    val listeners: MutableList<Listener> =mutableListOf(),
+    val fullListeners: MutableList<Listener> =mutableListOf(),
+    val results: LinkedHashSet<ParseMessage> = linkedSetOf(),
+    val fullResults: LinkedHashSet<ParseMessage> = linkedSetOf()
+)

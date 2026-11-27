@@ -37,25 +37,19 @@ class ParseTree private constructor(
      *
      * @return The starting index in the input string of the parse (inclusive).
      */
-    val spanStart1: Int,
+    val spanStart: Int,
     /**
      * The end index in the input string of the parse (exclusive).
      *
      * @return The end index in the input string of the parse (exclusive).
      */
-    val spanEndExclusive1: Int
+    val spanEndExclusive: Int
 ) : List<Node>, ParseResult {
     private var hashCode = 0
 
     init {
         require(!((spanStart == -1 && spanEndExclusive != -1) || (spanStart != -1 && spanStart > spanEndExclusive))) { "Invalid span $spanStart to $spanEndExclusive." }
     }
-
-    val spanStart: Int
-        get()=spanStart1
-
-    val spanEndExclusive: Int
-        get()=spanEndExclusive1
 
     /**
      * Equivalent to `content.get(index)`.
